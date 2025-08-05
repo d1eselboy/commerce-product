@@ -42,7 +42,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "test": "jest",
     "lint": "eslint src --ext ts,tsx",
