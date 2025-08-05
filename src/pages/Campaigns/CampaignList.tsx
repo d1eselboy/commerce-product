@@ -22,6 +22,18 @@ import {
   OutlinedInput,
   LinearProgress,
   Alert,
+  Checkbox,
+  Toolbar,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Slider,
+  Grid,
+  Card,
+  CardContent,
+  Divider,
 } from '@mui/material';
 import {
   Add,
@@ -32,6 +44,13 @@ import {
   FileCopy,
   Pause,
   PlayArrow,
+  FileDownload,
+  Tune,
+  Visibility,
+  TrendingUp,
+  Warning,
+  Schedule,
+  FilterList,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -119,6 +138,13 @@ export const CampaignList: React.FC = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+  const [bulkActionOpen, setBulkActionOpen] = useState(false);
+  const [bulkAction, setBulkAction] = useState<'pause' | 'resume' | 'delete' | 'weight' | null>(null);
+  const [bulkWeight, setBulkWeight] = useState(10);
+  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<'name' | 'status' | 'weight' | 'impressions' | 'ctr'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   
   const { data: campaigns, isLoading, error } = useListCampaignsQuery({
     search: search || undefined,
@@ -153,6 +179,125 @@ export const CampaignList: React.FC = () => {
     });
   };
 
+  // Selection handlers
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedCampaigns(campaigns?.map(c => c.id) || []);
+    } else {
+      setSelectedCampaigns([]);
+    }
+  };
+
+  const handleSelectCampaign = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCampaigns(prev => [...prev, id]);
+    } else {
+      setSelectedCampaigns(prev => prev.filter(cId => cId !== id));
+    }
+  };
+
+  // Bulk operations
+  const handleBulkAction = (action: 'pause' | 'resume' | 'delete' | 'weight') => {
+    setBulkAction(action);
+    setBulkActionOpen(true);
+  };
+
+  const executeBulkAction = async () => {
+    if (!bulkAction) return;
+
+    try {
+      for (const campaignId of selectedCampaigns) {
+        switch (bulkAction) {
+          case 'pause':
+            await updateCampaign({ id: campaignId, data: { status: 'paused' } });
+            break;
+          case 'resume':
+            await updateCampaign({ id: campaignId, data: { status: 'active' } });
+            break;
+          case 'weight':
+            await updateCampaign({ id: campaignId, data: { weight: bulkWeight } });
+            break;
+          case 'delete':
+            // Implement delete logic
+            break;
+        }
+      }
+      setSelectedCampaigns([]);
+      setBulkActionOpen(false);
+      setBulkAction(null);
+    } catch (error) {
+      console.error('Bulk action failed:', error);
+    }
+  };
+
+  const exportCampaigns = () => {
+    const selectedData = campaigns?.filter(c => selectedCampaigns.includes(c.id)) || [];
+    const csvContent = [
+      ['Name', 'Status', 'Weight', 'Impressions Done', 'Limit', 'CTR', 'eCPM'].join(','),
+      ...selectedData.map(c => [
+        c.name,
+        c.status,
+        c.weight,
+        c.impressionsDone,
+        c.limitImpressions,
+        c.ctr || 0,
+        c.ecpm || 0,
+      ].join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'campaigns.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Sorting
+  const sortedCampaigns = React.useMemo(() => {
+    if (!campaigns) return [];
+    
+    return [...campaigns].sort((a, b) => {
+      let aValue: any = a[sortBy];
+      let bValue: any = b[sortBy];
+      
+      if (sortBy === 'impressions') {
+        aValue = a.impressionsDone;
+        bValue = b.impressionsDone;
+      }
+      
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      } else {
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      }
+    });
+  }, [campaigns, sortBy, sortOrder]);
+
+  // Quick stats
+  const quickStats = React.useMemo(() => {
+    if (!campaigns) return { total: 0, active: 0, paused: 0, totalImpressions: 0, avgCtr: 0 };
+    
+    const active = campaigns.filter(c => c.status === 'active').length;
+    const paused = campaigns.filter(c => c.status === 'paused').length;
+    const totalImpressions = campaigns.reduce((sum, c) => sum + c.impressionsDone, 0);
+    const avgCtr = campaigns.reduce((sum, c) => sum + (c.ctr || 0), 0) / campaigns.length;
+    
+    return {
+      total: campaigns.length,
+      active,
+      paused,
+      totalImpressions,
+      avgCtr,
+    };
+  }, [campaigns]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ru-RU');
   };
@@ -179,24 +324,165 @@ export const CampaignList: React.FC = () => {
 
   return (
     <Box>
-      {/* Filters Bar */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-        <Button
-          variant="outlined"
-          startIcon={<Add />}
-          sx={{
-            bgcolor: '#F5F5F7',
-            border: 'none',
-            color: '#1C1C1E',
-            '&:hover': {
-              bgcolor: '#E5E5EA',
+      {/* Quick Stats */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ border: '1px solid #E5E5EA' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                ВСЕГО КАМПАНИЙ
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                {quickStats.total}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ border: '1px solid #E5E5EA' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                АКТИВНЫЕ
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 500, color: '#34C759' }}>
+                {quickStats.active}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ border: '1px solid #E5E5EA' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                ПОКАЗЫ
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                {quickStats.totalImpressions.toLocaleString()}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ border: '1px solid #E5E5EA' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                СРЕДНИЙ CTR
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                {quickStats.avgCtr.toFixed(2)}%
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Action Bar */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <TextField
+            placeholder="Поиск кампаний..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            size="small"
+            sx={{ minWidth: 250 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ fontSize: 18, color: '#8E8E93' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+          
+          <Button
+            variant="outlined"
+            startIcon={<FilterList />}
+            onClick={() => setAdvancedFiltersOpen(true)}
+            sx={{
+              bgcolor: '#F5F5F7',
               border: 'none',
+              color: '#1C1C1E',
+              '&:hover': {
+                bgcolor: '#E5E5EA',
+                border: 'none',
+              },
+            }}
+          >
+            Фильтры
+          </Button>
+        </Box>
+
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={handleCreateCampaign}
+          sx={{
+            bgcolor: '#FFDD2D',
+            color: '#000',
+            '&:hover': {
+              bgcolor: '#E6C429',
             },
           }}
         >
-          Фильтры
+          Создать кампанию
         </Button>
       </Box>
+
+      {/* Bulk Actions Toolbar */}
+      {selectedCampaigns.length > 0 && (
+        <Toolbar
+          sx={{
+            mb: 2,
+            bgcolor: '#E3F2FD',
+            borderRadius: 1,
+            border: '1px solid #BBDEFB',
+            minHeight: '56px !important',
+          }}
+        >
+          <Typography variant="body2" sx={{ flex: 1, fontWeight: 500 }}>
+            {selectedCampaigns.length} кампаний выбрано
+          </Typography>
+          
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              size="small"
+              startIcon={<PlayArrow />}
+              onClick={() => handleBulkAction('resume')}
+            >
+              Запустить
+            </Button>
+            <Button
+              size="small"
+              startIcon={<Pause />}
+              onClick={() => handleBulkAction('pause')}
+            >
+              Остановить
+            </Button>
+            <Button
+              size="small"
+              startIcon={<Tune />}
+              onClick={() => handleBulkAction('weight')}
+            >
+              Изменить вес
+            </Button>
+            <Button
+              size="small"
+              startIcon={<FileDownload />}
+              onClick={exportCampaigns}
+            >
+              Экспорт
+            </Button>
+            <Button
+              size="small"
+              startIcon={<Delete />}
+              onClick={() => handleBulkAction('delete')}
+              sx={{ color: '#FF3B30' }}
+            >
+              Удалить
+            </Button>
+          </Box>
+        </Toolbar>
+      )}
 
       {/* Main Campaign Table */}
       <Paper
@@ -210,20 +496,58 @@ export const CampaignList: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500 }}>
-                  Статус
+                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, width: 48 }}>
+                  <Checkbox
+                    indeterminate={selectedCampaigns.length > 0 && selectedCampaigns.length < (campaigns?.length || 0)}
+                    checked={campaigns ? selectedCampaigns.length === campaigns.length : false}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    size="small"
+                  />
                 </TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500 }}>
-                  Название кампании
+                <TableCell 
+                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  onClick={() => {
+                    setSortBy('status');
+                    setSortOrder(sortBy === 'status' && sortOrder === 'asc' ? 'desc' : 'asc');
+                  }}
+                >
+                  Статус {sortBy === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500 }}>
-                  Вес
+                <TableCell 
+                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  onClick={() => {
+                    setSortBy('name');
+                    setSortOrder(sortBy === 'name' && sortOrder === 'asc' ? 'desc' : 'asc');
+                  }}
+                >
+                  Название кампании {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500 }}>
-                  Показы
+                <TableCell 
+                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  onClick={() => {
+                    setSortBy('weight');
+                    setSortOrder(sortBy === 'weight' && sortOrder === 'asc' ? 'desc' : 'asc');
+                  }}
+                >
+                  Вес {sortBy === 'weight' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500 }}>
-                  CTR
+                <TableCell 
+                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  onClick={() => {
+                    setSortBy('impressions');
+                    setSortOrder(sortBy === 'impressions' && sortOrder === 'asc' ? 'desc' : 'asc');
+                  }}
+                >
+                  Показы {sortBy === 'impressions' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </TableCell>
+                <TableCell 
+                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  onClick={() => {
+                    setSortBy('ctr');
+                    setSortOrder(sortBy === 'ctr' && sortOrder === 'asc' ? 'desc' : 'asc');
+                  }}
+                >
+                  CTR {sortBy === 'ctr' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </TableCell>
                 <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500 }}>
                   Прогресс
@@ -234,7 +558,7 @@ export const CampaignList: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {campaigns?.map((campaign) => {
+              {sortedCampaigns?.map((campaign) => {
                 const progress = calculateProgress(campaign.impressionsDone, campaign.limitImpressions);
                 const statusColor = campaign.status === 'active' ? '#34C759' : 
                                   campaign.status === 'paused' ? '#FF9500' : '#8E8E93';
@@ -244,6 +568,13 @@ export const CampaignList: React.FC = () => {
                 
                 return (
                   <TableRow key={campaign.id} hover>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedCampaigns.includes(campaign.id)}
+                        onChange={(e) => handleSelectCampaign(campaign.id, e.target.checked)}
+                        size="small"
+                      />
+                    </TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Box
@@ -345,6 +676,83 @@ export const CampaignList: React.FC = () => {
           </Button>
         </Box>
       )}
+
+      {/* Bulk Action Dialog */}
+      <Dialog open={bulkActionOpen} onClose={() => setBulkActionOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {bulkAction === 'pause' && 'Приостановить кампании'}
+          {bulkAction === 'resume' && 'Запустить кампании'}
+          {bulkAction === 'delete' && 'Удалить кампании'}
+          {bulkAction === 'weight' && 'Изменить вес кампаний'}
+        </DialogTitle>
+        <DialogContent>
+          {bulkAction === 'delete' ? (
+            <Alert severity="warning">
+              Вы действительно хотите удалить {selectedCampaigns.length} кампаний? 
+              Это действие нельзя отменить.
+            </Alert>
+          ) : bulkAction === 'weight' ? (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body2" sx={{ mb: 3 }}>
+                Установить новый вес для {selectedCampaigns.length} выбранных кампаний:
+              </Typography>
+              <Box sx={{ px: 2 }}>
+                <Slider
+                  value={bulkWeight}
+                  onChange={(_, value) => setBulkWeight(value as number)}
+                  min={1}
+                  max={100}
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={(value) => `${value}%`}
+                  marks={[
+                    { value: 1, label: '1%' },
+                    { value: 25, label: '25%' },
+                    { value: 50, label: '50%' },
+                    { value: 75, label: '75%' },
+                    { value: 100, label: '100%' },
+                  ]}
+                  sx={{
+                    color: '#FFDD2D',
+                    '& .MuiSlider-thumb': {
+                      bgcolor: '#FFDD2D',
+                    },
+                  }}
+                />
+              </Box>
+              <Typography variant="caption" sx={{ color: '#8E8E93', mt: 2, display: 'block' }}>
+                Новый вес: {bulkWeight}%
+              </Typography>
+            </Box>
+          ) : (
+            <Typography variant="body2">
+              {bulkAction === 'pause' && `Приостановить ${selectedCampaigns.length} кампаний?`}
+              {bulkAction === 'resume' && `Запустить ${selectedCampaigns.length} кампаний?`}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBulkActionOpen(false)}>
+            Отмена
+          </Button>
+          <Button 
+            onClick={executeBulkAction} 
+            variant="contained"
+            color={bulkAction === 'delete' ? 'error' : 'primary'}
+            sx={bulkAction !== 'delete' ? {
+              bgcolor: '#FFDD2D',
+              color: '#000',
+              '&:hover': {
+                bgcolor: '#E6C429',
+              },
+            } : {}}
+          >
+            {bulkAction === 'pause' && 'Приостановить'}
+            {bulkAction === 'resume' && 'Запустить'}
+            {bulkAction === 'delete' && 'Удалить'}
+            {bulkAction === 'weight' && 'Применить'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
