@@ -25,15 +25,6 @@ interface SchedulingStepProps {
   errors: Record<string, string>;
 }
 
-const weekDays = [
-  { value: 1, label: 'Пн' },
-  { value: 2, label: 'Вт' },
-  { value: 3, label: 'Ср' },
-  { value: 4, label: 'Чт' },
-  { value: 5, label: 'Пт' },
-  { value: 6, label: 'Сб' },
-  { value: 0, label: 'Вс' },
-];
 
 export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, errors }) => {
   const { t } = useTranslation();
@@ -51,34 +42,6 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
     onChange({ limitImpressions: value });
   };
 
-  const handleDayToggle = (day: number) => {
-    const currentDays = data.timeTargeting?.days || [];
-    const newDays = currentDays.includes(day)
-      ? currentDays.filter((d: number) => d !== day)
-      : [...currentDays, day].sort();
-    
-    onChange({
-      timeTargeting: {
-        ...data.timeTargeting,
-        days: newDays,
-      },
-    });
-  };
-
-  const handleTimeRangeChange = (event: Event, newValue: number | number[]) => {
-    const [startHour, endHour] = newValue as number[];
-    onChange({
-      timeTargeting: {
-        ...data.timeTargeting,
-        startHour,
-        endHour,
-      },
-    });
-  };
-
-  const formatHour = (hour: number) => {
-    return `${hour.toString().padStart(2, '0')}:00`;
-  };
 
   const calculateDuration = () => {
     if (!data.startDate || !data.endDate) return null;
@@ -189,77 +152,6 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
               )}
             </Box>
 
-            {/* Time Targeting */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2 }}>
-                {t('campaignEditor.scheduling.timeTargeting')}
-              </Typography>
-              
-              {/* Days of Week */}
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                  Days of Week
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {weekDays.map((day) => (
-                    <Chip
-                      key={day.value}
-                      label={day.label}
-                      onClick={() => handleDayToggle(day.value)}
-                      sx={{
-                        bgcolor: data.timeTargeting?.days?.includes(day.value) ? '#FFDD2D' : '#F5F5F7',
-                        color: data.timeTargeting?.days?.includes(day.value) ? '#000' : '#8E8E93',
-                        '&:hover': {
-                          bgcolor: data.timeTargeting?.days?.includes(day.value) ? '#E6C429' : '#E5E5EA',
-                        },
-                      }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-
-              {/* Time Range */}
-              <Box>
-                <Typography variant="body2" sx={{ fontWeight: 500, mb: 2 }}>
-                  Time Range
-                </Typography>
-                <Box sx={{ px: 2 }}>
-                  <Slider
-                    value={[data.timeTargeting?.startHour || 9, data.timeTargeting?.endHour || 21]}
-                    onChange={handleTimeRangeChange}
-                    valueLabelDisplay="auto"
-                    valueLabelFormat={formatHour}
-                    min={0}
-                    max={23}
-                    marks={[
-                      { value: 0, label: '00:00' },
-                      { value: 6, label: '06:00' },
-                      { value: 12, label: '12:00' },
-                      { value: 18, label: '18:00' },
-                      { value: 23, label: '23:00' },
-                    ]}
-                    sx={{
-                      color: '#FFDD2D',
-                      '& .MuiSlider-thumb': {
-                        bgcolor: '#FFDD2D',
-                        '&:hover': {
-                          boxShadow: '0 0 0 8px rgba(255, 221, 45, 0.16)',
-                        },
-                      },
-                      '& .MuiSlider-track': {
-                        bgcolor: '#FFDD2D',
-                      },
-                      '& .MuiSlider-rail': {
-                        bgcolor: '#E5E5EA',
-                      },
-                    }}
-                  />
-                </Box>
-                <Typography variant="caption" sx={{ color: '#8E8E93', mt: 1, display: 'block' }}>
-                  Active hours: {formatHour(data.timeTargeting?.startHour || 9)} - {formatHour(data.timeTargeting?.endHour || 21)}
-                </Typography>
-              </Box>
-            </Box>
           </Grid>
 
           <Grid item xs={12} md={4}>
@@ -300,23 +192,12 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
                 </Box>
               )}
 
-              {data.timeTargeting?.days?.length > 0 && (
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                    Active Days
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                    {data.timeTargeting.days.length} days/week
-                  </Typography>
-                </Box>
-              )}
-
               <Box>
                 <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                  Daily Hours
+                  Campaign Type
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                  {(data.timeTargeting?.endHour || 21) - (data.timeTargeting?.startHour || 9)} hours/day
+                  Standard Display
                 </Typography>
               </Box>
             </Paper>

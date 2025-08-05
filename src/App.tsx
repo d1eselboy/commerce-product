@@ -9,6 +9,7 @@ import { MainLayout } from '@/components/Layout/MainLayout';
 import { Dashboard } from '@/pages/Dashboard';
 import { CampaignList } from '@/pages/Campaigns/CampaignList';
 import { CampaignEditor } from '@/pages/Campaigns/CampaignEditor';
+import { CampaignDetails } from '@/pages/Campaigns/CampaignDetails';
 import { lightTheme } from '@/theme';
 import '@/i18n';
 
@@ -29,8 +30,8 @@ const ThemedApp: React.FC = () => {
               <Route path="/" element={<Dashboard />} />
               <Route path="/campaigns" element={<CampaignList />} />
               <Route path="/campaigns/new" element={<CampaignEditor />} />
+              <Route path="/campaigns/:id" element={<CampaignDetails />} />
               <Route path="/campaigns/:id/edit" element={<CampaignEditor />} />
-              <Route path="/creatives" element={<div>Creative Library</div>} />
               <Route path="/surfaces" element={<div>Surface Preview</div>} />
               <Route path="/live-logs" element={<div>Live Logs</div>} />
               <Route path="/settings" element={<div>Settings</div>} />

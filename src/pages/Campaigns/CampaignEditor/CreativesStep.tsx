@@ -32,6 +32,10 @@ import {
   AspectRatio,
   CheckCircle,
   Warning,
+  SmartDisplay,
+  Widgets,
+  VideoLibrary,
+  CropSquare,
 } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
@@ -47,44 +51,116 @@ interface Creative {
   name: string;
   file?: File;
   url?: string;
-  surface: 'promo_block' | 'map_object';
+  surfaces: ('promo_block' | 'map_object')[];
   dimensions: { width: number; height: number };
   size: number;
   weight: number;
-  format: string;
+  format: 'banner' | 'icon' | 'video';
+  fileFormat: string;
+  // Promo block specific fields
+  title?: string;
+  subtitle?: string;
+  layoutType?: 'media_left' | 'media_right' | 'media_top';
 }
+
+// Mock creative images (base64 encoded placeholders)
+const mockImages = {
+  vtbBanner: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE2OCIgdmlld0JveD0iMCAwIDMyMCAxNjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTY4IiBmaWxsPSIjMDA0QkE4Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5WVEIgUHJlbWl1bTwvdGV4dD4KPHR5ZWFsbT0iaGF0IHg9IjE2MCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CYW5raW5nIENhcmRzPC90ZXh0Pgo8L3N2Zz4K',
+  sberBanner: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE2OCIgdmlld0JveD0iMCAwIDMyMCAxNjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTY4IiBmaWxsPSIjMjFBMDM4Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TYmVyYmFuazwvdGV4dD4KPHR5ZWFsbD0iaGF0IHg9IjE2MCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BdXRvIENyZWRpdDwvdGV4dD4KPC9zdmc+Cg==',
+  tinkoffBanner: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE2OCIgdmlld0JveD0iMCAwIDMyMCAxNjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTY4IiBmaWxsPSIjRkZEQjAwIi8+Cjx0ZXh0IHg9IjE2MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9ImJsYWNrIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UaW5rb2ZmPC90ZXh0Pgo8dHlwZT0iaGF0IHg9IjE2MCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9ImJsYWNrIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CdXNpbmVzcyBBY2NvdW50PC90ZXh0Pgo8L3N2Zz4K',
+  megafonIcon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzIiIGZpbGw9IiM4MDA4ODAiLz4KPHR5ZWFsbT0iaGF0IHg9IjMyIiB5PSIzOCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk08L3RleHQ+Cjwvc3ZnPgo=',
+  ozonIcon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzIiIGZpbGw9IiMwMDVCRkYiLz4KPHR5ZWFsbD0iaGF0IHg9IjMyIiB5PSIzOCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk88L3RleHQ+Cjwvc3ZnPgo=',
+  yandexIcon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzIiIGZpbGw9IiNGRkREMkQiLz48dGV4dCB4PSIzMiIgeT0iMzgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9ImJsYWNrIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ZPC90ZXh0Pjwvc3ZnPg==',
+  videoPlaceholder: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMyMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMDAwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMTMwLDYwIDIwMCwxMDAgMTMwLDE0MCIgZmlsbD0iI0ZGRkYiLz4KPHR5ZWFsbT0iaGF0IHg9IjE2MCIgeT0iMTYwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5WaWRlbyBQbGFjZWhvbGRlcjwvdGV4dD4KPC9zdmc+Cg=='
+};
 
 // Mock creative library data
 const mockCreativeLibrary: Creative[] = [
   {
     id: '1',
-    name: 'VTB Premium Banner',
-    url: '/images/vtb-banner.jpg',
-    surface: 'promo_block',
+    name: 'VTB Premium Creative',
+    url: mockImages.vtbBanner,
+    surfaces: ['promo_block', 'map_object'],
     dimensions: { width: 320, height: 168 },
     size: 45600,
     weight: 100,
-    format: 'JPEG',
+    format: 'banner',
+    fileFormat: 'SVG',
+    title: 'VTB Premium Banking',
+    subtitle: 'Откройте счёт за 5 минут',
+    layoutType: 'media_left',
   },
   {
     id: '2',
-    name: 'Sberbank Auto Promo',
-    url: '/images/sber-auto.jpg',
-    surface: 'promo_block',
+    name: 'Sberbank Auto Creative',
+    url: mockImages.sberBanner,
+    surfaces: ['promo_block'],
     dimensions: { width: 320, height: 168 },
     size: 52300,
     weight: 100,
-    format: 'JPEG',
+    format: 'banner',
+    fileFormat: 'SVG',
+    title: 'Автокредит Сбербанк',
+    subtitle: 'От 5.5% годовых',
+    layoutType: 'media_top',
   },
   {
     id: '3',
-    name: 'Tinkoff Map Sticker',
-    url: '/images/tinkoff-sticker.svg',
-    surface: 'map_object',
+    name: 'Tinkoff Business Creative',
+    url: mockImages.tinkoffBanner,
+    surfaces: ['promo_block', 'map_object'],
+    dimensions: { width: 320, height: 168 },
+    size: 48900,
+    weight: 100,
+    format: 'banner',
+    fileFormat: 'SVG',
+    title: 'Тинькофф Бизнес',
+    subtitle: 'Расчётный счёт бесплатно',
+    layoutType: 'media_right',
+  },
+  {
+    id: '4',
+    name: 'MegaFon Icon Creative',
+    url: mockImages.megafonIcon,
+    surfaces: ['map_object'],
     dimensions: { width: 64, height: 64 },
     size: 8900,
     weight: 100,
-    format: 'SVG',
+    format: 'icon',
+    fileFormat: 'SVG',
+  },
+  {
+    id: '5',
+    name: 'Ozon Icon Creative',
+    url: mockImages.ozonIcon,
+    surfaces: ['map_object'],
+    dimensions: { width: 64, height: 64 },
+    size: 7800,
+    weight: 100,
+    format: 'icon',
+    fileFormat: 'SVG',
+  },
+  {
+    id: '6',
+    name: 'Yandex Universal Creative',
+    url: mockImages.yandexIcon,
+    surfaces: ['promo_block', 'map_object'],
+    dimensions: { width: 64, height: 64 },
+    size: 9200,
+    weight: 100,
+    format: 'icon',
+    fileFormat: 'SVG',
+  },
+  {
+    id: '7',
+    name: 'Product Showcase Video',
+    url: mockImages.videoPlaceholder,
+    surfaces: ['promo_block'],
+    dimensions: { width: 320, height: 180 },
+    size: 1500000,
+    weight: 100,
+    format: 'video',
+    fileFormat: 'MP4',
   },
 ];
 
@@ -95,9 +171,16 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
   const [selectedCreatives, setSelectedCreatives] = useState<Creative[]>([]);
   const [uploading, setUploading] = useState(false);
   const [editingWeights, setEditingWeights] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<'banner' | 'icon' | 'video'>('banner');
+  const [selectedSurfaces, setSelectedSurfaces] = useState<('promo_block' | 'map_object')[]>(['promo_block']);
 
   // Dropzone for file uploads
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (selectedSurfaces.length === 0) {
+      alert('Please select at least one surface before uploading.');
+      return;
+    }
+    
     setUploading(true);
     
     // Simulate upload delay
@@ -106,11 +189,18 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
         id: `upload-${Date.now()}-${index}`,
         name: file.name.replace(/\.[^/.]+$/, ''),
         file,
-        surface: (file.name.includes('map') || file.name.includes('sticker')) ? 'map_object' : 'promo_block' as const,
-        dimensions: { width: 320, height: 168 }, // Will be detected from actual file
+        surfaces: selectedSurfaces,
+        dimensions: selectedFormat === 'icon' ? { width: 64, height: 64 } : { width: 320, height: 168 },
         size: file.size,
         weight: 100,
-        format: file.type.split('/')[1].toUpperCase(),
+        format: selectedFormat,
+        fileFormat: file.type.split('/')[1].toUpperCase(),
+        // Add default promo block fields if promo_block surface is selected
+        ...(selectedSurfaces.includes('promo_block') && {
+          title: file.name.replace(/\.[^/.]+$/, ''),
+          subtitle: 'Add subtitle text',
+          layoutType: 'media_left' as const,
+        }),
       }));
       
       const currentCreatives = data.creativeFiles || [];
@@ -123,13 +213,16 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
+    accept: selectedFormat === 'video' ? {
+      'video/mp4': ['.mp4'],
+      'video/webm': ['.webm'],
+    } : {
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/png': ['.png'],
       'image/webp': ['.webp'],
       'image/svg+xml': ['.svg'],
     },
-    maxSize: 500 * 1024, // 500KB
+    maxSize: selectedFormat === 'video' ? 2 * 1024 * 1024 : 500 * 1024, // 2MB for video, 500KB for images
   });
 
   const handleAddFromLibrary = () => {
@@ -190,35 +283,38 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
     }
 
     // Check format requirements
-    const promoBlocks = creatives.filter((c: Creative) => c.surface === 'promo_block');
-    const mapObjects = creatives.filter((c: Creative) => c.surface === 'map_object');
-
-    promoBlocks.forEach((c: Creative) => {
-      const ratio = c.dimensions.width / c.dimensions.height;
-      if (Math.abs(ratio - 1.91) > 0.1) {
-        issues.push({ 
-          type: 'warning', 
-          message: `${c.name}: Promo block should have 1.91:1 ratio (recommended: 320x168px)` 
-        });
+    creatives.forEach((c: Creative) => {
+      // Check promo block requirements if creative supports this surface
+      if (c.surfaces.includes('promo_block')) {
+        const ratio = c.dimensions.width / c.dimensions.height;
+        if (Math.abs(ratio - 1.91) > 0.1) {
+          issues.push({ 
+            type: 'warning', 
+            message: `${c.name}: Promo block should have 1.91:1 ratio (recommended: 320x168px)` 
+          });
+        }
       }
-    });
-
-    mapObjects.forEach((c: Creative) => {
-      const ratio = c.dimensions.width / c.dimensions.height;
-      if (Math.abs(ratio - 1) > 0.1) {
-        issues.push({ 
-          type: 'warning', 
-          message: `${c.name}: Map object should be square (1:1 ratio)` 
-        });
+      
+      // Check map object requirements if creative supports this surface
+      if (c.surfaces.includes('map_object')) {
+        const ratio = c.dimensions.width / c.dimensions.height;
+        if (Math.abs(ratio - 1) > 0.1) {
+          issues.push({ 
+            type: 'warning', 
+            message: `${c.name}: Map object should be square (1:1 ratio)` 
+          });
+        }
       }
     });
 
     // Check file sizes
     creatives.forEach((c: Creative) => {
-      if (c.size > 500 * 1024) {
+      const maxSize = c.format === 'video' ? 2 * 1024 * 1024 : 500 * 1024;
+      const maxSizeText = c.format === 'video' ? '2MB' : '500KB';
+      if (c.size > maxSize) {
         issues.push({ 
           type: 'warning', 
-          message: `${c.name}: File size exceeds 500KB recommendation` 
+          message: `${c.name}: File size exceeds ${maxSizeText} recommendation` 
         });
       }
     });
@@ -255,6 +351,111 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
               Upload New Creatives
             </Typography>
             
+            {/* Format Selection */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" sx={{ fontWeight: 500, mb: 2 }}>
+                Choose Format:
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant={selectedFormat === 'banner' ? 'contained' : 'outlined'}
+                  startIcon={<AspectRatio />}
+                  onClick={() => setSelectedFormat('banner')}
+                  sx={{
+                    bgcolor: selectedFormat === 'banner' ? '#FFDD2D' : 'transparent',
+                    color: selectedFormat === 'banner' ? '#000' : '#1C1C1E',
+                    borderColor: '#E5E5EA',
+                    '&:hover': {
+                      bgcolor: selectedFormat === 'banner' ? '#E6C429' : '#F5F5F7',
+                    },
+                  }}
+                >
+                  Banner
+                </Button>
+                <Button
+                  variant={selectedFormat === 'icon' ? 'contained' : 'outlined'}
+                  startIcon={<CropSquare />}
+                  onClick={() => setSelectedFormat('icon')}
+                  sx={{
+                    bgcolor: selectedFormat === 'icon' ? '#FFDD2D' : 'transparent',
+                    color: selectedFormat === 'icon' ? '#000' : '#1C1C1E',
+                    borderColor: '#E5E5EA',
+                    '&:hover': {
+                      bgcolor: selectedFormat === 'icon' ? '#E6C429' : '#F5F5F7',
+                    },
+                  }}
+                >
+                  Icon
+                </Button>
+                <Button
+                  variant={selectedFormat === 'video' ? 'contained' : 'outlined'}
+                  startIcon={<VideoLibrary />}
+                  onClick={() => setSelectedFormat('video')}
+                  sx={{
+                    bgcolor: selectedFormat === 'video' ? '#FFDD2D' : 'transparent',
+                    color: selectedFormat === 'video' ? '#000' : '#1C1C1E',
+                    borderColor: '#E5E5EA',
+                    '&:hover': {
+                      bgcolor: selectedFormat === 'video' ? '#E6C429' : '#F5F5F7',
+                    },
+                  }}
+                >
+                  Video
+                </Button>
+              </Box>
+            </Box>
+
+            {/* Surface Selection */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" sx={{ fontWeight: 500, mb: 2 }}>
+                Select Surfaces:
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant={selectedSurfaces.includes('promo_block') ? 'contained' : 'outlined'}
+                  startIcon={<AspectRatio />}
+                  onClick={() => {
+                    if (selectedSurfaces.includes('promo_block')) {
+                      setSelectedSurfaces(prev => prev.filter(s => s !== 'promo_block'));
+                    } else {
+                      setSelectedSurfaces(prev => [...prev, 'promo_block']);
+                    }
+                  }}
+                  sx={{
+                    bgcolor: selectedSurfaces.includes('promo_block') ? '#FFDD2D' : 'transparent',
+                    color: selectedSurfaces.includes('promo_block') ? '#000' : '#1C1C1E',
+                    borderColor: '#E5E5EA',
+                    '&:hover': {
+                      bgcolor: selectedSurfaces.includes('promo_block') ? '#E6C429' : '#F5F5F7',
+                    },
+                  }}
+                >
+                  Promo Block
+                </Button>
+                <Button
+                  variant={selectedSurfaces.includes('map_object') ? 'contained' : 'outlined'}
+                  startIcon={<CropSquare />}
+                  onClick={() => {
+                    if (selectedSurfaces.includes('map_object')) {
+                      setSelectedSurfaces(prev => prev.filter(s => s !== 'map_object'));
+                    } else {
+                      setSelectedSurfaces(prev => [...prev, 'map_object']);
+                    }
+                  }}
+                  sx={{
+                    bgcolor: selectedSurfaces.includes('map_object') ? '#FFDD2D' : 'transparent',
+                    color: selectedSurfaces.includes('map_object') ? '#000' : '#1C1C1E',
+                    borderColor: '#E5E5EA',
+                    '&:hover': {
+                      bgcolor: selectedSurfaces.includes('map_object') ? '#E6C429' : '#F5F5F7',
+                    },
+                  }}
+                >
+                  Map Object
+                </Button>
+              </Box>
+            </Box>
+            
             <Paper
               {...getRootProps()}
               sx={{
@@ -276,12 +477,20 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
                 {isDragActive ? 'Drop files here' : 'Drag files here or click to select'}
               </Typography>
               <Typography variant="body2" sx={{ color: '#8E8E93', mb: 2 }}>
-                {t('campaignEditor.creatives.supportedFormats')}: JPEG, WebP, SVG
+                {selectedFormat === 'video' 
+                  ? 'Supported formats: MP4, WebM' 
+                  : 'Supported formats: JPEG, WebP, SVG'
+                }
               </Typography>
               <Typography variant="caption" sx={{ color: '#8E8E93' }}>
-                {t('campaignEditor.creatives.maxFileSize')}: 500 KB • 
-                {t('campaignEditor.creatives.promoBlockRatio')}: 1.91:1 • 
-                {t('campaignEditor.creatives.mapObjectRatio')}: 1:1
+                Max size: {selectedFormat === 'video' ? '2MB' : '500KB'} • 
+                {selectedFormat === 'banner' && 'Banner ratio: 1.91:1 • '}
+                {selectedFormat === 'icon' && 'Icon ratio: 1:1 • '}
+                {selectedFormat === 'video' && 'Video ratio: 16:9 or 1:1 • '}
+                {selectedSurfaces.length > 0 
+                  ? `Surfaces: ${selectedSurfaces.map(s => s === 'promo_block' ? 'Promo' : 'Map').join(', ')}` 
+                  : 'Select at least one surface'
+                }
               </Typography>
             </Paper>
 
@@ -311,12 +520,173 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
             </Button>
           </Box>
 
-          {/* Selected Creatives */}
+          {/* Surface Previews */}
           {creatives.length > 0 && (
             <Box sx={{ mb: 4 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 3 }}>
+                Surface Previews
+              </Typography>
+              
+              {/* Promo Block Previews */}
+              {creatives.some((c: Creative) => c.surfaces.includes('promo_block')) && (
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AspectRatio sx={{ fontSize: 16, color: '#8E8E93' }} />
+                    Promo Block Previews
+                  </Typography>
+                  <Grid container spacing={2}>
+                    {creatives
+                      .filter((c: Creative) => c.surfaces.includes('promo_block'))
+                      .map((creative: Creative) => (
+                        <Grid item xs={12} sm={6} key={`promo-${creative.id}`}>
+                          <Card sx={{ border: '1px solid #E5E5EA', position: 'relative' }}>
+                            {/* Promo Block Layout */}
+                            <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, minHeight: 100 }}>
+                              {creative.layoutType === 'media_left' && (
+                                <>
+                                  <Box sx={{ flexShrink: 0 }}>
+                                    <img 
+                                      src={creative.url} 
+                                      alt={creative.name}
+                                      style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
+                                    />
+                                  </Box>
+                                  <Box sx={{ flex: 1 }}>
+                                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                                      {creative.title || creative.name}
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                                      {creative.subtitle || 'Subtitle text'}
+                                    </Typography>
+                                  </Box>
+                                </>
+                              )}
+                              {creative.layoutType === 'media_right' && (
+                                <>
+                                  <Box sx={{ flex: 1 }}>
+                                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                                      {creative.title || creative.name}
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                                      {creative.subtitle || 'Subtitle text'}
+                                    </Typography>
+                                  </Box>
+                                  <Box sx={{ flexShrink: 0 }}>
+                                    <img 
+                                      src={creative.url} 
+                                      alt={creative.name}
+                                      style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
+                                    />
+                                  </Box>
+                                </>
+                              )}
+                              {creative.layoutType === 'media_top' && (
+                                <Box sx={{ textAlign: 'center', width: '100%' }}>
+                                  <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
+                                    <img 
+                                      src={creative.url} 
+                                      alt={creative.name}
+                                      style={{ width: 80, height: 50, objectFit: 'cover', borderRadius: 4 }}
+                                    />
+                                  </Box>
+                                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                                    {creative.title || creative.name}
+                                  </Typography>
+                                  <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                                    {creative.subtitle || 'Subtitle text'}
+                                  </Typography>
+                                </Box>
+                              )}
+                            </Box>
+                            
+                            <Box sx={{ px: 2, pb: 2 }}>
+                              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                                Layout: {creative.layoutType || 'media_left'} • Weight: {creative.weight}%
+                              </Typography>
+                            </Box>
+                            
+                            <IconButton
+                              onClick={() => handleRemoveCreative(creative.id)}
+                              sx={{
+                                position: 'absolute',
+                                top: 8,
+                                right: 8,
+                                bgcolor: 'rgba(255, 255, 255, 0.9)',
+                                '&:hover': {
+                                  bgcolor: '#FF3B30',
+                                  color: 'white',
+                                },
+                              }}
+                              size="small"
+                            >
+                              <Delete sx={{ fontSize: 16 }} />
+                            </IconButton>
+                          </Card>
+                        </Grid>
+                      ))
+                    }
+                  </Grid>
+                </Box>
+              )}
+              
+              {/* Map Object Previews */}
+              {creatives.some((c: Creative) => c.surfaces.includes('map_object')) && (
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CropSquare sx={{ fontSize: 16, color: '#8E8E93' }} />
+                    Map Object Previews
+                  </Typography>
+                  <Grid container spacing={2}>
+                    {creatives
+                      .filter((c: Creative) => c.surfaces.includes('map_object'))
+                      .map((creative: Creative) => (
+                        <Grid item xs={6} sm={4} md={3} key={`map-${creative.id}`}>
+                          <Card sx={{ border: '1px solid #E5E5EA', position: 'relative' }}>
+                            {/* Map Object Layout - Just the media */}
+                            <Box sx={{ p: 2, textAlign: 'center' }}>
+                              <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
+                                <img 
+                                  src={creative.url} 
+                                  alt={creative.name}
+                                  style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8 }}
+                                />
+                              </Box>
+                              <Typography variant="caption" sx={{ color: '#8E8E93', display: 'block' }}>
+                                {creative.name}
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                                Weight: {creative.weight}%
+                              </Typography>
+                            </Box>
+                            
+                            <IconButton
+                              onClick={() => handleRemoveCreative(creative.id)}
+                              sx={{
+                                position: 'absolute',
+                                top: 4,
+                                right: 4,
+                                bgcolor: 'rgba(255, 255, 255, 0.9)',
+                                '&:hover': {
+                                  bgcolor: '#FF3B30',
+                                  color: 'white',
+                                },
+                              }}
+                              size="small"
+                            >
+                              <Delete sx={{ fontSize: 14 }} />
+                            </IconButton>
+                          </Card>
+                        </Grid>
+                      ))
+                    }
+                  </Grid>
+                </Box>
+              )}
+              
+              {/* Creative Management */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                  Campaign Creatives ({creatives.length})
+                  Manage Creatives ({creatives.length})
                 </Typography>
                 <Button
                   size="small"
@@ -329,39 +699,22 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
 
               <Grid container spacing={2}>
                 {creatives.map((creative: Creative) => (
-                  <Grid item xs={12} sm={6} md={4} key={creative.id}>
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={creative.id}>
                     <Card sx={{ position: 'relative', border: '1px solid #E5E5EA' }}>
-                      <CardMedia
-                        sx={{
-                          height: 120,
-                          bgcolor: '#F5F5F7',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {creative.url ? (
-                          <img 
-                            src={creative.url} 
-                            alt={creative.name}
-                            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' }}
-                          />
-                        ) : (
-                          <ImageIcon sx={{ fontSize: 48, color: '#8E8E93' }} />
-                        )}
-                      </CardMedia>
-                      
                       <CardContent sx={{ p: 2 }}>
                         <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
                           {creative.name}
                         </Typography>
                         
-                        <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                          <Chip
-                            label={creative.surface === 'promo_block' ? 'Promo' : 'Map'}
-                            size="small"
-                            sx={{ fontSize: '0.7rem' }}
-                          />
+                        <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+                          {creative.surfaces.map((surface) => (
+                            <Chip
+                              key={surface}
+                              label={surface === 'promo_block' ? 'Promo' : 'Map'}
+                              size="small"
+                              sx={{ fontSize: '0.7rem' }}
+                            />
+                          ))}
                           <Chip
                             label={creative.format}
                             size="small"
@@ -456,7 +809,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
             <Box sx={{ mb: 3 }}>
               <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <AspectRatio sx={{ fontSize: 16 }} />
-                Promo Block
+                Banner Format
               </Typography>
               <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
                 • Ratio: 1.91:1 (recommended: 320×168px)
@@ -467,10 +820,10 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
               </Typography>
             </Box>
 
-            <Box>
+            <Box sx={{ mb: 3 }}>
               <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <AspectRatio sx={{ fontSize: 16 }} />
-                Map Object
+                <CropSquare sx={{ fontSize: 16 }} />
+                Icon Format
               </Typography>
               <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
                 • Ratio: 1:1 (recommended: 64×64px)
@@ -478,6 +831,20 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
                 • Formats: SVG preferred, PNG, WebP
                 <br />
                 • Max size: 500KB
+              </Typography>
+            </Box>
+
+            <Box>
+              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <VideoLibrary sx={{ fontSize: 16 }} />
+                Video Format
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
+                • Ratio: 16:9 or 1:1 (recommended: 320×180px or 320×320px)
+                <br />
+                • Formats: MP4, WebM
+                <br />
+                • Max size: 2MB • Duration: 15s max
               </Typography>
             </Box>
           </Paper>
@@ -559,16 +926,18 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
         <DialogContent>
           <Tabs value={selectedTab} onChange={(_, value) => setSelectedTab(value)} sx={{ mb: 3 }}>
             <Tab label="All Creatives" />
-            <Tab label="Promo Blocks" />
-            <Tab label="Map Objects" />
+            <Tab label="Banners" />
+            <Tab label="Icons" />
+            <Tab label="Videos" />
           </Tabs>
 
           <Grid container spacing={2}>
             {mockCreativeLibrary
               .filter(c => 
                 selectedTab === 0 || 
-                (selectedTab === 1 && c.surface === 'promo_block') ||
-                (selectedTab === 2 && c.surface === 'map_object')
+                (selectedTab === 1 && c.format === 'banner') ||
+                (selectedTab === 2 && c.format === 'icon') ||
+                (selectedTab === 3 && c.format === 'video')
               )
               .map((creative) => (
                 <Grid item xs={12} sm={6} md={4} key={creative.id}>
@@ -593,7 +962,15 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
                         justifyContent: 'center',
                       }}
                     >
-                      <ImageIcon sx={{ fontSize: 32, color: '#8E8E93' }} />
+                      {creative.url ? (
+                        <img 
+                          src={creative.url} 
+                          alt={creative.name}
+                          style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <ImageIcon sx={{ fontSize: 32, color: '#8E8E93' }} />
+                      )}
                     </CardMedia>
                     
                     <CardContent sx={{ p: 2 }}>
@@ -601,12 +978,15 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, er
                         {creative.name}
                       </Typography>
                       
-                      <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                        <Chip
-                          label={creative.surface === 'promo_block' ? 'Promo' : 'Map'}
-                          size="small"
-                          sx={{ fontSize: '0.7rem' }}
-                        />
+                      <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+                        {creative.surfaces.map((surface) => (
+                          <Chip
+                            key={surface}
+                            label={surface === 'promo_block' ? 'Promo' : 'Map'}
+                            size="small"
+                            sx={{ fontSize: '0.7rem' }}
+                          />
+                        ))}
                         <Chip
                           label={creative.format}
                           size="small"

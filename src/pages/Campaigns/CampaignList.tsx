@@ -567,8 +567,13 @@ export const CampaignList: React.FC = () => {
                                  campaign.status === 'draft' ? 'Черновик' : 'Завершена';
                 
                 return (
-                  <TableRow key={campaign.id} hover>
-                    <TableCell>
+                  <TableRow 
+                    key={campaign.id} 
+                    hover 
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => navigate(`/campaigns/${campaign.id}`)}
+                  >
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox
                         checked={selectedCampaigns.includes(campaign.id)}
                         onChange={(e) => handleSelectCampaign(campaign.id, e.target.checked)}
@@ -635,7 +640,7 @@ export const CampaignList: React.FC = () => {
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <ActionMenu
                         campaign={campaign}
                         onEdit={() => handleEditCampaign(campaign.id)}
