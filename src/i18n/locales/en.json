@@ -1,0 +1,130 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "campaigns": "Campaigns",
+    "creatives": "Creatives",
+    "surfaces": "Surfaces",
+    "liveLogs": "Live Logs",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "impressionsToday": "Impressions Today",
+    "uniqueUsers": "Unique Users",
+    "ecpm": "eCPM",
+    "errorRate": "Error Rate",
+    "alertLimitReached": "90% impression limit reached for campaign {{name}}"
+  },
+  "campaigns": {
+    "title": "Campaigns",
+    "createCampaign": "Create Campaign",
+    "name": "Name",
+    "period": "Period",
+    "weight": "Weight",
+    "consecutiveCap": "Consecutive Cap",
+    "impressionsPlan": "Impressions Plan",
+    "impressionsDone": "Impressions Done",
+    "status": "Status",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "duplicate": "Duplicate",
+    "pause": "Pause",
+    "resume": "Resume",
+    "draft": "Draft",
+    "active": "Active",
+    "paused": "Paused",
+    "completed": "Completed"
+  },
+  "campaignEditor": {
+    "title": "Campaign Editor",
+    "createTitle": "Create Campaign",
+    "editTitle": "Edit Campaign",
+    "steps": {
+      "basic": "Basic",
+      "scheduling": "Scheduling",
+      "weights": "Weights",
+      "creatives": "Creatives",
+      "review": "Review & Publish"
+    },
+    "basic": {
+      "name": "Campaign Name",
+      "description": "Description",
+      "namePlaceholder": "Enter campaign name",
+      "descriptionPlaceholder": "Enter campaign description"
+    },
+    "scheduling": {
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "limitImpressions": "Impression Limit",
+      "timeTargeting": "Time Targeting"
+    },
+    "weights": {
+      "campaignWeight": "Campaign Weight",
+      "previewDistribution": "Preview Distribution"
+    },
+    "creatives": {
+      "uploadCreative": "Upload Creative",
+      "selectFromLibrary": "Select from Library",
+      "dragAndDrop": "Drag files here or click to select",
+      "supportedFormats": "Supported formats: JPEG, WebP, SVG",
+      "maxFileSize": "Max file size: 500 KB",
+      "promoBlockRatio": "Promo block ratio: 1.91:1",
+      "mapObjectRatio": "Map object ratio: 1:1"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "datesRequired": "Start and end dates are required",
+      "weightZero": "Weight cannot be zero",
+      "noCreatives": "At least one creative is required"
+    },
+    "buttons": {
+      "next": "Next",
+      "previous": "Previous",
+      "save": "Save",
+      "publish": "Publish",
+      "cancel": "Cancel"
+    }
+  },
+  "creatives": {
+    "title": "Creative Library",
+    "uploadNew": "Upload New",
+    "name": "Name",
+    "size": "Size",
+    "hash": "Hash",
+    "usedIn": "Used in Campaigns",
+    "surface": "Surface",
+    "promoBlock": "Promo Block",
+    "mapObject": "Map Object"
+  },
+  "settings": {
+    "title": "Settings",
+    "globalDefaults": "Global Defaults",
+    "consecutiveCap": "Default Consecutive Cap",
+    "viewabilityThreshold": "Viewability Threshold",
+    "apiBaseUrl": "API Base URL",
+    "rolesManagement": "Roles Management",
+    "user": "User",
+    "role": "Role",
+    "lastLogin": "Last Login",
+    "actions": "Actions"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  }
+}

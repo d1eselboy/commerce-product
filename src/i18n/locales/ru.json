@@ -1,0 +1,130 @@
+{
+  "navigation": {
+    "dashboard": "Дашборд",
+    "campaigns": "Кампании",
+    "creatives": "Креативы",
+    "surfaces": "Поверхности",
+    "liveLogs": "Живые логи",
+    "settings": "Настройки"
+  },
+  "dashboard": {
+    "title": "Дашборд",
+    "impressionsToday": "Показы сегодня",
+    "uniqueUsers": "Уникальные пользователи",
+    "ecpm": "eCPM",
+    "errorRate": "Частота ошибок",
+    "alertLimitReached": "Достигнуто 90% лимита показов для кампании {{name}}"
+  },
+  "campaigns": {
+    "title": "Кампании",
+    "createCampaign": "Создать кампанию",
+    "name": "Название",
+    "period": "Период",
+    "weight": "Вес",
+    "consecutiveCap": "Consecutive Cap",
+    "impressionsPlan": "План показов",
+    "impressionsDone": "Выполнено показов",
+    "status": "Статус",
+    "actions": "Действия",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "duplicate": "Дублировать",
+    "pause": "Приостановить",
+    "resume": "Возобновить",
+    "draft": "Черновик",
+    "active": "Активная",
+    "paused": "Приостановлена",
+    "completed": "Завершена"
+  },
+  "campaignEditor": {
+    "title": "Редактор кампании",
+    "createTitle": "Создание кампании",
+    "editTitle": "Редактирование кампании",
+    "steps": {
+      "basic": "Основное",
+      "scheduling": "Планирование",
+      "weights": "Веса",
+      "creatives": "Креативы",
+      "review": "Проверка и публикация"
+    },
+    "basic": {
+      "name": "Название кампании",
+      "description": "Описание",
+      "namePlaceholder": "Введите название кампании",
+      "descriptionPlaceholder": "Введите описание кампании"
+    },
+    "scheduling": {
+      "startDate": "Дата начала",
+      "endDate": "Дата окончания",
+      "limitImpressions": "Лимит показов",
+      "timeTargeting": "Временной таргетинг"
+    },
+    "weights": {
+      "campaignWeight": "Вес кампании",
+      "previewDistribution": "Предварительный просмотр распределения"
+    },
+    "creatives": {
+      "uploadCreative": "Загрузить креатив",
+      "selectFromLibrary": "Выбрать из библиотеки",
+      "dragAndDrop": "Перетащите файлы сюда или нажмите для выбора",
+      "supportedFormats": "Поддерживаемые форматы: JPEG, WebP, SVG",
+      "maxFileSize": "Максимальный размер файла: 500 КБ",
+      "promoBlockRatio": "Соотношение для промоблока: 1.91:1",
+      "mapObjectRatio": "Соотношение для объекта на карте: 1:1"
+    },
+    "validation": {
+      "nameRequired": "Название обязательно",
+      "datesRequired": "Даты начала и окончания обязательны",
+      "weightZero": "Вес не может быть равен нулю",
+      "noCreatives": "Необходимо добавить хотя бы один креатив"
+    },
+    "buttons": {
+      "next": "Далее",
+      "previous": "Назад",
+      "save": "Сохранить",
+      "publish": "Опубликовать",
+      "cancel": "Отмена"
+    }
+  },
+  "creatives": {
+    "title": "Библиотека креативов",
+    "uploadNew": "Загрузить новый",
+    "name": "Название",
+    "size": "Размер",
+    "hash": "Хэш",
+    "usedIn": "Используется в кампаниях",
+    "surface": "Поверхность",
+    "promoBlock": "Промоблок",
+    "mapObject": "Объект на карте"
+  },
+  "settings": {
+    "title": "Настройки",
+    "globalDefaults": "Глобальные настройки по умолчанию",
+    "consecutiveCap": "Consecutive Cap по умолчанию",
+    "viewabilityThreshold": "Порог видимости",
+    "apiBaseUrl": "Базовый URL API",
+    "rolesManagement": "Управление ролями",
+    "user": "Пользователь",
+    "role": "Роль",
+    "lastLogin": "Последний вход",
+    "actions": "Действия"
+  },
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "create": "Создать",
+    "search": "Поиск",
+    "filter": "Фильтр",
+    "export": "Экспорт",
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успешно",
+    "warning": "Предупреждение",
+    "info": "Информация",
+    "confirm": "Подтвердить",
+    "yes": "Да",
+    "no": "Нет"
+  }
+}
