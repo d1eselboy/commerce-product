@@ -1,4 +1,4 @@
-# Drive Ads Commerce Manager
+# Drive Ads Commerce Manager 0.2
 
 Internal web interface for managing Drive Ads advertising campaigns in the Yandex Drive ecosystem.
 
