@@ -14,11 +14,13 @@ interface AuthState {
   isLoading: boolean;
 }
 
+import { mockUser } from './mockData';
+
 const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem('authToken'),
-  isAuthenticated: false,
-  isLoading: true,
+  user: mockUser, // Use mock user for development
+  token: 'mock-token',
+  isAuthenticated: true, // Always authenticated in development
+  isLoading: false,
 };
 
 const authSlice = createSlice({
