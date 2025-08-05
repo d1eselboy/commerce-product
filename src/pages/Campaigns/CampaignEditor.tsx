@@ -181,7 +181,7 @@ export const CampaignEditor: React.FC = () => {
       if (isEdit) {
         await updateCampaign({ id: id!, data: campaignData }).unwrap();
       } else {
-        const result = await createCampaign(campaignData).unwrap();
+        await createCampaign(campaignData).unwrap();
         // TODO: Upload creative files if any
       }
       

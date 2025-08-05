@@ -13,11 +13,7 @@ import {
   Search,
   Add,
   Notifications,
-  AccountCircle,
 } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
 import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
@@ -25,9 +21,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ title }) => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.auth);
   
   const [searchQuery, setSearchQuery] = React.useState('');
 

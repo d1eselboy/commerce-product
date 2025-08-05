@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Typography,
@@ -9,9 +9,8 @@ import {
   TextField,
   Alert,
   Chip,
-  LinearProgress,
 } from '@mui/material';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { TrendingUp, Warning, CheckCircle } from '@mui/icons-material';
 import { mockCampaigns } from '@/store/mockData';
@@ -24,9 +23,8 @@ interface WeightsStepProps {
 
 export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors }) => {
   const { t } = useTranslation();
-  const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const handleWeightChange = (event: Event, newValue: number | number[]) => {
+  const handleWeightChange = (_event: Event, newValue: number | number[]) => {
     onChange({ weight: newValue as number });
   };
 
@@ -222,7 +220,7 @@ export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors
                         innerRadius={40}
                         outerRadius={80}
                         dataKey="percentage"
-                        label={({ name, percentage }) => `${percentage}%`}
+                        label={({ percentage }) => `${percentage}%`}
                       >
                         {distributionData.slice(0, 6).map((entry, index) => (
                           <Cell 

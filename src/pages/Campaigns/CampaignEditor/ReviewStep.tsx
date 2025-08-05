@@ -7,9 +7,6 @@ import {
   Chip,
   Divider,
   Alert,
-  Card,
-  CardContent,
-  LinearProgress,
   Table,
   TableBody,
   TableCell,
@@ -18,13 +15,9 @@ import {
   TableRow,
 } from '@mui/material';
 import {
-  CalendarToday,
   TrendingUp,
-  Image as ImageIcon,
   CheckCircle,
   Warning,
-  Schedule,
-  Visibility,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
@@ -35,7 +28,7 @@ interface ReviewStepProps {
   errors: Record<string, string>;
 }
 
-export const ReviewStep: React.FC<ReviewStepProps> = ({ data, onChange, errors }) => {
+export const ReviewStep: React.FC<ReviewStepProps> = ({ data }) => {
   const { t } = useTranslation();
 
   const formatDate = (dateString: string) => {
@@ -333,9 +326,9 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data, onChange, errors }
                           innerRadius={40}
                           outerRadius={80}
                           dataKey="value"
-                          label={({ name, value }) => `${value}%`}
+                          label={({ value }) => `${value}%`}
                         >
-                          {creativeDistribution.map((entry, index) => (
+                          {creativeDistribution.map((entry: any, index: number) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>

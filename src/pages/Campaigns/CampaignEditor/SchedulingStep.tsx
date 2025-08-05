@@ -5,11 +5,7 @@ import {
   TextField,
   FormHelperText,
   Grid,
-  FormControlLabel,
-  Checkbox,
-  Slider,
   Paper,
-  Chip,
   Alert,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -17,7 +13,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { ru } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { AccessTime, CalendarToday, TrendingUp } from '@mui/icons-material';
+import { CalendarToday, TrendingUp } from '@mui/icons-material';
 
 interface SchedulingStepProps {
   data: any;

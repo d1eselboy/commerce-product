@@ -4,8 +4,6 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Box,
   Avatar,
   Typography,
@@ -13,18 +11,14 @@ import {
 } from '@mui/material';
 import {
   Dashboard,
-  Campaign,
   Image,
-  ViewInAr,
   Timeline,
   Settings,
-  Person,
   DirectionsCar,
   Assignment,
   ExitToApp,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { useAuth } from '@/hooks/useAuth';

@@ -17,23 +17,16 @@ import {
   Chip,
   Alert,
   LinearProgress,
-  Menu,
-  MenuItem,
-  TextField,
   Slider,
 } from '@mui/material';
 import {
   CloudUpload,
   Add,
   Delete,
-  Edit,
-  MoreVert,
   Image as ImageIcon,
   AspectRatio,
   CheckCircle,
   Warning,
-  SmartDisplay,
-  Widgets,
   VideoLibrary,
   CropSquare,
 } from '@mui/icons-material';
@@ -164,7 +157,7 @@ const mockCreativeLibrary: Creative[] = [
   },
 ];
 
-export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange, errors }) => {
+export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) => {
   const { t } = useTranslation();
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);

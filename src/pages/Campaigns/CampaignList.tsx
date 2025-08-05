@@ -16,15 +16,10 @@ import {
   MenuItem,
   TextField,
   InputAdornment,
-  FormControl,
-  InputLabel,
-  Select,
-  OutlinedInput,
   LinearProgress,
   Alert,
   Checkbox,
   Toolbar,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -33,7 +28,6 @@ import {
   Grid,
   Card,
   CardContent,
-  Divider,
 } from '@mui/material';
 import {
   Add,
@@ -47,9 +41,6 @@ import {
   FileDownload,
   Tune,
   Visibility,
-  TrendingUp,
-  Warning,
-  Schedule,
   FilterList,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
@@ -142,7 +133,6 @@ export const CampaignList: React.FC = () => {
   const [bulkActionOpen, setBulkActionOpen] = useState(false);
   const [bulkAction, setBulkAction] = useState<'pause' | 'resume' | 'delete' | 'weight' | null>(null);
   const [bulkWeight, setBulkWeight] = useState(10);
-  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
   const [sortBy, setSortBy] = useState<'name' | 'status' | 'weight' | 'impressions' | 'ctr'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   
@@ -397,7 +387,6 @@ export const CampaignList: React.FC = () => {
           <Button
             variant="outlined"
             startIcon={<FilterList />}
-            onClick={() => setAdvancedFiltersOpen(true)}
             sx={{
               bgcolor: '#F5F5F7',
               border: 'none',

@@ -7,7 +7,11 @@ export interface Campaign {
   weight: number; // 0‑100
   consecutiveCap: number;
   limitImpressions: number;
+  impressionsDone?: number;
+  ctr?: number;
+  ecpm?: number;
   creatives: CreativeRef[];
+  creativeFiles?: Creative[];
   status: 'draft' | 'active' | 'paused' | 'completed';
   createdAt: string;
   updatedAt: string;
@@ -21,7 +25,8 @@ export interface CampaignSummary {
   weight: number;
   consecutiveCap: number;
   limitImpressions: number;
-  impressionsDone: number;
+  impressionsDone?: number;
+  impressions?: number;
   status: 'draft' | 'active' | 'paused' | 'completed';
   ctr?: number;
   ecpm?: number;

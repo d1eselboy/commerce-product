@@ -1,8 +1,5 @@
 import React from 'react';
 import {
-  Grid,
-  Card,
-  CardContent,
   Typography,
   Box,
   Paper,
@@ -14,7 +11,6 @@ import {
   TableRow,
   Chip,
   IconButton,
-  Avatar,
   LinearProgress,
 } from '@mui/material';
 import {
@@ -24,8 +20,6 @@ import {
   TrendingDown,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { useGetMetricsQuery } from '@/store/api';
 
 // Mock data for campaigns table
 const campaignsData = [
@@ -81,15 +75,6 @@ const campaignsData = [
   },
 ];
 
-// Mock data for charts
-const chartData = [
-  { name: '00:00', impressions: 120, clicks: 8 },
-  { name: '04:00', impressions: 89, clicks: 5 },
-  { name: '08:00', impressions: 234, clicks: 15 },
-  { name: '12:00', impressions: 567, clicks: 34 },
-  { name: '16:00', impressions: 432, clicks: 28 },
-  { name: '20:00', impressions: 298, clicks: 19 },
-];
 
 export const Dashboard: React.FC = () => {
   const { t } = useTranslation();

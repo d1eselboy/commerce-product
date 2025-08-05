@@ -1,8 +1,6 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { useCallback, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
 import { RootState } from '@/store';
-import { loginStart, loginSuccess, loginFailure, logout, setLoading } from '@/store/authSlice';
-import type { User } from '@/store/authSlice';
 
 export const useAuth = () => {
   // Completely disabled for development - return mock data
@@ -13,7 +11,7 @@ export const useAuth = () => {
     // No-op for development
   }, []);
 
-  const handleOAuthCallback = useCallback(async (code: string, state: string) => {
+  const handleOAuthCallback = useCallback(async () => {
     // No-op for development
   }, []);
 
@@ -32,19 +30,6 @@ export const useAuth = () => {
   };
 };
 
-// Helper functions for OAuth2 PKCE
-function generateCodeVerifier(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return base64URLEncode(array);
-}
-
-async function generateCodeChallenge(verifier: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return base64URLEncode(new Uint8Array(digest));
-}
 
 function base64URLEncode(array: Uint8Array): string {
   return btoa(String.fromCharCode(...array))

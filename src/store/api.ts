@@ -136,7 +136,7 @@ export const adsApi = createApi({
       providesTags: ['Stats'],
     }),
     getImpressionStats: build.query<ImpressionStats[], StatsRequest>({
-      queryFn: async (params) => {
+      queryFn: async () => {
         await delay(400);
         return { data: [] }; // Empty for now
       },

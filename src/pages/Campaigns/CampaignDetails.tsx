@@ -29,20 +29,17 @@ import {
   MoreVert,
   CalendarToday,
   TrendingUp,
-  Visibility,
   AspectRatio,
   CropSquare,
   VideoLibrary,
   ArrowBack,
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useGetCampaignQuery, useUpdateCampaignMutation } from '@/store/api';
 
 export const CampaignDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const [actionDialogOpen, setActionDialogOpen] = useState(false);
   const [actionType, setActionType] = useState<'pause' | 'resume' | 'delete' | null>(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
