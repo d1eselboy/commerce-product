@@ -23,6 +23,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGetCampaignQuery, useCreateCampaignMutation, useUpdateCampaignMutation } from '@/store/api';
 import { BasicStep } from './CampaignEditor/BasicStep';
 import { SchedulingStep } from './CampaignEditor/SchedulingStep';
+import { AudienceStep } from './CampaignEditor/AudienceStep';
 import { WeightsStep } from './CampaignEditor/WeightsStep';
 import { CreativesStep } from './CampaignEditor/CreativesStep';
 import { ReviewStep } from './CampaignEditor/ReviewStep';
@@ -31,6 +32,7 @@ import type { Campaign } from '@/types/campaign';
 const steps = [
   'basic',
   'scheduling',
+  'audience',
   'weights',
   'creatives',
   'review'
@@ -42,6 +44,14 @@ interface CampaignFormData extends Partial<Campaign> {
     days: number[];
     startHour: number;
     endHour: number;
+  };
+  audienceTargeting?: {
+    type: 'role' | 'file';
+    role?: string;
+    file?: File;
+    fileName?: string;
+    fileSize?: number;
+    estimatedIds?: number;
   };
   creativeFiles?: File[];
 }
@@ -58,9 +68,10 @@ export const CampaignEditor: React.FC = () => {
     description: '',
     startDate: '',
     endDate: '',
-    weight: 10,
+    audienceTargeting: undefined,
+    weight: undefined,
     consecutiveCap: 3,
-    limitImpressions: 10000,
+    limitImpressions: undefined,
     creatives: [],
     status: 'draft',
     timeTargeting: {
@@ -117,15 +128,27 @@ export const CampaignEditor: React.FC = () => {
           errors.dates = 'End date must be after start date';
         }
         if (!formData.limitImpressions || formData.limitImpressions <= 0) {
-          errors.limitImpressions = 'Impression limit must be greater than 0';
+          errors.limitImpressions = t('campaignEditor.validation.impressionsRequired', 'Impression limit must be greater than 0');
         }
         break;
-      case 2: // Weights
-        if (formData.weight === 0) {
-          errors.weight = t('campaignEditor.validation.weightZero');
+      case 2: // Audience
+        if (!formData.audienceTargeting?.type) {
+          errors.audience = t('campaignEditor.validation.audienceRequired');
+        } else if (formData.audienceTargeting.type === 'role' && !formData.audienceTargeting.role) {
+          errors.audience = 'Необходимо выбрать роль аудитории';
+        } else if (formData.audienceTargeting.type === 'file' && !formData.audienceTargeting.file) {
+          errors.audience = 'Необходимо загрузить файл с ID аудитории';
         }
         break;
-      case 3: // Creatives
+      case 3: // Weights
+        if (!formData.weight || formData.weight <= 0) {
+          errors.weight = t('campaignEditor.validation.weightRequired', 'Weight must be greater than 0');
+        }
+        if (!formData.consecutiveCap || formData.consecutiveCap <= 0) {
+          errors.consecutiveCap = 'Consecutive cap must be greater than 0';
+        }
+        break;
+      case 4: // Creatives
         if (!formData.creatives?.length && !formData.creativeFiles?.length) {
           errors.creatives = t('campaignEditor.validation.noCreatives');
         }
@@ -211,7 +234,7 @@ export const CampaignEditor: React.FC = () => {
         );
       case 2:
         return (
-          <WeightsStep
+          <AudienceStep
             data={formData}
             onChange={updateFormData}
             errors={validationErrors}
@@ -219,13 +242,21 @@ export const CampaignEditor: React.FC = () => {
         );
       case 3:
         return (
-          <CreativesStep
+          <WeightsStep
             data={formData}
             onChange={updateFormData}
             errors={validationErrors}
           />
         );
       case 4:
+        return (
+          <CreativesStep
+            data={formData}
+            onChange={updateFormData}
+            errors={validationErrors}
+          />
+        );
+      case 5:
         return (
           <ReviewStep
             data={formData}
@@ -240,13 +271,18 @@ export const CampaignEditor: React.FC = () => {
 
   const isStepComplete = (stepIndex: number): boolean => {
     switch (stepIndex) {
-      case 0:
+      case 0: // Basic
         return Boolean(formData.name?.trim());
-      case 1:
-        return Boolean(formData.startDate && formData.endDate && formData.limitImpressions);
-      case 2:
-        return Boolean(formData.weight && formData.weight > 0);
-      case 3:
+      case 1: // Scheduling
+        return Boolean(formData.startDate && formData.endDate && formData.limitImpressions && formData.limitImpressions > 0);
+      case 2: // Audience
+        return Boolean(formData.audienceTargeting?.type && (
+          (formData.audienceTargeting.type === 'role' && formData.audienceTargeting.role) ||
+          (formData.audienceTargeting.type === 'file' && formData.audienceTargeting.file)
+        ));
+      case 3: // Weights
+        return Boolean(formData.weight !== undefined && formData.weight > 0 && formData.consecutiveCap !== undefined);
+      case 4: // Creatives
         return Boolean(formData.creatives?.length || formData.creativeFiles?.length);
       default:
         return false;

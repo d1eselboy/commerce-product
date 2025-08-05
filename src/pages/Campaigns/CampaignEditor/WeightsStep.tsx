@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -23,6 +23,16 @@ interface WeightsStepProps {
 
 export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors }) => {
   const { t } = useTranslation();
+
+  // Initialize default values if not set
+  useEffect(() => {
+    if (data.weight === undefined || data.consecutiveCap === undefined) {
+      onChange({
+        weight: data.weight || 10,
+        consecutiveCap: data.consecutiveCap || 3,
+      });
+    }
+  }, []);
 
   const handleWeightChange = (_event: Event, newValue: number | number[]) => {
     onChange({ weight: newValue as number });
@@ -192,11 +202,12 @@ export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors
             <TextField
               type="number"
               placeholder="3"
-              value={data.consecutiveCap || ''}
+              value={data.consecutiveCap || 3}
               onChange={handleConsecutiveCapChange}
               inputProps={{ min: 1, max: 10 }}
+              error={Boolean(errors.consecutiveCap)}
+              helperText={errors.consecutiveCap || "Maximum consecutive shows for this campaign"}
               sx={{ maxWidth: 200 }}
-              helperText="Maximum consecutive shows for this campaign"
             />
           </Box>
 

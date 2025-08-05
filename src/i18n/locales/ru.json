@@ -8,18 +8,34 @@
     "settings": "Настройки"
   },
   "dashboard": {
-    "title": "Дашборд",
+    "title": "Панель управления",
     "impressionsToday": "Показы сегодня",
     "uniqueUsers": "Уникальные пользователи",
     "ecpm": "eCPM",
     "errorRate": "Частота ошибок",
-    "alertLimitReached": "Достигнуто 90% лимита показов для кампании {{name}}"
+    "alertLimitReached": "Достигнуто 90% лимита показов для кампании {{name}}",
+    "currentCampaign": "Текущая кампания",
+    "campaignsTable": {
+      "status": "Статус",
+      "number": "Номер",
+      "charge": "Заряд",
+      "impressions": "Показы",
+      "clicks": "Клики",
+      "ctr": "CTR",
+      "progress": "Прогресс"
+    },
+    "statusLabels": {
+      "service": "Сервис",
+      "active": "Доступен",
+      "unknown": "Неизвестно"
+    }
   },
   "campaigns": {
-    "title": "Кампании",
+    "title": "Управление кампаниями",
     "createCampaign": "Создать кампанию",
     "name": "Название",
     "period": "Период",
+    "audience": "Аудитория",
     "weight": "Вес",
     "consecutiveCap": "Consecutive Cap",
     "impressionsPlan": "План показов",
@@ -34,7 +50,20 @@
     "draft": "Черновик",
     "active": "Активная",
     "paused": "Приостановлена",
-    "completed": "Завершена"
+    "completed": "Завершена",
+    "filters": {
+      "all": "Все кампании",
+      "active": "Активные",
+      "draft": "Черновики",
+      "paused": "Приостановленные",
+      "completed": "Завершенные"
+    },
+    "stats": {
+      "totalCampaigns": "Всего кампаний",
+      "activeCampaigns": "Активных",
+      "totalImpressions": "Всего показов",
+      "avgCTR": "Средний CTR"
+    }
   },
   "campaignEditor": {
     "title": "Редактор кампании",
@@ -43,6 +72,7 @@
     "steps": {
       "basic": "Основное",
       "scheduling": "Планирование",
+      "audience": "Аудитория",
       "weights": "Веса",
       "creatives": "Креативы",
       "review": "Проверка и публикация"
@@ -63,27 +93,77 @@
       "campaignWeight": "Вес кампании",
       "previewDistribution": "Предварительный просмотр распределения"
     },
+    "audience": {
+      "title": "Целевая аудитория",
+      "description": "Настройте целевую аудиторию для кампании",
+      "targetingType": "Тип таргетинга",
+      "roleBasedTargeting": "По ролям",
+      "fileBasedTargeting": "По файлу ID",
+      "selectRole": "Выберите роль",
+      "uploadFile": "Загрузить файл с ID",
+      "fileFormat": "Формат файла: TXT, CSV (один ID на строку)",
+      "maxFileSize": "Максимальный размер: 1 МБ",
+      "currentAudience": "Текущая аудитория",
+      "estimatedReach": "Предполагаемый охват",
+      "roles": {
+        "all_users": "Все пользователи",
+        "new_users": "Новые пользователи",
+        "active_users": "Активные пользователи",
+        "premium_users": "Премиум пользователи",
+        "business_users": "Бизнес пользователи",
+        "students": "Студенты",
+        "drivers": "Водители",
+        "passengers": "Пассажиры"
+      }
+    },
     "creatives": {
+      "title": "Креативы кампании",
+      "description": "Загрузите новые креативы или выберите из библиотеки. Настройте веса для A/B тестирования.",
       "uploadCreative": "Загрузить креатив",
       "selectFromLibrary": "Выбрать из библиотеки",
       "dragAndDrop": "Перетащите файлы сюда или нажмите для выбора",
-      "supportedFormats": "Поддерживаемые форматы: JPEG, WebP, SVG",
-      "maxFileSize": "Максимальный размер файла: 500 КБ",
-      "promoBlockRatio": "Соотношение для промоблока: 1.91:1",
-      "mapObjectRatio": "Соотношение для объекта на карте: 1:1"
+      "supportedFormats": "Поддерживаемые форматы",
+      "maxFileSize": "Максимальный размер файла",
+      "promoBlockFormats": "JPEG, PNG",
+      "mapObjectFormats": "GIF, WebP (анимированные)",
+      "layoutTypes": {
+        "smallImage": "Маленькое изображение",
+        "fiftyFifty": "50/50 разделение",
+        "backgroundImage": "Фоновое изображение"
+      },
+      "surfaceTypes": {
+        "promoBlock": "Промоблок",
+        "mapObject": "Объект на карте"
+      },
+      "creativeId": "ID креатива",
+      "enableCreative": "Включить креатив",
+      "title": "Заголовок",
+      "subtitle": "Подзаголовок",
+      "enterUniqueId": "Введите уникальный ID",
+      "enterTitle": "Введите заголовок промоблока",
+      "enterSubtitle": "Введите подзаголовок промоблока"
     },
     "validation": {
-      "nameRequired": "Название обязательно",
+      "nameRequired": "Название кампании обязательно",
       "datesRequired": "Даты начала и окончания обязательны",
-      "weightZero": "Вес не может быть равен нулю",
-      "noCreatives": "Необходимо добавить хотя бы один креатив"
+      "impressionsRequired": "Лимит показов должен быть больше 0",
+      "audienceRequired": "Необходимо настроить аудиторию",
+      "weightRequired": "Вес должен быть больше 0",
+      "consecutiveCapRequired": "Consecutive cap должен быть больше 0",
+      "noCreatives": "Необходимо добавить хотя бы один креатив",
+      "creativeIdRequired": "ID креатива обязателен",
+      "invalidFileFormat": "Неподдерживаемый формат файла",
+      "fileTooLarge": "Файл слишком большой"
     },
     "buttons": {
       "next": "Далее",
       "previous": "Назад",
-      "save": "Сохранить",
-      "publish": "Опубликовать",
-      "cancel": "Отмена"
+      "save": "Сохранить черновик",
+      "publish": "Опубликовать кампанию",
+      "cancel": "Отмена",
+      "chooseFile": "Выбрать файл",
+      "removeFile": "Удалить файл",
+      "preview": "Предварительный просмотр"
     }
   },
   "creatives": {
@@ -94,20 +174,35 @@
     "hash": "Хэш",
     "usedIn": "Используется в кампаниях",
     "surface": "Поверхность",
+    "format": "Формат",
+    "dimensions": "Размеры",
+    "weight": "Вес",
+    "enabled": "Включен",
+    "disabled": "Отключен",
     "promoBlock": "Промоблок",
-    "mapObject": "Объект на карте"
+    "mapObject": "Объект на карте",
+    "staticImage": "Статическое изображение",
+    "animatedIcon": "Анимированная иконка"
   },
   "settings": {
-    "title": "Настройки",
+    "title": "Настройки системы",
     "globalDefaults": "Глобальные настройки по умолчанию",
     "consecutiveCap": "Consecutive Cap по умолчанию",
     "viewabilityThreshold": "Порог видимости",
     "apiBaseUrl": "Базовый URL API",
     "rolesManagement": "Управление ролями",
+    "audienceManagement": "Управление аудиториями",
     "user": "Пользователь",
     "role": "Роль",
     "lastLogin": "Последний вход",
-    "actions": "Действия"
+    "actions": "Действия",
+    "audiences": {
+      "uploadFile": "Загрузить файл аудитории",
+      "manageRoles": "Управление ролями",
+      "createRole": "Создать роль",
+      "editRole": "Редактировать роль",
+      "deleteRole": "Удалить роль"
+    }
   },
   "common": {
     "save": "Сохранить",
@@ -118,6 +213,9 @@
     "search": "Поиск",
     "filter": "Фильтр",
     "export": "Экспорт",
+    "import": "Импорт",
+    "upload": "Загрузить",
+    "download": "Скачать",
     "loading": "Загрузка...",
     "error": "Ошибка",
     "success": "Успешно",
@@ -125,6 +223,15 @@
     "info": "Информация",
     "confirm": "Подтвердить",
     "yes": "Да",
-    "no": "Нет"
+    "no": "Нет",
+    "close": "Закрыть",
+    "open": "Открыть",
+    "enable": "Включить",
+    "disable": "Отключить",
+    "reset": "Сбросить",
+    "refresh": "Обновить",
+    "preview": "Предварительный просмотр",
+    "apply": "Применить",
+    "clear": "Очистить"
   }
 }

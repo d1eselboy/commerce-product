@@ -36,49 +36,81 @@ const baseThemeOptions: ThemeOptions = {
     },
   },
   typography: {
-    fontFamily: '"YS Text", "Helvetica Neue", Helvetica, Arial, sans-serif',
+    fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    // Page titles and main headings
     h1: {
-      fontSize: '2rem',
-      fontWeight: 500,
-      lineHeight: 1.2,
+      fontSize: '2rem', // 32px
+      fontWeight: 600,
+      lineHeight: 1.25,
+      letterSpacing: '-0.02em',
     },
+    // Section titles
     h2: {
-      fontSize: '1.75rem',
-      fontWeight: 500,
+      fontSize: '1.5rem', // 24px
+      fontWeight: 600,
       lineHeight: 1.3,
+      letterSpacing: '-0.01em',
     },
+    // Card titles
     h3: {
-      fontSize: '1.5rem',
-      fontWeight: 500,
+      fontSize: '1.25rem', // 20px
+      fontWeight: 600,
       lineHeight: 1.4,
     },
+    // Subsection headings
     h4: {
-      fontSize: '1.25rem',
-      fontWeight: 500,
+      fontSize: '1.125rem', // 18px
+      fontWeight: 600,
       lineHeight: 1.4,
     },
+    // Component titles
     h5: {
-      fontSize: '1.125rem',
-      fontWeight: 500,
-      lineHeight: 1.4,
+      fontSize: '1rem', // 16px
+      fontWeight: 600,
+      lineHeight: 1.5,
     },
+    // Small headings
     h6: {
-      fontSize: '1rem',
+      fontSize: '0.875rem', // 14px
+      fontWeight: 600,
+      lineHeight: 1.5,
+    },
+    // Main body text
+    body1: {
+      fontSize: '0.875rem', // 14px
+      fontWeight: 400,
+      lineHeight: 1.5,
+    },
+    // Secondary text
+    body2: {
+      fontSize: '0.75rem', // 12px
+      fontWeight: 400,
+      lineHeight: 1.5,
+    },
+    // Button text
+    button: {
+      fontSize: '0.875rem', // 14px
       fontWeight: 500,
+      lineHeight: 1.5,
+      textTransform: 'none',
+    },
+    // Small labels and captions
+    caption: {
+      fontSize: '0.6875rem', // 11px
+      fontWeight: 400,
       lineHeight: 1.4,
     },
-    body1: {
-      fontSize: '0.875rem',
-      lineHeight: 1.5,
-    },
-    body2: {
-      fontSize: '0.75rem',
-      lineHeight: 1.5,
-    },
-    button: {
-      fontSize: '0.875rem',
+    // Form labels
+    subtitle1: {
+      fontSize: '0.875rem', // 14px
       fontWeight: 500,
-      textTransform: 'none',
+      lineHeight: 1.5,
+    },
+    // Small form labels
+    subtitle2: {
+      fontSize: '0.75rem', // 12px
+      fontWeight: 500,
+      lineHeight: 1.4,
     },
   },
   shape: {
@@ -184,6 +216,48 @@ const baseThemeOptions: ThemeOptions = {
               borderColor: '#FFDD2D',
               borderWidth: 2,
             },
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+          transition: 'all 0.2s ease-in-out',
+        },
+        elevation1: {
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+        },
+        elevation2: {
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+        },
+        elevation4: {
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+        },
+      },
+    },
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+          backgroundColor: '#E5E5EA',
+        },
+        bar: {
+          borderRadius: 4,
+          transition: 'all 0.3s ease-in-out',
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            backgroundColor: '#F5F5F7',
+            transform: 'translateY(-1px)',
           },
         },
       },

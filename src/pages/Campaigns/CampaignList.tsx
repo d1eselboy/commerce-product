@@ -315,50 +315,98 @@ export const CampaignList: React.FC = () => {
   return (
     <Box>
       {/* Quick Stats */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ border: '1px solid #E5E5EA' }}>
-            <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+          <Card 
+            sx={{ 
+              border: '1px solid #E5E5EA',
+              borderRadius: '16px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                border: '1px solid #D1D1D6',
+                transform: 'translateY(-2px)',
+              },
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
                 ВСЕГО КАМПАНИЙ
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 500 }}>
+              <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
                 {quickStats.total}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ border: '1px solid #E5E5EA' }}>
-            <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+          <Card 
+            sx={{ 
+              border: '1px solid #E5E5EA',
+              borderRadius: '16px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                border: '1px solid #D1D1D6',
+                transform: 'translateY(-2px)',
+              },
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
                 АКТИВНЫЕ
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 500, color: '#34C759' }}>
+              <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#34C759' }}>
                 {quickStats.active}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ border: '1px solid #E5E5EA' }}>
-            <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+          <Card 
+            sx={{ 
+              border: '1px solid #E5E5EA',
+              borderRadius: '16px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                border: '1px solid #D1D1D6',
+                transform: 'translateY(-2px)',
+              },
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
                 ПОКАЗЫ
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 500 }}>
+              <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
                 {quickStats.totalImpressions.toLocaleString()}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ border: '1px solid #E5E5EA' }}>
-            <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+          <Card 
+            sx={{ 
+              border: '1px solid #E5E5EA',
+              borderRadius: '16px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                border: '1px solid #D1D1D6',
+                transform: 'translateY(-2px)',
+              },
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
                 СРЕДНИЙ CTR
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 500 }}>
+              <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
                 {quickStats.avgCtr.toFixed(2)}%
               </Typography>
             </CardContent>
@@ -391,9 +439,16 @@ export const CampaignList: React.FC = () => {
               bgcolor: '#F5F5F7',
               border: 'none',
               color: '#1C1C1E',
+              borderRadius: '12px',
+              px: 3,
+              py: 1.5,
+              fontWeight: 600,
+              transition: 'all 0.2s ease-in-out',
               '&:hover': {
                 bgcolor: '#E5E5EA',
                 border: 'none',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
               },
             }}
           >
@@ -408,8 +463,16 @@ export const CampaignList: React.FC = () => {
           sx={{
             bgcolor: '#FFDD2D',
             color: '#000',
+            borderRadius: '12px',
+            px: 3,
+            py: 1.5,
+            fontWeight: 600,
+            boxShadow: '0 2px 8px rgba(255, 221, 45, 0.3)',
+            transition: 'all 0.2s ease-in-out',
             '&:hover': {
               bgcolor: '#E6C429',
+              transform: 'translateY(-1px)',
+              boxShadow: '0 4px 16px rgba(255, 221, 45, 0.4)',
             },
           }}
         >
@@ -476,25 +539,65 @@ export const CampaignList: React.FC = () => {
       {/* Main Campaign Table */}
       <Paper
         sx={{
-          borderRadius: 2,
+          borderRadius: '16px',
           border: '1px solid #E5E5EA',
           overflow: 'hidden',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+            border: '1px solid #D1D1D6',
+          },
         }}
       >
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, width: 48 }}>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3, 
+                    width: 48,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
                   <Checkbox
                     indeterminate={selectedCampaigns.length > 0 && selectedCampaigns.length < (campaigns?.length || 0)}
                     checked={campaigns ? selectedCampaigns.length === campaigns.length : false}
                     onChange={(e) => handleSelectAll(e.target.checked)}
                     size="small"
+                    sx={{
+                      color: '#8E8E93',
+                      '&.Mui-checked': {
+                        color: '#FFDD2D',
+                      },
+                    }}
                   />
                 </TableCell>
                 <TableCell 
-                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s ease-in-out',
+                    '&:hover': {
+                      color: '#1C1C1E',
+                    },
+                  }}
                   onClick={() => {
                     setSortBy('status');
                     setSortOrder(sortBy === 'status' && sortOrder === 'asc' ? 'desc' : 'asc');
@@ -503,7 +606,22 @@ export const CampaignList: React.FC = () => {
                   Статус {sortBy === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </TableCell>
                 <TableCell 
-                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s ease-in-out',
+                    '&:hover': {
+                      color: '#1C1C1E',
+                    },
+                  }}
                   onClick={() => {
                     setSortBy('name');
                     setSortOrder(sortBy === 'name' && sortOrder === 'asc' ? 'desc' : 'asc');
@@ -512,7 +630,22 @@ export const CampaignList: React.FC = () => {
                   Название кампании {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </TableCell>
                 <TableCell 
-                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s ease-in-out',
+                    '&:hover': {
+                      color: '#1C1C1E',
+                    },
+                  }}
                   onClick={() => {
                     setSortBy('weight');
                     setSortOrder(sortBy === 'weight' && sortOrder === 'asc' ? 'desc' : 'asc');
@@ -521,7 +654,22 @@ export const CampaignList: React.FC = () => {
                   Вес {sortBy === 'weight' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </TableCell>
                 <TableCell 
-                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s ease-in-out',
+                    '&:hover': {
+                      color: '#1C1C1E',
+                    },
+                  }}
                   onClick={() => {
                     setSortBy('impressions');
                     setSortOrder(sortBy === 'impressions' && sortOrder === 'asc' ? 'desc' : 'asc');
@@ -530,7 +678,22 @@ export const CampaignList: React.FC = () => {
                   Показы {sortBy === 'impressions' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </TableCell>
                 <TableCell 
-                  sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500, cursor: 'pointer' }}
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s ease-in-out',
+                    '&:hover': {
+                      color: '#1C1C1E',
+                    },
+                  }}
                   onClick={() => {
                     setSortBy('ctr');
                     setSortOrder(sortBy === 'ctr' && sortOrder === 'asc' ? 'desc' : 'asc');
@@ -538,10 +701,34 @@ export const CampaignList: React.FC = () => {
                 >
                   CTR {sortBy === 'ctr' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500 }}>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
                   Прогресс
                 </TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5, fontWeight: 500 }}>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
                   Действия
                 </TableCell>
               </TableRow>
@@ -558,78 +745,100 @@ export const CampaignList: React.FC = () => {
                 return (
                   <TableRow 
                     key={campaign.id} 
-                    hover 
-                    sx={{ cursor: 'pointer' }}
+                    sx={{
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        bgcolor: '#F8F9FA',
+                        transform: 'translateY(-1px)',
+                      },
+                      '&:nth-of-type(even)': {
+                        bgcolor: '#FAFBFC',
+                      },
+                      '&:nth-of-type(even):hover': {
+                        bgcolor: '#F0F2F5',
+                      },
+                    }}
                     onClick={() => navigate(`/campaigns/${campaign.id}`)}
                   >
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell onClick={(e) => e.stopPropagation()} sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
                       <Checkbox
                         checked={selectedCampaigns.includes(campaign.id)}
                         onChange={(e) => handleSelectCampaign(campaign.id, e.target.checked)}
                         size="small"
+                        sx={{
+                          color: '#8E8E93',
+                          '&.Mui-checked': {
+                            color: '#FFDD2D',
+                          },
+                        }}
                       />
                     </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <Box
                           sx={{
-                            width: 8,
-                            height: 8,
+                            width: 10,
+                            height: 10,
                             borderRadius: '50%',
                             bgcolor: statusColor,
+                            boxShadow: `0 0 0 2px ${statusColor}20`,
                           }}
                         />
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1C1C1E' }}>
                           {statusText}
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#1C1C1E', mb: 0.5 }}>
                         {campaign.name}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                      <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 500 }}>
                         {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">{campaign.weight}%</Typography>
+                    <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
+                        {campaign.weight}%
+                      </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
+                    <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E', mb: 0.5 }}>
                         {campaign.impressionsDone.toLocaleString()}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                      <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 500 }}>
                         из {campaign.limitImpressions.toLocaleString()}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
+                    <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
                         {campaign.ctr ? `${campaign.ctr}%` : '—'}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 120 }}>
+                    <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, minWidth: 140 }}>
                         <LinearProgress
                           variant="determinate"
                           value={Math.min(progress, 100)}
                           sx={{
                             flexGrow: 1,
-                            height: 6,
-                            borderRadius: 3,
+                            height: 8,
+                            borderRadius: '4px',
                             bgcolor: '#E5E5EA',
                             '& .MuiLinearProgress-bar': {
                               bgcolor: progress > 80 ? '#FF9500' : progress > 50 ? '#FFDD2D' : '#34C759',
-                              borderRadius: 3,
+                              borderRadius: '4px',
+                              transition: 'all 0.3s ease-in-out',
                             },
                           }}
                         />
-                        <Typography variant="caption" sx={{ color: '#8E8E93', minWidth: 35 }}>
+                        <Typography variant="body2" sx={{ color: '#8E8E93', minWidth: 40, fontWeight: 500 }}>
                           {progress}%
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
+                    <TableCell onClick={(e) => e.stopPropagation()} sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
                       <ActionMenu
                         campaign={campaign}
                         onEdit={() => handleEditCampaign(campaign.id)}

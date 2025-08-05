@@ -81,6 +81,43 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
                       textField: {
                         fullWidth: true,
                         error: Boolean(errors.dates),
+                        sx: {
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                            backgroundColor: '#FAFAFA',
+                            border: '1px solid #E5E5EA',
+                            '& fieldset': {
+                              borderColor: 'transparent',
+                            },
+                            '&:hover fieldset': {
+                              borderColor: '#007AFF',
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: '#007AFF',
+                              borderWidth: '2px',
+                            },
+                            '& input': {
+                              py: '14px',
+                              px: '16px',
+                              fontSize: '16px',
+                              fontWeight: 400,
+                              color: '#1C1C1E',
+                            },
+                            '&.Mui-error': {
+                              backgroundColor: '#FFF5F5',
+                              '& fieldset': {
+                                borderColor: '#FF3B30',
+                              },
+                            },
+                          },
+                          '& .MuiInputLabel-root': {
+                            color: '#8E8E93',
+                            fontWeight: 500,
+                            '&.Mui-focused': {
+                              color: '#007AFF',
+                            },
+                          },
+                        },
                       },
                     }}
                   />
@@ -95,6 +132,43 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
                       textField: {
                         fullWidth: true,
                         error: Boolean(errors.dates),
+                        sx: {
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                            backgroundColor: '#FAFAFA',
+                            border: '1px solid #E5E5EA',
+                            '& fieldset': {
+                              borderColor: 'transparent',
+                            },
+                            '&:hover fieldset': {
+                              borderColor: '#007AFF',
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: '#007AFF',
+                              borderWidth: '2px',
+                            },
+                            '& input': {
+                              py: '14px',
+                              px: '16px',
+                              fontSize: '16px',
+                              fontWeight: 400,
+                              color: '#1C1C1E',
+                            },
+                            '&.Mui-error': {
+                              backgroundColor: '#FFF5F5',
+                              '& fieldset': {
+                                borderColor: '#FF3B30',
+                              },
+                            },
+                          },
+                          '& .MuiInputLabel-root': {
+                            color: '#8E8E93',
+                            fontWeight: 500,
+                            '&.Mui-focused': {
+                              color: '#007AFF',
+                            },
+                          },
+                        },
                       },
                     }}
                   />
@@ -106,7 +180,7 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
                 </FormHelperText>
               )}
               {calculateDuration() && (
-                <Alert severity="info" sx={{ mt: 2, bgcolor: '#E3F2FD', border: '1px solid #BBDEFB' }}>
+                <Alert severity="info" sx={{ mt: 2, bgcolor: '#F0F8FF', border: '1px solid #D1E9FF', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0, 122, 255, 0.1)', '& .MuiAlert-icon': { color: '#007AFF' } }}>
                   Campaign duration: {calculateDuration()} days
                 </Alert>
               )}
@@ -125,13 +199,40 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
                 onChange={handleImpressionLimitChange}
                 error={Boolean(errors.limitImpressions)}
                 InputProps={{
-                  endAdornment: <Typography variant="body2" sx={{ color: '#8E8E93' }}>impressions</Typography>,
+                  endAdornment: <Typography variant="body2" sx={{ color: '#8E8E93', fontWeight: 500 }}>impressions</Typography>,
                 }}
                 sx={{
                   maxWidth: 300,
                   '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                    backgroundColor: '#FAFAFA',
+                    border: '1px solid #E5E5EA',
+                    '& fieldset': {
+                      borderColor: 'transparent',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#007AFF',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#007AFF',
+                      borderWidth: '2px',
+                    },
                     '& input': {
-                      py: 1.5,
+                      py: '14px',
+                      px: '16px',
+                      fontSize: '16px',
+                      fontWeight: 400,
+                      color: '#1C1C1E',
+                      '&::placeholder': {
+                        color: '#8E8E93',
+                        opacity: 1,
+                      },
+                    },
+                    '&.Mui-error': {
+                      backgroundColor: '#FFF5F5',
+                      '& fieldset': {
+                        borderColor: '#FF3B30',
+                      },
                     },
                   },
                 }}
@@ -155,9 +256,10 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
             <Paper 
               sx={{ 
                 p: 3, 
-                bgcolor: '#F5F5F7', 
-                borderRadius: 2,
+                bgcolor: '#FFFFFF', 
+                borderRadius: '16px',
                 border: '1px solid #E5E5EA',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                 mb: 3,
               }}
             >
@@ -202,9 +304,10 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
             <Paper 
               sx={{ 
                 p: 3, 
-                bgcolor: '#FFF3CD', 
-                borderRadius: 2,
-                border: '1px solid #FFE69C',
+                bgcolor: '#FFFBF0', 
+                borderRadius: '16px',
+                border: '1px solid #FFD60A',
+                boxShadow: '0 1px 3px rgba(255, 214, 10, 0.1)',
               }}
             >
               <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>

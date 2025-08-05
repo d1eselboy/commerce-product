@@ -145,7 +145,7 @@ export const CampaignDetails: React.FC = () => {
             <ArrowBack />
           </IconButton>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 500 }}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: '#1C1C1E' }}>
               {campaign.name}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
@@ -157,7 +157,7 @@ export const CampaignDetails: React.FC = () => {
                   bgcolor: statusColor,
                 }}
               />
-              <Typography variant="body2" sx={{ fontWeight: 500, color: '#8E8E93' }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: '#8E8E93' }}>
                 {getStatusText(campaign.status)}
               </Typography>
             </Box>
@@ -170,7 +170,21 @@ export const CampaignDetails: React.FC = () => {
               variant="outlined"
               startIcon={<Pause />}
               onClick={() => handleStatusAction('pause')}
-              sx={{ borderColor: '#FF9500', color: '#FF9500' }}
+              sx={{ 
+                borderColor: '#FF9500', 
+                color: '#FF9500',
+                borderRadius: '12px',
+                px: 3,
+                py: 1.5,
+                fontWeight: 600,
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 149, 0, 0.1)',
+                  borderColor: '#E6850E',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 2px 8px rgba(255, 149, 0, 0.3)',
+                },
+              }}
             >
               Приостановить
             </Button>
@@ -181,7 +195,17 @@ export const CampaignDetails: React.FC = () => {
               onClick={() => handleStatusAction('resume')}
               sx={{
                 bgcolor: '#34C759',
-                '&:hover': { bgcolor: '#30B456' },
+                borderRadius: '12px',
+                px: 3,
+                py: 1.5,
+                fontWeight: 600,
+                boxShadow: '0 2px 8px rgba(52, 199, 89, 0.3)',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': { 
+                  bgcolor: '#30B456',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 4px 16px rgba(52, 199, 89, 0.4)',
+                },
               }}
             >
               Запустить
@@ -192,12 +216,37 @@ export const CampaignDetails: React.FC = () => {
             variant="outlined"
             startIcon={<Edit />}
             onClick={() => navigate(`/campaigns/${campaign.id}/edit`)}
-            sx={{ borderColor: '#E5E5EA', color: '#1C1C1E' }}
+            sx={{ 
+              borderColor: '#E5E5EA', 
+              color: '#1C1C1E',
+              borderRadius: '12px',
+              px: 3,
+              py: 1.5,
+              fontWeight: 600,
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                bgcolor: '#F5F5F7',
+                borderColor: '#D1D1D6',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+              },
+            }}
           >
             Редактировать
           </Button>
 
-          <IconButton onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
+          <IconButton 
+            onClick={(e) => setMenuAnchorEl(e.currentTarget)}
+            sx={{
+              borderRadius: '12px',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                bgcolor: '#F5F5F7',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+              },
+            }}
+          >
             <MoreVert />
           </IconButton>
         </Box>
@@ -207,21 +256,34 @@ export const CampaignDetails: React.FC = () => {
         {/* Left Column - Main Info */}
         <Grid item xs={12} md={8}>
           {/* Campaign Stats */}
-          <Paper sx={{ p: 3, mb: 3, border: '1px solid #E5E5EA' }}>
-            <Typography variant="h6" sx={{ fontWeight: 500, mb: 3 }}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              mb: 3, 
+              border: '1px solid #E5E5EA',
+              borderRadius: '16px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                border: '1px solid #D1D1D6',
+              },
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 4, color: '#1C1C1E' }}>
               Статистика кампании
             </Typography>
             
             <Grid container spacing={3}>
               <Grid item xs={6} md={3}>
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                  <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
                     ПОКАЗЫ
                   </Typography>
-                  <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
                     {campaign.impressionsDone.toLocaleString()}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                  <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 500 }}>
                     из {campaign.limitImpressions.toLocaleString()}
                   </Typography>
                 </Box>
@@ -229,10 +291,10 @@ export const CampaignDetails: React.FC = () => {
               
               <Grid item xs={6} md={3}>
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                  <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
                     CTR
                   </Typography>
-                  <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
                     {campaign.ctr ? `${campaign.ctr}%` : '—'}
                   </Typography>
                 </Box>
@@ -240,10 +302,10 @@ export const CampaignDetails: React.FC = () => {
               
               <Grid item xs={6} md={3}>
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                  <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
                     eCPM
                   </Typography>
-                  <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
                     {campaign.ecpm ? `₽${campaign.ecpm}` : '—'}
                   </Typography>
                 </Box>
@@ -251,25 +313,25 @@ export const CampaignDetails: React.FC = () => {
               
               <Grid item xs={6} md={3}>
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                  <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
                     ВЕС
                   </Typography>
-                  <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
                     {campaign.weight}%
                   </Typography>
                 </Box>
               </Grid>
             </Grid>
 
-            <Divider sx={{ my: 3 }} />
+            <Divider sx={{ my: 4, bgcolor: '#F0F0F0' }} />
 
             {/* Progress Bar */}
             <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1C1C1E' }}>
                   Прогресс выполнения
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+                <Typography variant="body2" sx={{ color: '#8E8E93', fontWeight: 500 }}>
                   {progress}%
                 </Typography>
               </Box>
@@ -277,12 +339,13 @@ export const CampaignDetails: React.FC = () => {
                 variant="determinate"
                 value={Math.min(progress, 100)}
                 sx={{
-                  height: 8,
-                  borderRadius: 4,
+                  height: 10,
+                  borderRadius: '5px',
                   bgcolor: '#E5E5EA',
                   '& .MuiLinearProgress-bar': {
                     bgcolor: progress > 80 ? '#FF9500' : progress > 50 ? '#FFDD2D' : '#34C759',
-                    borderRadius: 4,
+                    borderRadius: '5px',
+                    transition: 'all 0.3s ease-in-out',
                   },
                 }}
               />
@@ -290,8 +353,20 @@ export const CampaignDetails: React.FC = () => {
           </Paper>
 
           {/* Campaign Creatives */}
-          <Paper sx={{ p: 3, border: '1px solid #E5E5EA' }}>
-            <Typography variant="h6" sx={{ fontWeight: 500, mb: 3 }}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              border: '1px solid #E5E5EA',
+              borderRadius: '16px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                border: '1px solid #D1D1D6',
+              },
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 4, color: '#1C1C1E' }}>
               Креативы кампании ({campaign.creativeFiles?.length || 0})
             </Typography>
 
@@ -299,7 +374,19 @@ export const CampaignDetails: React.FC = () => {
               <Grid container spacing={2}>
                 {campaign.creativeFiles.map((creative: any) => (
                   <Grid item xs={12} sm={6} md={4} key={creative.id}>
-                    <Card sx={{ border: '1px solid #E5E5EA' }}>
+                    <Card 
+                      sx={{ 
+                        border: '1px solid #E5E5EA',
+                        borderRadius: '12px',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                        transition: 'all 0.2s ease-in-out',
+                        '&:hover': {
+                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                          border: '1px solid #D1D1D6',
+                          transform: 'translateY(-2px)',
+                        },
+                      }}
+                    >
                       <CardMedia
                         sx={{
                           height: 120,
@@ -321,7 +408,7 @@ export const CampaignDetails: React.FC = () => {
                       </CardMedia>
                       
                       <CardContent sx={{ p: 2 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: '#1C1C1E' }}>
                           {creative.name}
                         </Typography>
                         
@@ -331,21 +418,33 @@ export const CampaignDetails: React.FC = () => {
                               key={surface}
                               label={surface === 'promo_block' ? 'Promo' : 'Map'}
                               size="small"
-                              sx={{ fontSize: '0.7rem' }}
+                              sx={{ 
+                                fontSize: '0.7rem',
+                                borderRadius: '6px',
+                                bgcolor: '#F5F5F7',
+                                color: '#8E8E93',
+                                fontWeight: 500,
+                              }}
                             />
                           ))}
                           <Chip
                             label={creative.format}
                             size="small"
-                            sx={{ fontSize: '0.7rem' }}
+                            sx={{ 
+                              fontSize: '0.7rem',
+                              borderRadius: '6px',
+                              bgcolor: '#E3F2FD',
+                              color: '#1976D2',
+                              fontWeight: 500,
+                            }}
                           />
                         </Box>
                         
-                        <Typography variant="caption" sx={{ color: '#8E8E93', display: 'block', mb: 1 }}>
+                        <Typography variant="caption" sx={{ color: '#8E8E93', display: 'block', mb: 1, fontWeight: 500 }}>
                           {creative.dimensions?.width}×{creative.dimensions?.height} • {((creative.size || 0) / 1024).toFixed(1)}KB
                         </Typography>
 
-                        <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                        <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 500 }}>
                           Вес: {creative.weight}%
                         </Typography>
                       </CardContent>
@@ -364,35 +463,48 @@ export const CampaignDetails: React.FC = () => {
         {/* Right Column - Campaign Info */}
         <Grid item xs={12} md={4}>
           {/* Schedule Info */}
-          <Paper sx={{ p: 3, mb: 3, border: '1px solid #E5E5EA' }}>
-            <Typography variant="h6" sx={{ fontWeight: 500, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CalendarToday sx={{ fontSize: 18, color: '#8E8E93' }} />
+          <Paper 
+            sx={{ 
+              p: 3, 
+              mb: 3, 
+              border: '1px solid #E5E5EA',
+              borderRadius: '16px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                border: '1px solid #D1D1D6',
+              },
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#1C1C1E' }}>
+              <CalendarToday sx={{ fontSize: 20, color: '#8E8E93' }} />
               Расписание
             </Typography>
             
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: '#1C1C1E' }}>
                 Начало
               </Typography>
-              <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+              <Typography variant="body2" sx={{ color: '#8E8E93', fontWeight: 500 }}>
                 {formatDate(campaign.startDate)}
               </Typography>
             </Box>
             
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: '#1C1C1E' }}>
                 Окончание
               </Typography>
-              <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+              <Typography variant="body2" sx={{ color: '#8E8E93', fontWeight: 500 }}>
                 {formatDate(campaign.endDate)}
               </Typography>
             </Box>
 
             <Box>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: '#1C1C1E' }}>
                 Длительность
               </Typography>
-              <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+              <Typography variant="body2" sx={{ color: '#8E8E93', fontWeight: 500 }}>
                 {Math.ceil((new Date(campaign.endDate).getTime() - new Date(campaign.startDate).getTime()) / (1000 * 60 * 60 * 24))} дней
               </Typography>
             </Box>
@@ -404,14 +516,21 @@ export const CampaignDetails: React.FC = () => {
               p: 3, 
               bgcolor: '#FFF3CD', 
               border: '1px solid #FFE69C',
+              borderRadius: '16px',
+              boxShadow: '0 2px 8px rgba(255, 230, 156, 0.2)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                boxShadow: '0 4px 16px rgba(255, 230, 156, 0.3)',
+                border: '1px solid #FFCC02',
+              },
             }}
           >
-            <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <TrendingUp sx={{ fontSize: 18, color: '#856404' }} />
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#856404' }}>
+              <TrendingUp sx={{ fontSize: 20, color: '#856404' }} />
               Рекомендации
             </Typography>
 
-            <Typography variant="body2" sx={{ color: '#856404', lineHeight: 1.5 }}>
+            <Typography variant="body2" sx={{ color: '#856404', lineHeight: 1.6, fontWeight: 500 }}>
               • Пиковые часы: 9-12 и 18-21 показывают наибольшую вовлеченность
               <br />
               • B2B кампании обычно лучше работают в будние дни

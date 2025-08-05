@@ -64,10 +64,32 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
               sx={{
                 '& .MuiOutlinedInput-root': {
                   fontSize: '1rem',
+                  borderRadius: '12px',
+                  backgroundColor: '#FAFAFA',
+                  border: '1px solid #E5E5EA',
+                  '& fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#007AFF',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#007AFF',
+                    borderWidth: '2px',
+                  },
                   '& input': {
-                    py: 1.5,
+                    py: '14px',
+                    px: '16px',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    color: '#1C1C1E',
+                    '&::placeholder': {
+                      color: '#8E8E93',
+                      opacity: 1,
+                    },
                   },
                   '&.Mui-error': {
+                    backgroundColor: '#FFF5F5',
                     '& fieldset': {
                       borderColor: '#FF3B30',
                     },
@@ -95,13 +117,20 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
                       size="small"
                       onClick={() => handleSuggestionClick(suggestion)}
                       sx={{
-                        bgcolor: '#F5F5F7',
+                        bgcolor: '#F2F2F7',
                         color: '#1C1C1E',
+                        borderRadius: '8px',
+                        fontSize: '13px',
+                        fontWeight: 500,
+                        height: '32px',
                         '&:hover': {
-                          bgcolor: '#FFDD2D',
-                          color: '#000',
+                          bgcolor: '#007AFF',
+                          color: '#FFFFFF',
+                          transform: 'translateY(-1px)',
+                          boxShadow: '0 2px 8px rgba(0, 122, 255, 0.3)',
                         },
                         cursor: 'pointer',
+                        transition: 'all 0.2s ease-in-out',
                       }}
                     />
                   ))}
@@ -124,8 +153,29 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
               sx={{
                 '& .MuiOutlinedInput-root': {
                   fontSize: '0.875rem',
+                  borderRadius: '12px',
+                  backgroundColor: '#FAFAFA',
+                  border: '1px solid #E5E5EA',
+                  '& fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#007AFF',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#007AFF',
+                    borderWidth: '2px',
+                  },
                   '& textarea': {
-                    py: 1.5,
+                    py: '14px',
+                    px: '16px',
+                    fontSize: '15px',
+                    fontWeight: 400,
+                    color: '#1C1C1E',
+                    '&::placeholder': {
+                      color: '#8E8E93',
+                      opacity: 1,
+                    },
                   },
                 },
               }}
@@ -140,9 +190,10 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
           <Box 
             sx={{ 
               p: 3, 
-              bgcolor: '#F5F5F7', 
-              borderRadius: 2,
+              bgcolor: '#FFFFFF', 
+              borderRadius: '16px',
               border: '1px solid #E5E5EA',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
             }}
           >
             <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2 }}>

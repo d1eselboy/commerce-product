@@ -4,6 +4,7 @@ export interface Campaign {
   description?: string;
   startDate: string; // ISO
   endDate: string;
+  audience?: AudienceTargeting;
   weight: number; // 0‑100
   consecutiveCap: number;
   limitImpressions: number;
@@ -22,6 +23,7 @@ export interface CampaignSummary {
   name: string;
   startDate: string;
   endDate: string;
+  audience?: AudienceTargeting;
   weight: number;
   consecutiveCap: number;
   limitImpressions: number;
@@ -51,6 +53,14 @@ export interface Creative {
   };
   uploadedAt: string;
   usedInCampaigns: number;
+}
+
+export interface AudienceTargeting {
+  type: 'role' | 'file';
+  role?: string;
+  fileName?: string;
+  fileSize?: number;
+  estimatedReach?: number;
 }
 
 export interface ListArgs {

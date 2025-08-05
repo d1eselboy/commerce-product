@@ -108,64 +108,127 @@ export const Dashboard: React.FC = () => {
         sx={{
           p: 3,
           mb: 3,
-          borderRadius: 2,
+          borderRadius: '16px',
           border: '1px solid #E5E5EA',
           bgcolor: '#FFFFFF',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+            border: '1px solid #D1D1D6',
+          },
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="h4" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Typography variant="h4" sx={{ fontWeight: 600, color: '#1C1C1E' }}>
             000505
           </Typography>
-          <IconButton sx={{ color: '#8E8E93' }}>
+          <IconButton 
+            sx={{ 
+              color: '#8E8E93',
+              borderRadius: '8px',
+              '&:hover': {
+                bgcolor: '#F5F5F7',
+                color: '#1C1C1E',
+              },
+            }}
+          >
             <MoreVert />
           </IconButton>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FiberManualRecord sx={{ color: '#FF9500', fontSize: 12 }} />
-            <Typography variant="body2" sx={{ color: '#1C1C1E', fontWeight: 500 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box
+              sx={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                bgcolor: '#FF9500',
+                boxShadow: '0 0 0 2px rgba(255, 149, 0, 0.2)',
+              }}
+            />
+            <Typography variant="body2" sx={{ color: '#1C1C1E', fontWeight: 600 }}>
               Сервис
             </Typography>
           </Box>
-          <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+          <Box sx={{ width: '1px', height: '20px', bgcolor: '#E5E5EA' }} />
+          <Typography variant="body2" sx={{ color: '#8E8E93', fontWeight: 500 }}>
             31%
           </Typography>
-          <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+          <Typography variant="body2" sx={{ color: '#8E8E93', fontWeight: 500 }}>
             3201.9 км
           </Typography>
-          <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+          <Typography variant="body2" sx={{ color: '#8E8E93', fontWeight: 500 }}>
             25 с
           </Typography>
-          <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+          <Typography variant="body2" sx={{ color: '#8E8E93', fontWeight: 500 }}>
             53 с
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
           <Chip
             label="IOT ошибки: 55, 23, 24"
             size="small"
-            sx={{ bgcolor: '#FFF3CD', color: '#856404', border: '1px solid #FFE69C' }}
+            sx={{ 
+              bgcolor: '#FFF3CD', 
+              color: '#856404', 
+              border: '1px solid #FFE69C',
+              borderRadius: '8px',
+              fontWeight: 500,
+              '&:hover': {
+                bgcolor: '#FFECB3',
+              },
+            }}
           />
           <Chip
             label="Разряжен"
             size="small"
             variant="outlined"
             onDelete={() => {}}
+            sx={{
+              borderRadius: '8px',
+              borderColor: '#E5E5EA',
+              color: '#8E8E93',
+              fontWeight: 500,
+              '&:hover': {
+                bgcolor: '#F5F5F7',
+                borderColor: '#D1D1D6',
+              },
+            }}
           />
           <Chip
             label="Скрыт с аренды"
             size="small"
             variant="outlined"
             onDelete={() => {}}
+            sx={{
+              borderRadius: '8px',
+              borderColor: '#E5E5EA',
+              color: '#8E8E93',
+              fontWeight: 500,
+              '&:hover': {
+                bgcolor: '#F5F5F7',
+                borderColor: '#D1D1D6',
+              },
+            }}
           />
           <Chip
             label="Склад"
             size="small"
             variant="outlined"
             onDelete={() => {}}
+            sx={{
+              borderRadius: '8px',
+              borderColor: '#E5E5EA',
+              color: '#8E8E93',
+              fontWeight: 500,
+              '&:hover': {
+                bgcolor: '#F5F5F7',
+                borderColor: '#D1D1D6',
+              },
+            }}
           />
         </Box>
       </Paper>
@@ -173,85 +236,213 @@ export const Dashboard: React.FC = () => {
       {/* Campaigns Table */}
       <Paper
         sx={{
-          borderRadius: 2,
+          borderRadius: '16px',
           border: '1px solid #E5E5EA',
           overflow: 'hidden',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+            border: '1px solid #D1D1D6',
+          },
         }}
       >
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5 }}>Статус</TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5 }}>Номер</TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5 }}>Заряд</TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5 }}>Показы</TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5 }}>Клики</TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5 }}>CTR</TableCell>
-                <TableCell sx={{ bgcolor: '#F5F5F7', py: 1.5 }}>Прогресс</TableCell>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
+                  Статус
+                </TableCell>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
+                  Номер
+                </TableCell>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
+                  Заряд
+                </TableCell>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
+                  Показы
+                </TableCell>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
+                  Клики
+                </TableCell>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
+                  CTR
+                </TableCell>
+                <TableCell 
+                  sx={{ 
+                    bgcolor: '#FAFBFC', 
+                    py: 2, 
+                    px: 3,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#8E8E93',
+                    borderBottom: '1px solid #E5E5EA',
+                  }}
+                >
+                  Прогресс
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {campaignsData.map((campaign) => (
-                <TableRow key={campaign.id} hover>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <FiberManualRecord
+              {campaignsData.map((campaign, index) => (
+                <TableRow 
+                  key={campaign.id} 
+                  sx={{
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      bgcolor: '#F8F9FA',
+                      transform: 'translateY(-1px)',
+                    },
+                    '&:nth-of-type(even)': {
+                      bgcolor: '#FAFBFC',
+                    },
+                    '&:nth-of-type(even):hover': {
+                      bgcolor: '#F0F2F5',
+                    },
+                  }}
+                >
+                  <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box
                         sx={{
-                          color: getStatusColor(campaign.status),
-                          fontSize: 12,
+                          width: 10,
+                          height: 10,
+                          borderRadius: '50%',
+                          bgcolor: getStatusColor(campaign.status),
+                          boxShadow: `0 0 0 2px ${getStatusColor(campaign.status)}20`,
                         }}
                       />
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#1C1C1E' }}>
                         {getStatusText(campaign.status)}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                  <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                    <Typography variant="body2" sx={{ fontFamily: 'monospace', fontWeight: 500, color: '#1C1C1E' }}>
                       {campaign.id}
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">{campaign.charge}%</Typography>
+                  <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
+                      {campaign.charge}%
+                    </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">
+                  <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
                       {campaign.impressions.toLocaleString()}
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">
+                  <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
                       {campaign.clicks.toLocaleString()}
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body2">{campaign.ctr}%</Typography>
+                  <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
+                        {campaign.ctr}%
+                      </Typography>
                       {campaign.ctr > 0.6 ? (
-                        <TrendingUp sx={{ color: '#34C759', fontSize: 16 }} />
+                        <TrendingUp sx={{ color: '#34C759', fontSize: 18 }} />
                       ) : (
-                        <TrendingDown sx={{ color: '#FF3B30', fontSize: 16 }} />
+                        <TrendingDown sx={{ color: '#FF3B30', fontSize: 18 }} />
                       )}
                     </Box>
                   </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 120 }}>
+                  <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, minWidth: 140 }}>
                       <LinearProgress
                         variant="determinate"
                         value={campaign.progress}
                         sx={{
                           flexGrow: 1,
-                          height: 6,
-                          borderRadius: 3,
+                          height: 8,
+                          borderRadius: '4px',
                           bgcolor: '#E5E5EA',
                           '& .MuiLinearProgress-bar': {
-                            bgcolor: campaign.progress > 80 ? '#FF9500' : '#34C759',
-                            borderRadius: 3,
+                            bgcolor: campaign.progress > 80 ? '#FF9500' : campaign.progress > 50 ? '#FFDD2D' : '#34C759',
+                            borderRadius: '4px',
+                            transition: 'all 0.3s ease-in-out',
                           },
                         }}
                       />
-                      <Typography variant="caption" sx={{ color: '#8E8E93', minWidth: 35 }}>
+                      <Typography variant="body2" sx={{ color: '#8E8E93', minWidth: 40, fontWeight: 500 }}>
                         {campaign.progress}%
                       </Typography>
                     </Box>
