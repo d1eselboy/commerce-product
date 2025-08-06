@@ -502,9 +502,7 @@ export const PlanningStep: React.FC<PlanningStepProps> = ({ data, onChange, erro
                   Шаг 3: Выбор креатива
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#1976D2', lineHeight: 1.4 }}>
-                  • A/B тестирование внутри кампании
-                  <br />
-                  • Учет весов креативов
+                  • Выбирается следующий креатив из списка
                 </Typography>
               </Box>
             </Paper>

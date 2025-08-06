@@ -515,10 +515,10 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
   return (
     <Box>
       <Typography variant="h2" sx={{ mb: 1 }}>
-        {t('campaignEditor.creatives.title', 'Campaign Creatives')}
+        {t('campaignEditor.title', 'Campaign Creatives')}
       </Typography>
       <Typography variant="body1" sx={{ color: '#8E8E93', mb: 4 }}>
-        Upload new creatives or select from your library. Set weights for A/B testing.
+        Upload new creatives or select from your library
       </Typography>
 
       <Grid container spacing={4}>
@@ -1117,28 +1117,96 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
             </Box>
           </Paper>
 
-          {/* Weight Distribution */}
+          {/* Algorithm Logic */}
+          <Paper 
+            elevation={1}
+            sx={{ 
+              p: 3, 
+              bgcolor: '#F0F8FF', 
+              borderRadius: '16px',
+              border: '1px solid #D1E9FF',
+              mb: 3,
+            }}
+          >
+            <Typography variant="h5" sx={{ mb: 3, color: '#1976D2', fontWeight: 600 }}>
+              Алгоритм показа креативов
+            </Typography>
+
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, color: '#1C1C1E' }}>
+                Consecutive cap
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.5 }}>
+                Не более <strong>{data.consecutiveCap || 3}</strong> подряд показов одной и той же кампании
+              </Typography>
+            </Box>
+
+            <Divider sx={{ my: 2, bgcolor: '#D1E9FF' }} />
+
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: '#1C1C1E' }}>
+                Алгоритм розыгрыша:
+              </Typography>
+              
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ color: '#1976D2', fontWeight: 500, mb: 1 }}>
+                  При вызове ручки:
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.5, ml: 2 }}>
+                  • Фильтруем по активным кампаниям с остатками показов
+                  <br />
+                  • Исключаем ту, которая нарушает consecutive cap
+                </Typography>
+              </Box>
+
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ color: '#1976D2', fontWeight: 500, mb: 1 }}>
+                  Если кампаний нет:
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.5, ml: 2 }}>
+                  • Берем ту, которая нарушает consecutive cap
+                  <br />
+                  • Если вообще нет кампаний для показа, то отправлять в ручку, что следующий запрос через несколько минут
+                </Typography>
+              </Box>
+
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ color: '#1976D2', fontWeight: 500, mb: 1 }}>
+                  Выбор креатива:
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.5, ml: 2 }}>
+                  • Считаем PriorityScore
+                  <br />
+                  • Сортируем и находим топ-1 кампанию
+                  <br />
+                  • Внутри топ-1 кампании выбирается креатив C_new по порядку, заданным в кампании с учетом уже показанных креативов
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
+
+          {/* Weight Distribution - only show if there are creatives */}
           {creatives.length > 1 && (
             <Paper 
               elevation={1}
               sx={{ 
                 p: 3, 
-                bgcolor: '#F0F8FF', 
+                bgcolor: '#F9F9F9', 
                 borderRadius: '16px',
-                border: '1px solid #D1E9FF',
+                border: '1px solid #E5E5EA',
               }}
             >
-              <Typography variant="h5" sx={{ mb: 2 }}>
-                {t('campaignEditor.creatives.abTestingWeights')}
+              <Typography variant="h5" sx={{ mb: 2, color: '#1C1C1E' }}>
+                Веса креативов
               </Typography>
 
               {creatives.map((creative: Creative) => (
                 <Box key={creative.id} sx={{ mb: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+                    <Typography variant="body2" sx={{ fontSize: '0.8rem', color: '#1C1C1E' }}>
                       {creative.name}
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8rem' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8rem', color: '#1C1C1E' }}>
                       {creative.weight}%
                     </Typography>
                   </Box>
@@ -1159,7 +1227,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
               ))}
 
               <Typography variant="body2" sx={{ color: '#8E8E93', mt: 1, display: 'block' }}>
-                {t('campaignEditor.creatives.total')}: {creatives.reduce((sum: number, c: Creative) => sum + c.weight, 0)}%
+                Всего: {creatives.reduce((sum: number, c: Creative) => sum + c.weight, 0)}%
               </Typography>
             </Paper>
           )}

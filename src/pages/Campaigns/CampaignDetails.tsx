@@ -95,6 +95,7 @@ export const CampaignDetails: React.FC = () => {
       case 'active': return '#34C759';
       case 'paused': return '#FF9500';
       case 'completed': return '#007AFF';
+      case 'pending_approval': return '#FFDD2D';
       default: return '#8E8E93';
     }
   };
@@ -104,6 +105,7 @@ export const CampaignDetails: React.FC = () => {
       case 'active': return 'Активная';
       case 'paused': return 'Приостановлена';
       case 'completed': return 'Завершена';
+      case 'pending_approval': return 'Ждет согласования';
       default: return 'Черновик';
     }
   };
@@ -210,6 +212,18 @@ export const CampaignDetails: React.FC = () => {
             >
               Запустить
             </Button>
+          ) : campaign.status === 'pending_approval' ? (
+            <Chip
+              label="Ждет согласования"
+              sx={{
+                bgcolor: '#FFDD2D',
+                color: '#000',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                height: 40,
+                px: 2,
+              }}
+            />
           ) : null}
           
           <Button
@@ -289,17 +303,7 @@ export const CampaignDetails: React.FC = () => {
                 </Box>
               </Grid>
               
-              
-              <Grid item xs={6} md={3}>
-                <Box>
-                  <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
-                    eCPM
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
-                    {campaign.ecpm ? `₽${campaign.ecpm}` : '—'}
-                  </Typography>
-                </Box>
-              </Grid>
+          
               
               <Grid item xs={6} md={3}>
                 <Box>
@@ -308,6 +312,9 @@ export const CampaignDetails: React.FC = () => {
                   </Typography>
                   <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
                     {campaign.weight}%
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 500 }}>
+                    Показы этой компании / Все показы активных кампаний)
                   </Typography>
                 </Box>
               </Grid>
@@ -500,34 +507,7 @@ export const CampaignDetails: React.FC = () => {
             </Box>
           </Paper>
 
-          {/* Performance Tips */}
-          <Paper 
-            sx={{ 
-              p: 3, 
-              bgcolor: '#FFF3CD', 
-              border: '1px solid #FFE69C',
-              borderRadius: '16px',
-              boxShadow: '0 2px 8px rgba(255, 230, 156, 0.2)',
-              transition: 'all 0.2s ease-in-out',
-              '&:hover': {
-                boxShadow: '0 4px 16px rgba(255, 230, 156, 0.3)',
-                border: '1px solid #FFCC02',
-              },
-            }}
-          >
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 3, display: 'flex', alignItems: 'center', gap: 1.5, color: '#856404' }}>
-              <TrendingUp sx={{ fontSize: 20, color: '#856404' }} />
-              Рекомендации
-            </Typography>
-
-            <Typography variant="body2" sx={{ color: '#856404', lineHeight: 1.6, fontWeight: 500 }}>
-              • Пиковые часы: 9-12 и 18-21 показывают наибольшую вовлеченность
-              <br />
-              • B2B кампании обычно лучше работают в будние дни
-              <br />
-              • Учитывайте часовой пояс целевой аудитории
-            </Typography>
-          </Paper>
+         
         </Grid>
       </Grid>
 

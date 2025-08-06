@@ -45,10 +45,13 @@ interface CampaignFormData extends Partial<Campaign> {
     endHour: number;
   };
   audienceTargeting?: {
-    type: 'role' | 'ytSegment' | 'crypta';
+    type: 'role' | 'yt-segment' | 'crypta' | 'file';
     roles?: string[];
     ytSegmentUrl?: string;
-    cryptaSegment?: string;
+    cryptaSegments?: string[];
+    file?: File;
+    fileName?: string;
+    fileSize?: number;
     estimatedIds?: number;
   };
   creativeFiles?: File[];
@@ -135,10 +138,12 @@ export const CampaignEditor: React.FC = () => {
           errors.audience = t('campaignEditor.validation.audienceRequired');
         } else if (formData.audienceTargeting.type === 'role' && (!formData.audienceTargeting.roles || formData.audienceTargeting.roles.length === 0)) {
           errors.audience = 'Необходимо выбрать роли аудитории';
-        } else if (formData.audienceTargeting.type === 'ytSegment' && !formData.audienceTargeting.ytSegmentUrl) {
+        } else if (formData.audienceTargeting.type === 'yt-segment' && !formData.audienceTargeting.ytSegmentUrl?.trim()) {
           errors.audience = 'Необходимо указать ссылку на YT сегмент';
-        } else if (formData.audienceTargeting.type === 'crypta' && !formData.audienceTargeting.cryptaSegment) {
-          errors.audience = 'Необходимо выбрать сегмент Крипты';
+        } else if (formData.audienceTargeting.type === 'crypta' && (!formData.audienceTargeting.cryptaSegments || formData.audienceTargeting.cryptaSegments.length === 0)) {
+          errors.audience = 'Необходимо выбрать сегменты Крипты';
+        } else if (formData.audienceTargeting.type === 'file' && !formData.audienceTargeting.file) {
+          errors.audience = 'Необходимо загрузить файл с аудиторией';
         }
         break;
       case 3: // Creatives
@@ -197,21 +202,27 @@ export const CampaignEditor: React.FC = () => {
     try {
       const campaignData = {
         ...formData,
-        status: 'active' as const,
+        status: 'pending_approval' as const, // Изменяем статус на "ждет согласования"
       };
       delete campaignData.creativeFiles;
       delete campaignData.timeTargeting;
 
+      let campaignId: string;
+      
       if (isEdit) {
-        await updateCampaign({ id: id!, data: campaignData }).unwrap();
+        const result = await updateCampaign({ id: id!, data: campaignData }).unwrap();
+        campaignId = id!;
       } else {
-        await createCampaign(campaignData).unwrap();
+        const result = await createCampaign(campaignData).unwrap();
+        campaignId = result.id; // Предполагаем, что API возвращает созданную кампанию с id
         // TODO: Upload creative files if any
       }
       
       setShowConfirmation(false);
       setPendingAction(null);
-      navigate('/campaigns');
+      
+      // Переход на страницу деталей созданной/обновленной кампании
+      navigate(`/campaigns/${campaignId}`);
     } catch (error) {
       console.error('Failed to publish campaign:', error);
       setShowConfirmation(false);
@@ -285,8 +296,9 @@ export const CampaignEditor: React.FC = () => {
       case 2: // Audience
         return Boolean(formData.audienceTargeting?.type && (
           (formData.audienceTargeting.type === 'role' && formData.audienceTargeting.roles && formData.audienceTargeting.roles.length > 0) ||
-          (formData.audienceTargeting.type === 'ytSegment' && formData.audienceTargeting.ytSegmentUrl) ||
-          (formData.audienceTargeting.type === 'crypta' && formData.audienceTargeting.cryptaSegment)
+          (formData.audienceTargeting.type === 'yt-segment' && formData.audienceTargeting.ytSegmentUrl?.trim()) ||
+          (formData.audienceTargeting.type === 'crypta' && formData.audienceTargeting.cryptaSegments && formData.audienceTargeting.cryptaSegments.length > 0) ||
+          (formData.audienceTargeting.type === 'file' && formData.audienceTargeting.file)
         ));
       case 3: // Creatives
         return Boolean(formData.creatives?.length || formData.creativeFiles?.length);

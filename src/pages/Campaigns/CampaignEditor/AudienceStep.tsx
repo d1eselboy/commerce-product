@@ -380,7 +380,7 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
                 
                 {selectedRoles.length > 1 && (
                   <Typography variant="caption" sx={{ color: '#8E8E93', mt: 1 }}>
-                    * Учитывается пересечение аудиторий (коэффициент 0.7)
+                    * Учитывается объединение аудиторий
                   </Typography>
                 )}
               </FormControl>
@@ -476,7 +476,7 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
                 
                 {selectedCryptaSegments.length > 1 && (
                   <Typography variant="caption" sx={{ color: '#8E8E93', mt: 1 }}>
-                    * Учитывается пересечение поведенческих сегментов (коэффициент 0.6)
+                    * Учитывается объединение сегментов
                   </Typography>
                 )}
               </FormControl>

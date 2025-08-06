@@ -351,14 +351,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data }) => {
             </Box>
 
 
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                Expected Clicks
-              </Typography>
-              <Typography variant="body1" sx={{ color: '#1C1C1E' }}>
-                {Math.floor((data.limitImpressions || 0) * 0.0075).toLocaleString()}
-              </Typography>
-            </Box>
+            
 
           </Paper>
 
