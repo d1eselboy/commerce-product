@@ -6,6 +6,7 @@ import {
   FormHelperText,
   Chip,
   Grid,
+  Paper,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
@@ -28,12 +29,12 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
 
   // Generate campaign suggestions based on current trends
   const campaignSuggestions = [
-    'Black Friday 2024',
-    'New Year Sale',
-    'Spring Collection',
-    'Mobile App Launch',
-    'Premium Service Promo',
-    'Student Discount',
+    'Черная пятница 2024',
+    'Новогодняя распродажа',
+    'Весенняя коллекция',
+    'Запуск мобильного приложения',
+    'Промо премиум услуг',
+    'Студенческая скидка',
   ];
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -43,10 +44,10 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
   return (
     <Box>
       <Typography variant="h5" sx={{ fontWeight: 500, mb: 1 }}>
-        {t('campaignEditor.basic.title', 'Campaign Details')}
+        {t('campaignEditor.basic.title', 'Детали кампании')}
       </Typography>
       <Typography variant="body2" sx={{ color: '#8E8E93', mb: 4 }}>
-        Start with basic information about your advertising campaign
+        Начните с базовой информации о вашей рекламной кампании
       </Typography>
 
       <Grid container spacing={4}>
@@ -106,8 +107,8 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
             {/* Campaign name suggestions */}
             {!data.name && (
               <Box sx={{ mt: 2 }}>
-                <Typography variant="caption" sx={{ color: '#8E8E93', mb: 1, display: 'block' }}>
-                  Popular campaign names:
+                <Typography variant="body2" sx={{ color: '#8E8E93', mb: 1, display: 'block' }}>
+                  Популярные названия кампаний:
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   {campaignSuggestions.map((suggestion) => (
@@ -181,52 +182,52 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
               }}
             />
             <FormHelperText sx={{ mt: 1, color: '#8E8E93' }}>
-              Optional: Describe your campaign goals and target audience
+              Необязательно: Опишите цели кампании и целевую аудиторию
             </FormHelperText>
           </Box>
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Box 
+          <Paper
+            elevation={1} 
             sx={{ 
               p: 3, 
-              bgcolor: '#FFFFFF', 
+              bgcolor: '#F5F5F7', 
               borderRadius: '16px',
               border: '1px solid #E5E5EA',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
             }}
           >
-            <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2 }}>
-              Campaign Tips
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              Советы по кампаниям
             </Typography>
             
             <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                📝 Naming Best Practices
+              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1 }}>
+                Лучшие практики именования
               </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
-                Use clear, descriptive names that include the brand, product, and time period
+              <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
+                Используйте четкие, описательные названия, включающие бренд, продукт и временной период
               </Typography>
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                🎯 Target Audience
+              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1 }}>
+                Целевая аудитория
               </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
-                Consider your audience when crafting the campaign description
+              <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
+                Учитывайте вашу аудиторию при создании описания кампании
               </Typography>
             </Box>
 
             <Box>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                📊 Performance Tracking
+              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1 }}>
+                Отслеживание эффективности
               </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
-                Clear names help with performance analysis and reporting
+              <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
+                Четкие названия помогают с анализом производительности и отчетностью
               </Typography>
             </Box>
-          </Box>
+          </Paper>
         </Grid>
       </Grid>
     </Box>

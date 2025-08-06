@@ -112,7 +112,6 @@ export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors
     return {
       dailyImpressions: predictedDailyImpressions,
       weeklyImpressions: predictedDailyImpressions * 7,
-      estimatedCTR: 0.65, // Base CTR estimate
       estimatedClicks: Math.floor(predictedDailyImpressions * 0.0065),
     };
   };
@@ -130,10 +129,10 @@ export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors
   return (
     <Box>
       <Typography variant="h5" sx={{ fontWeight: 500, mb: 1 }}>
-        {t('campaignEditor.weights.title', 'Campaign Weight & Distribution')}
+        {t('campaignEditor.weights.title', 'Вес кампании и распределение')}
       </Typography>
       <Typography variant="body2" sx={{ color: '#8E8E93', mb: 4 }}>
-        Set the weight for auction-based rotation and configure consecutive caps
+        {t('campaignEditor.weights.description', 'Установите вес для ротации на основе аукциона и настройте лимиты показов подряд')}
       </Typography>
 
       <Grid container spacing={4}>
@@ -307,72 +306,66 @@ export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors
         <Grid item xs={12} md={4}>
           {/* Performance Prediction */}
           <Paper 
+            elevation={1}
             sx={{ 
               p: 3, 
               bgcolor: '#F5F5F7', 
-              borderRadius: 2,
+              borderRadius: '16px',
               border: '1px solid #E5E5EA',
               mb: 3,
             }}
           >
-            <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <TrendingUp sx={{ fontSize: 18, color: '#8E8E93' }} />
-              Performance Prediction
+            <Typography variant="h5" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <TrendingUp sx={{ fontSize: 20, color: '#8E8E93' }} />
+              {t('campaignEditor.weights.performancePrediction')}
             </Typography>
 
             <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                Expected Daily Impressions
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                {t('campaignEditor.weights.expectedDailyImpressions')}
               </Typography>
-              <Typography variant="h6" sx={{ color: '#1C1C1E' }}>
+              <Typography variant="h4" sx={{ color: '#1C1C1E' }}>
                 {performance.dailyImpressions.toLocaleString()}
               </Typography>
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                Weekly Volume
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                {t('campaignEditor.weights.weeklyVolume')}
               </Typography>
               <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                {performance.weeklyImpressions.toLocaleString()} impressions
+                {performance.weeklyImpressions.toLocaleString()} показов
               </Typography>
             </Box>
 
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                Estimated CTR
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                {performance.estimatedCTR}%
-              </Typography>
-            </Box>
 
             <Box>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                Expected Daily Clicks
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                {t('campaignEditor.weights.expectedDailyClicks')}
               </Typography>
               <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                ~{performance.estimatedClicks} clicks
+                ~{performance.estimatedClicks} кликов
               </Typography>
             </Box>
           </Paper>
 
           {/* Weight Recommendations */}
           <Paper 
+            elevation={1}
             sx={{ 
               p: 3, 
               bgcolor: '#E3F2FD', 
-              borderRadius: 2,
+              borderRadius: '16px',
               border: '1px solid #BBDEFB',
             }}
           >
-            <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2 }}>
-              Weight Recommendations
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              {t('campaignEditor.weights.weightRecommendations')}
             </Typography>
 
             <Box sx={{ mb: 2 }}>
               <Chip 
-                label="Low Impact: 1-15%" 
+                label={t('campaignEditor.weights.lowImpact')} 
                 size="small" 
                 sx={{ 
                   bgcolor: '#E5E5EA', 
@@ -381,14 +374,14 @@ export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors
                   mb: 1,
                 }} 
               />
-              <Typography variant="caption" sx={{ color: '#8E8E93', display: 'block' }}>
-                For testing new creatives
+              <Typography variant="body2" sx={{ color: '#8E8E93', display: 'block' }}>
+                {t('campaignEditor.weights.testingCreatives')}
               </Typography>
             </Box>
 
             <Box sx={{ mb: 2 }}>
               <Chip 
-                label="Balanced: 15-40%" 
+                label={t('campaignEditor.weights.balanced')} 
                 size="small" 
                 sx={{ 
                   bgcolor: '#FFDD2D', 
@@ -397,14 +390,14 @@ export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors
                   mb: 1,
                 }} 
               />
-              <Typography variant="caption" sx={{ color: '#8E8E93', display: 'block' }}>
-                Recommended for most campaigns
+              <Typography variant="body2" sx={{ color: '#8E8E93', display: 'block' }}>
+                {t('campaignEditor.weights.recommendedCampaigns')}
               </Typography>
             </Box>
 
             <Box>
               <Chip 
-                label="High Impact: 40%+" 
+                label={t('campaignEditor.weights.highImpact')} 
                 size="small" 
                 sx={{ 
                   bgcolor: '#FF9500', 
@@ -413,8 +406,8 @@ export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors
                   mb: 1,
                 }} 
               />
-              <Typography variant="caption" sx={{ color: '#8E8E93', display: 'block' }}>
-                For priority campaigns only
+              <Typography variant="body2" sx={{ color: '#8E8E93', display: 'block' }}>
+                {t('campaignEditor.weights.priorityCampaigns')}
               </Typography>
             </Box>
           </Paper>

@@ -8,6 +8,9 @@ import { Dashboard } from '@/pages/Dashboard';
 import { CampaignList } from '@/pages/Campaigns/CampaignList';
 import { CampaignEditor } from '@/pages/Campaigns/CampaignEditor';
 import { CampaignDetails } from '@/pages/Campaigns/CampaignDetails';
+import { Surfaces } from '@/pages/Surfaces';
+import { LiveLogs } from '@/pages/LiveLogs';
+import { Settings } from '@/pages/Settings';
 import { lightTheme } from '@/theme';
 import '@/i18n';
 
@@ -30,9 +33,9 @@ const ThemedApp: React.FC = () => {
               <Route path="/campaigns/new" element={<CampaignEditor />} />
               <Route path="/campaigns/:id" element={<CampaignDetails />} />
               <Route path="/campaigns/:id/edit" element={<CampaignEditor />} />
-              <Route path="/surfaces" element={<div>Surface Preview</div>} />
-              <Route path="/live-logs" element={<div>Live Logs</div>} />
-              <Route path="/settings" element={<div>Settings</div>} />
+              <Route path="/surfaces" element={<Surfaces />} />
+              <Route path="/live-logs" element={<LiveLogs />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="/auth/callback" element={<div>OAuth Callback</div>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

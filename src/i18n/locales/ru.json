@@ -21,7 +21,6 @@
       "charge": "Заряд",
       "impressions": "Показы",
       "clicks": "Клики",
-      "ctr": "CTR",
       "progress": "Прогресс"
     },
     "statusLabels": {
@@ -61,8 +60,7 @@
     "stats": {
       "totalCampaigns": "Всего кампаний",
       "activeCampaigns": "Активных",
-      "totalImpressions": "Всего показов",
-      "avgCTR": "Средний CTR"
+      "totalImpressions": "Всего показов"
     }
   },
   "campaignEditor": {
@@ -71,9 +69,8 @@
     "editTitle": "Редактирование кампании",
     "steps": {
       "basic": "Основное",
-      "scheduling": "Планирование",
+      "planning": "Планирование и приоритизация",
       "audience": "Аудитория",
-      "weights": "Веса",
       "creatives": "Креативы",
       "review": "Проверка и публикация"
     },
@@ -83,6 +80,26 @@
       "namePlaceholder": "Введите название кампании",
       "descriptionPlaceholder": "Введите описание кампании"
     },
+    "planning": {
+      "title": "Планирование и приоритизация",
+      "description": "Настройте расписание кампании и параметры приоритизации в системе показов",
+      "campaignSchedule": "Расписание кампании",
+      "impressionSettings": "Настройки показов",
+      "priorityAlgorithm": "Алгоритм приоритизации",
+      "prioritySimulation": "Симуляция приоритетов",
+      "algorithmLogic": "Логика приоритизации",
+      "scheduleSummary": "Сводка по расписанию",
+      "startDate": "Дата начала",
+      "endDate": "Дата окончания",
+      "totalImpressions": "Общее количество показов",
+      "consecutiveCap": "Consecutive Cap",
+      "duration": "Продолжительность",
+      "impressionsPerDay": "Показов в день",
+      "priorityFormula": "Формула расчета приоритета",
+      "step1Filtering": "Шаг 1: Фильтрация",
+      "step2Priority": "Шаг 2: Расчет приоритета", 
+      "step3Creative": "Шаг 3: Выбор креатива"
+    },
     "scheduling": {
       "startDate": "Дата начала",
       "endDate": "Дата окончания",
@@ -90,8 +107,27 @@
       "timeTargeting": "Временной таргетинг"
     },
     "weights": {
+      "title": "Вес кампании и распределение",
+      "description": "Установите вес для ротации на основе аукциона и настройте лимиты показов подряд",
       "campaignWeight": "Вес кампании",
-      "previewDistribution": "Предварительный просмотр распределения"
+      "previewDistribution": "Предварительный просмотр распределения",
+      "consecutiveCap": "Лимит показов подряд",
+      "currentWeight": "Текущий вес",
+      "expectedShare": "Ожидаемая доля",
+      "impressionDistribution": "Распределение показов",
+      "campaignList": "Список кампаний",
+      "weightAnalysis": "Анализ веса",
+      "performancePrediction": "Прогноз показателей",
+      "expectedDailyImpressions": "Ожидаемые показы в день",
+      "weeklyVolume": "Недельный объем",
+      "expectedDailyClicks": "Ожидаемые клики в день",
+      "weightRecommendations": "Рекомендации по весу",
+      "lowImpact": "Низкое влияние: 1-15%",
+      "testingCreatives": "Для тестирования новых креативов",
+      "balanced": "Сбалансированно: 15-40%",
+      "recommendedCampaigns": "Рекомендуется для большинства кампаний",
+      "highImpact": "Высокое влияние: 40%+",
+      "priorityCampaigns": "Только для приоритетных кампаний"
     },
     "audience": {
       "title": "Целевая аудитория",
@@ -119,8 +155,10 @@
     "creatives": {
       "title": "Креативы кампании",
       "description": "Загрузите новые креативы или выберите из библиотеки. Настройте веса для A/B тестирования.",
+      "uploadNew": "Загрузить новые креативы",
       "uploadCreative": "Загрузить креатив",
       "selectFromLibrary": "Выбрать из библиотеки",
+      "chooseFromLibrary": "Выбрать из библиотеки",
       "dragAndDrop": "Перетащите файлы сюда или нажмите для выбора",
       "supportedFormats": "Поддерживаемые форматы",
       "maxFileSize": "Максимальный размер файла",
@@ -135,13 +173,43 @@
         "promoBlock": "Промоблок",
         "mapObject": "Объект на карте"
       },
+      "selectSurfaceType": "Выберите тип поверхности:",
+      "promoBlockConfig": "Настройка промоблока",
+      "mapObjectConfig": "Настройка объекта на карте",
       "creativeId": "ID креатива",
       "enableCreative": "Включить креатив",
       "title": "Заголовок",
       "subtitle": "Подзаголовок",
+      "layoutType": "Тип раскладки:",
       "enterUniqueId": "Введите уникальный ID",
       "enterTitle": "Введите заголовок промоблока",
-      "enterSubtitle": "Введите подзаголовок промоблока"
+      "enterSubtitle": "Введите подзаголовок промоблока",
+      "smallImage": "Маленькое изображение",
+      "fiftyFiftySplit": "50/50 разделение",
+      "backgroundImage": "Фоновое изображение",
+      "dropFiles": "Перетащите файлы сюда или нажмите для выбора",
+      "dropFilesActive": "Отпустите файлы здесь",
+      "uploading": "Загрузка...",
+      "surfacePreviews": "Предварительный просмотр поверхностей",
+      "promoBlockPreviews": "Предварительный просмотр промоблоков",
+      "mapObjectPreviews": "Предварительный просмотр объектов на карте",
+      "manageCreatives": "Управление креативами",
+      "editWeights": "Редактировать веса",
+      "done": "Готово",
+      "weight": "Вес",
+      "validationResults": "Результаты проверки",
+      "formatRequirements": "Требования к форматам",
+      "bannerFormat": "Формат баннера",
+      "iconFormat": "Формат иконки",
+      "videoFormat": "Формат видео",
+      "abTestingWeights": "Веса A/B тестирования",
+      "total": "Всего",
+      "creativeLibrary": "Библиотека креативов",
+      "addSelected": "Добавить выбранные",
+      "allCreatives": "Все креативы",
+      "banners": "Баннеры",
+      "icons": "Иконки",
+      "videos": "Видео"
     },
     "validation": {
       "nameRequired": "Название кампании обязательно",

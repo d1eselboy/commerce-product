@@ -9,7 +9,6 @@ export interface Campaign {
   consecutiveCap: number;
   limitImpressions: number;
   impressionsDone?: number;
-  ctr?: number;
   ecpm?: number;
   creatives: CreativeRef[];
   creativeFiles?: Creative[];
@@ -30,7 +29,6 @@ export interface CampaignSummary {
   impressionsDone?: number;
   impressions?: number;
   status: 'draft' | 'active' | 'paused' | 'completed';
-  ctr?: number;
   ecpm?: number;
 }
 

@@ -367,14 +367,6 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data }) => {
               </Typography>
             </Box>
 
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                Estimated CTR
-              </Typography>
-              <Typography variant="body1" sx={{ color: '#34C759' }}>
-                0.65% - 0.85%
-              </Typography>
-            </Box>
 
             <Box sx={{ mb: 3 }}>
               <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>

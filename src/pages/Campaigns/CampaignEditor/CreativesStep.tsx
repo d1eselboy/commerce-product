@@ -36,6 +36,9 @@ import {
 } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
+// Import VTB images
+import vtbBannerImg from '@/images/vtb banner.png';
+import vtbLogoImg from '@/images/vtb logo.png';
 
 interface CreativesStepProps {
   data: any;
@@ -61,9 +64,10 @@ interface Creative {
   layoutType?: 'small_image' | 'fifty_fifty' | 'background_image';
 }
 
-// Mock creative images (base64 encoded placeholders)
+// Mock creative images (real VTB images + base64 placeholders)
 const mockImages = {
-  vtbBanner: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE2OCIgdmlld0JveD0iMCAwIDMyMCAxNjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTY4IiBmaWxsPSIjMDA0QkE4Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5WVEIgUHJlbWl1bTwvdGV4dD4KPHR5ZWFsbT0iaGF0IHg9IjE2MCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CYW5raW5nIENhcmRzPC90ZXh0Pgo8L3N2Zz4K',
+  vtbBanner: vtbBannerImg,
+  vtbLogo: vtbLogoImg,
   sberBanner: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE2OCIgdmlld0JveD0iMCAwIDMyMCAxNjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTY4IiBmaWxsPSIjMjFBMDM4Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TYmVyYmFuazwvdGV4dD4KPHR5ZWFsbD0iaGF0IHg9IjE2MCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BdXRvIENyZWRpdDwvdGV4dD4KPC9zdmc+Cg==',
   tinkoffBanner: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE2OCIgdmlld0JveD0iMCAwIDMyMCAxNjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTY4IiBmaWxsPSIjRkZEQjAwIi8+Cjx0ZXh0IHg9IjE2MCIgeT0iNzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9ImJsYWNrIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UaW5rb2ZmPC90ZXh0Pgo8dHlwZT0iaGF0IHg9IjE2MCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9ImJsYWNrIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CdXNpbmVzcyBBY2NvdW50PC90ZXh0Pgo8L3N2Zz4K',
   megafonIcon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzIiIGZpbGw9IiM4MDA4ODAiLz4KPHR5ZWFsbT0iaGF0IHg9IjMyIiB5PSIzOCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk08L3RleHQ+Cjwvc3ZnPgo=',
@@ -76,18 +80,30 @@ const mockImages = {
 const mockCreativeLibrary: Creative[] = [
   {
     id: '1',
-    name: 'VTB Premium Creative',
+    name: 'VTB Premium Banner',
     url: mockImages.vtbBanner,
-    surfaces: ['promo_block', 'map_object'],
+    surfaces: ['promo_block'],
     dimensions: { width: 320, height: 168 },
     size: 45600,
     weight: 100,
     format: 'static_image',
-    fileFormat: 'SVG',
+    fileFormat: 'PNG',
     enabled: true,
     title: 'VTB Premium Banking',
     subtitle: 'Откройте счёт за 5 минут',
-    layoutType: 'media_left',
+    layoutType: 'small_image',
+  },
+  {
+    id: '1b',
+    name: 'VTB Logo',
+    url: mockImages.vtbLogo,
+    surfaces: ['map_object'],
+    dimensions: { width: 64, height: 64 },
+    size: 15200,
+    weight: 100,
+    format: 'static_image',
+    fileFormat: 'PNG',
+    enabled: true,
   },
   {
     id: '2',
@@ -177,6 +193,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
   const [uploading, setUploading] = useState(false);
   const [editingWeights, setEditingWeights] = useState(false);
   const [selectedSurface, setSelectedSurface] = useState<'promo_block' | 'map_object'>('promo_block');
+  const [creativeCounters, setCreativeCounters] = useState({ promo_block: 1, map_object: 1 });
   const [promoBlockData, setPromoBlockData] = useState({
     id: '',
     enabled: true,
@@ -189,45 +206,68 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
     enabled: true
   });
 
+  // Generate unique ID for new creative
+  const generateUniqueId = (baseName: string, surfaceType: 'promo_block' | 'map_object') => {
+    const counter = creativeCounters[surfaceType];
+    const newId = `${baseName}_${surfaceType}_${counter}`;
+    setCreativeCounters(prev => ({
+      ...prev,
+      [surfaceType]: prev[surfaceType] + 1
+    }));
+    return newId;
+  };
+
   // Dropzone for file uploads
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const surfaceData = selectedSurface === 'promo_block' ? promoBlockData : mapObjectData;
-    
-    if (!surfaceData.id.trim()) {
-      alert('Please enter an ID before uploading.');
-      return;
-    }
     
     setUploading(true);
     
     // Simulate upload delay
     setTimeout(() => {
-      const newCreatives = acceptedFiles.map((file, index) => ({
-        id: surfaceData.id || `upload-${Date.now()}-${index}`,
-        name: file.name.replace(/\.[^/.]+$/, ''),
-        file,
-        surfaces: [selectedSurface],
-        dimensions: selectedSurface === 'map_object' ? { width: 64, height: 64 } : { width: 320, height: 168 },
-        size: file.size,
-        weight: 100,
-        format: selectedSurface === 'map_object' ? 'animated_icon' as const : 'static_image' as const,
-        fileFormat: file.type.split('/')[1].toUpperCase(),
-        enabled: surfaceData.enabled,
-        // Add promo block specific fields
-        ...(selectedSurface === 'promo_block' && {
-          title: promoBlockData.title || file.name.replace(/\.[^/.]+$/, ''),
-          subtitle: promoBlockData.subtitle || 'Add subtitle text',
-          layoutType: promoBlockData.layoutType,
-        }),
-      }));
+      const newCreatives = acceptedFiles.map((file, index) => {
+        const baseName = surfaceData.id.trim() || file.name.replace(/\.[^/.]+$/, '');
+        const uniqueId = generateUniqueId(baseName, selectedSurface);
+        
+        return {
+          id: uniqueId,
+          name: file.name.replace(/\.[^/.]+$/, ''),
+          file,
+          surfaces: [selectedSurface],
+          dimensions: selectedSurface === 'map_object' ? { width: 64, height: 64 } : { width: 320, height: 168 },
+          size: file.size,
+          weight: 100,
+          format: selectedSurface === 'map_object' ? 'animated_icon' as const : 'static_image' as const,
+          fileFormat: file.type.split('/')[1].toUpperCase(),
+          enabled: surfaceData.enabled,
+          // Add promo block specific fields
+          ...(selectedSurface === 'promo_block' && {
+            title: promoBlockData.title || file.name.replace(/\.[^/.]+$/, ''),
+            subtitle: promoBlockData.subtitle || 'Add subtitle text',
+            layoutType: promoBlockData.layoutType,
+          }),
+        };
+      });
       
       const currentCreatives = data.creativeFiles || [];
+      const redistributedCreatives = [...currentCreatives, ...newCreatives].map((creative, index, array) => ({
+        ...creative,
+        weight: Math.floor(100 / array.length),
+      }));
+      
       onChange({ 
-        creativeFiles: [...currentCreatives, ...newCreatives]
+        creativeFiles: redistributedCreatives
       });
       setUploading(false);
+      
+      // Clear form after successful upload
+      if (selectedSurface === 'promo_block') {
+        setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image' });
+      } else {
+        setMapObjectData({ id: '', enabled: true });
+      }
     }, 1500);
-  }, [data.creativeFiles, onChange, selectedSurface, promoBlockData, mapObjectData]);
+  }, [data.creativeFiles, onChange, selectedSurface, promoBlockData, mapObjectData, creativeCounters]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -248,27 +288,38 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
   const handleChooseFromLibrary = (creative: Creative) => {
     const surfaceData = selectedSurface === 'promo_block' ? promoBlockData : mapObjectData;
     
-    if (!surfaceData.id.trim()) {
-      alert('Please enter an ID before selecting from library.');
-      return;
-    }
+    const baseName = surfaceData.id.trim() || creative.name;
+    const uniqueId = generateUniqueId(baseName, selectedSurface);
     
     const updatedCreative = {
       ...creative,
-      id: surfaceData.id,
+      id: uniqueId,
       enabled: surfaceData.enabled,
       surfaces: [selectedSurface],
       ...(selectedSurface === 'promo_block' && {
         title: promoBlockData.title || creative.title,
         subtitle: promoBlockData.subtitle || creative.subtitle,
+        layoutType: promoBlockData.layoutType,
       }),
     };
     
     const currentCreatives = data.creativeFiles || [];
+    const redistributedCreatives = [...currentCreatives, updatedCreative].map((creative, index, array) => ({
+      ...creative,
+      weight: Math.floor(100 / array.length),
+    }));
+    
     onChange({ 
-      creativeFiles: [...currentCreatives, updatedCreative]
+      creativeFiles: redistributedCreatives
     });
     setLibraryOpen(false);
+    
+    // Clear form after successful selection
+    if (selectedSurface === 'promo_block') {
+      setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image' });
+    } else {
+      setMapObjectData({ id: '', enabled: true });
+    }
   };
 
   const handleSelectFromLibrary = (creative: Creative) => {
@@ -306,6 +357,18 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
     }));
     
     onChange({ creativeFiles: redistributedCreatives });
+  };
+
+  const updateCreativesLayoutType = (newLayoutType: 'small_image' | 'fifty_fifty' | 'background_image') => {
+    const currentCreatives = data.creativeFiles || [];
+    const updatedCreatives = currentCreatives.map((creative: Creative) => {
+      if (creative.surfaces.includes('promo_block')) {
+        return { ...creative, layoutType: newLayoutType };
+      }
+      return creative;
+    });
+    
+    onChange({ creativeFiles: updatedCreatives });
   };
 
   const handleWeightChange = (id: string, newWeight: number) => {
@@ -390,7 +453,10 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
           {/* Upload New Creatives */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h4" sx={{ mb: 3 }}>
-              Upload New Creatives
+              Загрузить новые креативы
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#8E8E93', mb: 3 }}>
+              Можно добавлять несколько креативов одного типа поверхности
             </Typography>
             
             {/* Surface Selection Tabs */}
@@ -464,11 +530,11 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
-                        label="Creative ID"
-                        placeholder="Enter unique ID"
+                        label="Base Name (optional)"
+                        placeholder="Основное имя для креативов"
                         value={promoBlockData.id}
                         onChange={(e) => setPromoBlockData(prev => ({ ...prev, id: e.target.value }))}
-                        required
+                        helperText="Оставьте пустым для автоматической генерации ID"
                         sx={{
                           '& .MuiOutlinedInput-root': {
                             borderRadius: '12px',
@@ -571,11 +637,11 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
-                        label="Creative ID"
-                        placeholder="Enter unique ID"
+                        label="Base Name (optional)"
+                        placeholder="Основное имя для креативов"
                         value={mapObjectData.id}
                         onChange={(e) => setMapObjectData(prev => ({ ...prev, id: e.target.value }))}
-                        required
+                        helperText="Оставьте пустым для автоматической генерации ID"
                         sx={{
                           '& .MuiOutlinedInput-root': {
                             borderRadius: '12px',
@@ -629,7 +695,10 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                   <Button
                     variant={promoBlockData.layoutType === 'small_image' ? 'contained' : 'outlined'}
                     startIcon={<CropSquare />}
-                    onClick={() => setPromoBlockData(prev => ({ ...prev, layoutType: 'small_image' }))}
+                    onClick={() => {
+                      setPromoBlockData(prev => ({ ...prev, layoutType: 'small_image' }));
+                      updateCreativesLayoutType('small_image');
+                    }}
                     sx={{
                       bgcolor: promoBlockData.layoutType === 'small_image' ? '#007AFF' : '#FFFFFF',
                       color: promoBlockData.layoutType === 'small_image' ? '#FFFFFF' : '#1C1C1E',
@@ -645,7 +714,10 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                   <Button
                     variant={promoBlockData.layoutType === 'fifty_fifty' ? 'contained' : 'outlined'}
                     startIcon={<AspectRatio />}
-                    onClick={() => setPromoBlockData(prev => ({ ...prev, layoutType: 'fifty_fifty' }))}
+                    onClick={() => {
+                      setPromoBlockData(prev => ({ ...prev, layoutType: 'fifty_fifty' }));
+                      updateCreativesLayoutType('fifty_fifty');
+                    }}
                     sx={{
                       bgcolor: promoBlockData.layoutType === 'fifty_fifty' ? '#007AFF' : '#FFFFFF',
                       color: promoBlockData.layoutType === 'fifty_fifty' ? '#FFFFFF' : '#1C1C1E',
@@ -661,7 +733,10 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                   <Button
                     variant={promoBlockData.layoutType === 'background_image' ? 'contained' : 'outlined'}
                     startIcon={<VideoLibrary />}
-                    onClick={() => setPromoBlockData(prev => ({ ...prev, layoutType: 'background_image' }))}
+                    onClick={() => {
+                      setPromoBlockData(prev => ({ ...prev, layoutType: 'background_image' }));
+                      updateCreativesLayoutType('background_image');
+                    }}
                     sx={{
                       bgcolor: promoBlockData.layoutType === 'background_image' ? '#007AFF' : '#FFFFFF',
                       color: promoBlockData.layoutType === 'background_image' ? '#FFFFFF' : '#1C1C1E',
@@ -728,7 +803,6 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
             <Button
               onClick={handleAddFromLibrary}
               startIcon={<Add />}
-              disabled={!((selectedSurface === 'promo_block' && promoBlockData.id.trim()) || (selectedSurface === 'map_object' && mapObjectData.id.trim()))}
               sx={{
                 bgcolor: '#FFFFFF',
                 color: '#1C1C1E',
@@ -744,21 +818,14 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                   transform: 'translateY(-1px)',
                   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                 },
-                '&:disabled': {
-                  bgcolor: '#F9F9F9',
-                  color: '#C7C7CC',
-                  cursor: 'not-allowed',
-                },
                 transition: 'all 0.2s ease-in-out',
               }}
             >
-              Choose from Library
+              Выбрать из библиотеки
             </Button>
-            {!((selectedSurface === 'promo_block' && promoBlockData.id.trim()) || (selectedSurface === 'map_object' && mapObjectData.id.trim())) && (
-              <Typography variant="caption" sx={{ display: 'block', mt: 1, color: '#FF3B30' }}>
-                Please enter an ID above before selecting from library
-              </Typography>
-            )}
+            <Typography variant="caption" sx={{ display: 'block', mt: 1, color: '#8E8E93' }}>
+              ID будет сгенерирован автоматически для каждого креатива
+            </Typography>
           </Box>
 
           {/* Surface Previews */}
@@ -1059,58 +1126,58 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
         <Grid item xs={12} md={4}>
           {/* Creative Requirements */}
           <Paper 
+            elevation={1}
             sx={{ 
               p: 3, 
-              bgcolor: '#FFFFFF', 
+              bgcolor: '#F5F5F7', 
               borderRadius: '16px',
               border: '1px solid #E5E5EA',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
               mb: 3,
             }}
           >
-            <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2 }}>
-              Format Requirements
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              {t('campaignEditor.creatives.formatRequirements')}
             </Typography>
 
             <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="subtitle1" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <AspectRatio sx={{ fontSize: 16 }} />
-                Banner Format
+                {t('campaignEditor.creatives.bannerFormat')}
               </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
-                • Ratio: 1.91:1 (recommended: 320×168px)
+              <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
+                • Соотношение: 1.91:1 (рекомендуется: 320×168px)
                 <br />
-                • Formats: JPEG, WebP, SVG
+                • Форматы: JPEG, WebP, SVG
                 <br />
-                • Max size: 500KB
+                • Максимальный размер: 500KB
               </Typography>
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="subtitle1" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <CropSquare sx={{ fontSize: 16 }} />
-                Icon Format
+                {t('campaignEditor.creatives.iconFormat')}
               </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
-                • Ratio: 1:1 (recommended: 64×64px)
+              <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
+                • Соотношение: 1:1 (рекомендуется: 64×64px)
                 <br />
-                • Formats: SVG preferred, PNG, WebP
+                • Форматы: SVG предпочтительно, PNG, WebP
                 <br />
-                • Max size: 500KB
+                • Максимальный размер: 500KB
               </Typography>
             </Box>
 
             <Box>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="subtitle1" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <VideoLibrary sx={{ fontSize: 16 }} />
-                Video Format
+                {t('campaignEditor.creatives.videoFormat')}
               </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
-                • Ratio: 16:9 or 1:1 (recommended: 320×180px or 320×320px)
+              <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
+                • Соотношение: 16:9 или 1:1 (рекомендуется: 320×180px или 320×320px)
                 <br />
-                • Formats: MP4, WebM
+                • Форматы: MP4, WebM
                 <br />
-                • Max size: 2MB • Duration: 15s max
+                • Максимальный размер: 2MB • Длительность: макс. 15с
               </Typography>
             </Box>
           </Paper>
@@ -1118,16 +1185,16 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
           {/* Weight Distribution */}
           {creatives.length > 1 && (
             <Paper 
+              elevation={1}
               sx={{ 
                 p: 3, 
                 bgcolor: '#F0F8FF', 
                 borderRadius: '16px',
                 border: '1px solid #D1E9FF',
-                boxShadow: '0 1px 3px rgba(0, 122, 255, 0.1)',
               }}
             >
-              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2 }}>
-                A/B Testing Weights
+              <Typography variant="h5" sx={{ mb: 2 }}>
+                {t('campaignEditor.creatives.abTestingWeights')}
               </Typography>
 
               {creatives.map((creative: Creative) => (
@@ -1156,8 +1223,8 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                 </Box>
               ))}
 
-              <Typography variant="caption" sx={{ color: '#8E8E93', mt: 1, display: 'block' }}>
-                Total: {creatives.reduce((sum: number, c: Creative) => sum + c.weight, 0)}%
+              <Typography variant="body2" sx={{ color: '#8E8E93', mt: 1, display: 'block' }}>
+                {t('campaignEditor.creatives.total')}: {creatives.reduce((sum: number, c: Creative) => sum + c.weight, 0)}%
               </Typography>
             </Paper>
           )}

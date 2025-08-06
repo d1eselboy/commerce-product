@@ -61,7 +61,7 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
           {t('campaignEditor.scheduling.title', 'Campaign Schedule')}
         </Typography>
         <Typography variant="body2" sx={{ color: '#8E8E93', mb: 4 }}>
-          Set up when your campaign will run and how many impressions to deliver
+          Настройте когда будет запущена кампания и сколько показов нужно доставить
         </Typography>
 
         <Grid container spacing={4}>
@@ -254,37 +254,37 @@ export const SchedulingStep: React.FC<SchedulingStepProps> = ({ data, onChange, 
           <Grid item xs={12} md={4}>
             {/* Campaign Preview */}
             <Paper 
+              elevation={1}
               sx={{ 
                 p: 3, 
-                bgcolor: '#FFFFFF', 
+                bgcolor: '#F5F5F7', 
                 borderRadius: '16px',
                 border: '1px solid #E5E5EA',
-                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                 mb: 3,
               }}
             >
-              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <CalendarToday sx={{ fontSize: 18, color: '#8E8E93' }} />
-                Schedule Preview
+              <Typography variant="h5" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CalendarToday sx={{ fontSize: 20, color: '#8E8E93' }} />
+                Предварительный просмотр расписания
               </Typography>
 
               {data.startDate && data.endDate && (
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                    Duration
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    Продолжительность
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                    {calculateDuration()} days
+                    {calculateDuration()} дней
                   </Typography>
                 </Box>
               )}
 
               {data.limitImpressions && (
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                    Total Impressions
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    Общее количество показов
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+                  <Typography variant="h4" sx={{ color: '#1C1C1E' }}>
                     {data.limitImpressions.toLocaleString()}
                   </Typography>
                 </Box>

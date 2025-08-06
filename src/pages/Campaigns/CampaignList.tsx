@@ -133,7 +133,7 @@ export const CampaignList: React.FC = () => {
   const [bulkActionOpen, setBulkActionOpen] = useState(false);
   const [bulkAction, setBulkAction] = useState<'pause' | 'resume' | 'delete' | 'weight' | null>(null);
   const [bulkWeight, setBulkWeight] = useState(10);
-  const [sortBy, setSortBy] = useState<'name' | 'status' | 'weight' | 'impressions' | 'ctr'>('name');
+  const [sortBy, setSortBy] = useState<'name' | 'status' | 'weight' | 'impressions'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   
   const { data: campaigns, isLoading, error } = useListCampaignsQuery({
@@ -223,14 +223,13 @@ export const CampaignList: React.FC = () => {
   const exportCampaigns = () => {
     const selectedData = campaigns?.filter(c => selectedCampaigns.includes(c.id)) || [];
     const csvContent = [
-      ['Name', 'Status', 'Weight', 'Impressions Done', 'Limit', 'CTR', 'eCPM'].join(','),
+      ['Name', 'Status', 'Weight', 'Impressions Done', 'Limit', 'eCPM'].join(','),
       ...selectedData.map(c => [
         c.name,
         c.status,
         c.weight,
         c.impressionsDone,
         c.limitImpressions,
-        c.ctr || 0,
         c.ecpm || 0,
       ].join(','))
     ].join('\n');
@@ -272,19 +271,17 @@ export const CampaignList: React.FC = () => {
 
   // Quick stats
   const quickStats = React.useMemo(() => {
-    if (!campaigns) return { total: 0, active: 0, paused: 0, totalImpressions: 0, avgCtr: 0 };
+    if (!campaigns) return { total: 0, active: 0, paused: 0, totalImpressions: 0 };
     
     const active = campaigns.filter(c => c.status === 'active').length;
     const paused = campaigns.filter(c => c.status === 'paused').length;
     const totalImpressions = campaigns.reduce((sum, c) => sum + c.impressionsDone, 0);
-    const avgCtr = campaigns.reduce((sum, c) => sum + (c.ctr || 0), 0) / campaigns.length;
     
     return {
       total: campaigns.length,
       active,
       paused,
       totalImpressions,
-      avgCtr,
     };
   }, [campaigns]);
 
@@ -404,10 +401,10 @@ export const CampaignList: React.FC = () => {
           >
             <CardContent sx={{ p: 3 }}>
               <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
-                СРЕДНИЙ CTR
+                АКТИВНЫЕ КАМПАНИИ
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
-                {quickStats.avgCtr.toFixed(2)}%
+                {quickStats.activeCampaigns}
               </Typography>
             </CardContent>
           </Card>
@@ -688,30 +685,6 @@ export const CampaignList: React.FC = () => {
                     letterSpacing: '0.5px',
                     color: '#8E8E93',
                     borderBottom: '1px solid #E5E5EA',
-                    cursor: 'pointer',
-                    transition: 'color 0.2s ease-in-out',
-                    '&:hover': {
-                      color: '#1C1C1E',
-                    },
-                  }}
-                  onClick={() => {
-                    setSortBy('ctr');
-                    setSortOrder(sortBy === 'ctr' && sortOrder === 'asc' ? 'desc' : 'asc');
-                  }}
-                >
-                  CTR {sortBy === 'ctr' && (sortOrder === 'asc' ? '↑' : '↓')}
-                </TableCell>
-                <TableCell 
-                  sx={{ 
-                    bgcolor: '#FAFBFC', 
-                    py: 2, 
-                    px: 3,
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    color: '#8E8E93',
-                    borderBottom: '1px solid #E5E5EA',
                   }}
                 >
                   Прогресс
@@ -809,11 +782,6 @@ export const CampaignList: React.FC = () => {
                       </Typography>
                       <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 500 }}>
                         из {campaign.limitImpressions.toLocaleString()}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
-                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
-                        {campaign.ctr ? `${campaign.ctr}%` : '—'}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>

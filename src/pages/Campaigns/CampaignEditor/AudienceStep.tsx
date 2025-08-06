@@ -58,13 +58,15 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
   const estimatedIds = data.audienceTargeting?.estimatedIds || 0;
 
   const handleTargetingTypeChange = (_event: React.ChangeEvent<HTMLInputElement>, value: string) => {
+    const newTargeting = {
+      type: value,
+      role: value === 'role' ? 'all_users' : undefined,
+      file: value === 'file' ? audienceFile : undefined,
+      estimatedIds: value === 'role' ? getEstimatedReach('all_users') : estimatedIds,
+    };
+    
     onChange({
-      audienceTargeting: {
-        type: value,
-        role: value === 'role' ? 'all_users' : undefined,
-        file: value === 'file' ? audienceFile : undefined,
-        estimatedIds: value === 'role' ? getEstimatedReach('all_users') : estimatedIds,
-      }
+      audienceTargeting: newTargeting
     });
   };
 
@@ -350,6 +352,7 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
         <Grid item xs={12} md={4}>
           {/* Current Audience Summary */}
           <Paper 
+            elevation={1}
             sx={{ 
               p: 3, 
               bgcolor: '#F5F5F7', 
@@ -414,6 +417,7 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
 
           {/* Targeting Tips */}
           <Paper 
+            elevation={1}
             sx={{ 
               p: 3, 
               bgcolor: '#E3F2FD', 

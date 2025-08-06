@@ -30,7 +30,6 @@ const campaignsData = [
     charge: 31,
     impressions: 125400,  
     clicks: 890,
-    ctr: 0.71,
     progress: 78,
   },
   {
@@ -40,7 +39,6 @@ const campaignsData = [
     charge: 9,
     impressions: 45600,
     clicks: 234,
-    ctr: 0.51,
     progress: 34,
   },
   {
@@ -50,7 +48,6 @@ const campaignsData = [
     charge: 21,
     impressions: 89200,
     clicks: 567,
-    ctr: 0.64,
     progress: 56,
   },
   {
@@ -60,7 +57,6 @@ const campaignsData = [
     charge: 31,
     impressions: 156700,
     clicks: 1203,
-    ctr: 0.77,
     progress: 89,
   },
   {
@@ -70,7 +66,6 @@ const campaignsData = [
     charge: 77,
     impressions: 234500,
     clicks: 1876,
-    ctr: 0.80,
     progress: 95,
   },
 ];
@@ -339,21 +334,6 @@ export const Dashboard: React.FC = () => {
                     borderBottom: '1px solid #E5E5EA',
                   }}
                 >
-                  CTR
-                </TableCell>
-                <TableCell 
-                  sx={{ 
-                    bgcolor: '#FAFBFC', 
-                    py: 2, 
-                    px: 3,
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    color: '#8E8E93',
-                    borderBottom: '1px solid #E5E5EA',
-                  }}
-                >
                   Прогресс
                 </TableCell>
               </TableRow>
@@ -412,18 +392,6 @@ export const Dashboard: React.FC = () => {
                     <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
                       {campaign.clicks.toLocaleString()}
                     </Typography>
-                  </TableCell>
-                  <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
-                        {campaign.ctr}%
-                      </Typography>
-                      {campaign.ctr > 0.6 ? (
-                        <TrendingUp sx={{ color: '#34C759', fontSize: 18 }} />
-                      ) : (
-                        <TrendingDown sx={{ color: '#FF3B30', fontSize: 18 }} />
-                      )}
-                    </Box>
                   </TableCell>
                   <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, minWidth: 140 }}>

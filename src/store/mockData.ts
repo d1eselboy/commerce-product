@@ -19,7 +19,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 125000,
     impressionsDone: 97500,
     status: 'active',
-    ctr: 0.71,
     ecpm: 145.80,
   },
   {
@@ -32,7 +31,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 45600,
     impressionsDone: 15504,
     status: 'active',
-    ctr: 0.51,
     ecpm: 98.40,
   },
   {
@@ -45,7 +43,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 89200,
     impressionsDone: 49952,
     status: 'active',
-    ctr: 0.64,
     ecpm: 178.20,
   },
   {
@@ -58,7 +55,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 156700,
     impressionsDone: 139463,
     status: 'paused',
-    ctr: 0.77,
     ecpm: 87.60,
   },
   {
@@ -71,7 +67,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 234500,
     impressionsDone: 222775,
     status: 'active',
-    ctr: 0.89,
     ecpm: 203.40,
   },
   {
@@ -84,7 +79,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 67800,
     impressionsDone: 25842,
     status: 'active',
-    ctr: 0.43,
     ecpm: 156.90,
   },
   {
@@ -97,7 +91,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 123400,
     impressionsDone: 123400,
     status: 'completed',
-    ctr: 0.58,
     ecpm: 134.20,
   },
   {
@@ -110,7 +103,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 198000,
     impressionsDone: 90180,
     status: 'active',
-    ctr: 0.73,
     ecpm: 189.50,
   },
   {
@@ -123,7 +115,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 345600,
     impressionsDone: 158976,
     status: 'active',
-    ctr: 0.91,
     ecpm: 267.80,
   },
   {
@@ -136,7 +127,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 187500,
     impressionsDone: 71250,
     status: 'active',
-    ctr: 0.62,
     ecpm: 156.30,
   },
 ];

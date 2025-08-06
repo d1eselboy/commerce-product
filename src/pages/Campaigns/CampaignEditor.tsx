@@ -22,18 +22,16 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetCampaignQuery, useCreateCampaignMutation, useUpdateCampaignMutation } from '@/store/api';
 import { BasicStep } from './CampaignEditor/BasicStep';
-import { SchedulingStep } from './CampaignEditor/SchedulingStep';
+import { PlanningStep } from './CampaignEditor/PlanningStep';
 import { AudienceStep } from './CampaignEditor/AudienceStep';
-import { WeightsStep } from './CampaignEditor/WeightsStep';
 import { CreativesStep } from './CampaignEditor/CreativesStep';
 import { ReviewStep } from './CampaignEditor/ReviewStep';
 import type { Campaign } from '@/types/campaign';
 
 const steps = [
   'basic',
-  'scheduling',
+  'planning',
   'audience',
-  'weights',
   'creatives',
   'review'
 ];
@@ -69,7 +67,6 @@ export const CampaignEditor: React.FC = () => {
     startDate: '',
     endDate: '',
     audienceTargeting: undefined,
-    weight: undefined,
     consecutiveCap: 3,
     limitImpressions: undefined,
     creatives: [],
@@ -120,7 +117,7 @@ export const CampaignEditor: React.FC = () => {
           errors.name = t('campaignEditor.validation.nameRequired');
         }
         break;
-      case 1: // Scheduling
+      case 1: // Planning (combines scheduling and weights)
         if (!formData.startDate || !formData.endDate) {
           errors.dates = t('campaignEditor.validation.datesRequired');
         }
@@ -140,15 +137,7 @@ export const CampaignEditor: React.FC = () => {
           errors.audience = 'Необходимо загрузить файл с ID аудитории';
         }
         break;
-      case 3: // Weights
-        if (!formData.weight || formData.weight <= 0) {
-          errors.weight = t('campaignEditor.validation.weightRequired', 'Weight must be greater than 0');
-        }
-        if (!formData.consecutiveCap || formData.consecutiveCap <= 0) {
-          errors.consecutiveCap = 'Consecutive cap must be greater than 0';
-        }
-        break;
-      case 4: // Creatives
+      case 3: // Creatives
         if (!formData.creatives?.length && !formData.creativeFiles?.length) {
           errors.creatives = t('campaignEditor.validation.noCreatives');
         }
@@ -226,7 +215,7 @@ export const CampaignEditor: React.FC = () => {
         );
       case 1:
         return (
-          <SchedulingStep
+          <PlanningStep
             data={formData}
             onChange={updateFormData}
             errors={validationErrors}
@@ -242,21 +231,13 @@ export const CampaignEditor: React.FC = () => {
         );
       case 3:
         return (
-          <WeightsStep
-            data={formData}
-            onChange={updateFormData}
-            errors={validationErrors}
-          />
-        );
-      case 4:
-        return (
           <CreativesStep
             data={formData}
             onChange={updateFormData}
             errors={validationErrors}
           />
         );
-      case 5:
+      case 4:
         return (
           <ReviewStep
             data={formData}
@@ -273,16 +254,19 @@ export const CampaignEditor: React.FC = () => {
     switch (stepIndex) {
       case 0: // Basic
         return Boolean(formData.name?.trim());
-      case 1: // Scheduling
-        return Boolean(formData.startDate && formData.endDate && formData.limitImpressions && formData.limitImpressions > 0);
+      case 1: // Planning (combines scheduling and weights)
+        return Boolean(
+          formData.startDate && 
+          formData.endDate && 
+          formData.limitImpressions && 
+          formData.limitImpressions > 0
+        );
       case 2: // Audience
         return Boolean(formData.audienceTargeting?.type && (
           (formData.audienceTargeting.type === 'role' && formData.audienceTargeting.role) ||
           (formData.audienceTargeting.type === 'file' && formData.audienceTargeting.file)
         ));
-      case 3: // Weights
-        return Boolean(formData.weight !== undefined && formData.weight > 0 && formData.consecutiveCap !== undefined);
-      case 4: // Creatives
+      case 3: // Creatives
         return Boolean(formData.creatives?.length || formData.creativeFiles?.length);
       default:
         return false;
@@ -333,6 +317,7 @@ export const CampaignEditor: React.FC = () => {
             {steps.map((stepKey, index) => (
               <Step key={stepKey} completed={isStepComplete(index)}>
                 <StepLabel
+                  onClick={() => setActiveStep(index)}
                   icon={
                     isStepComplete(index) ? (
                       <CheckCircle sx={{ color: '#34C759', fontSize: 20 }} />
@@ -349,6 +334,7 @@ export const CampaignEditor: React.FC = () => {
                           justifyContent: 'center',
                           fontSize: '0.75rem',
                           fontWeight: 500,
+                          cursor: 'pointer',
                         }}
                       >
                         {index + 1}
@@ -360,7 +346,12 @@ export const CampaignEditor: React.FC = () => {
                       fontSize: '0.875rem',
                       fontWeight: 500,
                       color: activeStep >= index ? '#1C1C1E' : '#8E8E93',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        color: '#007AFF',
+                      },
                     },
+                    cursor: 'pointer',
                   }}
                 >
                   {t(`campaignEditor.steps.${stepKey}`)}

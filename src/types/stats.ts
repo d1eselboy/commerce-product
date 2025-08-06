@@ -13,7 +13,6 @@ export interface ImpressionStats {
   impressions: number;
   views: number;
   clicks: number;
-  ctr: number;
   ecpm: number;
 }
 

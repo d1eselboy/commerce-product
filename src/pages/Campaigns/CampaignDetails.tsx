@@ -289,16 +289,6 @@ export const CampaignDetails: React.FC = () => {
                 </Box>
               </Grid>
               
-              <Grid item xs={6} md={3}>
-                <Box>
-                  <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
-                    CTR
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
-                    {campaign.ctr ? `${campaign.ctr}%` : '—'}
-                  </Typography>
-                </Box>
-              </Grid>
               
               <Grid item xs={6} md={3}>
                 <Box>
