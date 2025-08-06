@@ -50,71 +50,8 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           {title || 'Дашборд'}
         </Typography>
 
-        {/* Search Bar */}
-        <TextField
-          placeholder="Поиск по номеру авто"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          size="small"
-          sx={{
-            width: 300,
-            mr: 'auto',
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: '#F5F5F7',
-              border: 'none',
-              '& fieldset': {
-                border: 'none',
-              },
-            },
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search sx={{ color: '#8E8E93', fontSize: 18 }} />
-              </InputAdornment>
-            ),
-          }}
-        />
-
-        {/* Stats Chips */}
-        <Box sx={{ display: 'flex', gap: 2, mr: 3 }}>
-          <Chip
-            label="Все 21"
-            variant="outlined"
-            sx={{
-              bgcolor: '#F5F5F7',
-              border: 'none',
-              fontWeight: 500,
-            }}
-          />
-          <Chip
-            label="Поездка 136"
-            variant="outlined"
-            sx={{
-              bgcolor: 'transparent',
-              border: 'none',
-              color: '#8E8E93',
-            }}
-          />
-          <Chip
-            label="Доступен 56"
-            variant="outlined"
-            sx={{
-              bgcolor: 'transparent',
-              border: 'none',
-              color: '#8E8E93',
-            }}
-          />
-          <Chip
-            label="Сервис 2377"
-            variant="outlined"
-            sx={{
-              bgcolor: 'transparent',
-              border: 'none',
-              color: '#8E8E93',
-            }}
-          />
-        </Box>
+        
+        
 
         {/* Action Buttons */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -131,9 +68,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
             <Add />
           </IconButton>
           
-          <IconButton sx={{ color: '#8E8E93' }}>
-            <Notifications />
-          </IconButton>
+
         </Box>
       </Toolbar>
     </AppBar>
