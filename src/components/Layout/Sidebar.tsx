@@ -10,13 +10,11 @@ import {
   IconButton,
 } from '@mui/material';
 import {
-  Dashboard,
-  Image,
   Timeline,
   Settings,
-  DirectionsCar,
   Assignment,
   ExitToApp,
+  Apps,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -26,10 +24,8 @@ import { useAuth } from '@/hooks/useAuth';
 const DRAWER_WIDTH = 60;
 
 const menuItems = [
-  { key: 'dashboard', icon: Dashboard, path: '/' },
   { key: 'campaigns', icon: Assignment, path: '/campaigns' },
-  { key: 'creatives', icon: Image, path: '/creatives' },
-  { key: 'surfaces', icon: DirectionsCar, path: '/surfaces' },
+  { key: 'surfaces', icon: Apps, path: '/surfaces' },
   { key: 'liveLogs', icon: Timeline, path: '/live-logs' },
 ];
 
@@ -98,7 +94,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path || 
-            (item.path !== '/' && location.pathname.startsWith(item.path));
+            location.pathname.startsWith(item.path) ||
+            (item.key === 'campaigns' && location.pathname === '/');
           
           return (
             <ListItem key={item.key} disablePadding sx={{ mb: 1 }}>

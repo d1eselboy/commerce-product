@@ -4,9 +4,8 @@ import { useLocation, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const pathMap: Record<string, string> = {
-  '': 'dashboard',
+  '': 'campaigns',
   'campaigns': 'campaigns',
-  'creatives': 'creatives', 
   'surfaces': 'surfaces',
   'live-logs': 'liveLogs',
   'settings': 'settings',
@@ -30,7 +29,7 @@ export const Breadcrumbs: React.FC = () => {
         color="inherit"
         underline="hover"
       >
-        {t('navigation.dashboard')}
+        {t('navigation.campaigns')}
       </Link>
       
       {pathnames.map((name, index) => {

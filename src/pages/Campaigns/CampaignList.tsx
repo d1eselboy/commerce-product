@@ -247,14 +247,13 @@ export const CampaignList: React.FC = () => {
   const exportCampaigns = () => {
     const selectedData = campaigns?.filter(c => selectedCampaigns.includes(c.id)) || [];
     const csvContent = [
-      ['Name', 'Status', 'Weight', 'Impressions Done', 'Limit', 'eCPM'].join(','),
+      ['Name', 'Status', 'Weight', 'Impressions Done', 'Limit'].join(','),
       ...selectedData.map(c => [
         c.name,
         c.status,
         c.weight,
         c.impressionsDone,
         c.limitImpressions,
-        c.ecpm || 0,
       ].join(','))
     ].join('\n');
     
@@ -425,7 +424,7 @@ export const CampaignList: React.FC = () => {
           >
             <CardContent sx={{ p: 3 }}>
               <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 600, letterSpacing: '0.5px' }}>
-                АКТИВНЫЕ КАМПАНИИ
+                ОБЩИЙ ПРОГРЕСС
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
                 {quickStats.activeCampaigns}

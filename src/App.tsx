@@ -4,7 +4,6 @@ import { Provider } from 'react-redux';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { store } from '@/store';
 import { MainLayout } from '@/components/Layout/MainLayout';
-import { Dashboard } from '@/pages/Dashboard';
 import { CampaignList } from '@/pages/Campaigns/CampaignList';
 import { CampaignEditor } from '@/pages/Campaigns/CampaignEditor';
 import { CampaignDetails } from '@/pages/Campaigns/CampaignDetails';
@@ -28,7 +27,7 @@ const ThemedApp: React.FC = () => {
         <AuthGuard>
           <MainLayout>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<CampaignList />} />
               <Route path="/campaigns" element={<CampaignList />} />
               <Route path="/campaigns/new" element={<CampaignEditor />} />
               <Route path="/campaigns/:id" element={<CampaignDetails />} />

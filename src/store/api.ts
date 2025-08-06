@@ -109,7 +109,6 @@ export const adsApi = createApi({
           creatives: body.creatives || [],
           creativeFiles: body.creativeFiles || [],
           status: body.status || 'draft',
-          ecpm: 0,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -128,7 +127,6 @@ export const adsApi = createApi({
           limitImpressions: newCampaign.limitImpressions,
           impressionsDone: newCampaign.impressionsDone,
           status: newCampaign.status,
-          ecpm: newCampaign.ecpm,
         };
         runtimeCampaigns.push(campaignSummary);
         
@@ -170,7 +168,6 @@ export const adsApi = createApi({
             limitImpressions: updatedCampaign.limitImpressions,
             impressionsDone: updatedCampaign.impressionsDone,
             status: updatedCampaign.status,
-            ecpm: updatedCampaign.ecpm,
           };
         }
         

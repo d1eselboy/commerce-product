@@ -1,33 +1,9 @@
 {
   "navigation": {
-    "dashboard": "Дашборд",
     "campaigns": "Кампании",
-    "creatives": "Креативы",
     "surfaces": "Поверхности",
     "liveLogs": "Живые логи",
     "settings": "Настройки"
-  },
-  "dashboard": {
-    "title": "Панель управления",
-    "impressionsToday": "Показы сегодня",
-    "uniqueUsers": "Уникальные пользователи",
-    "ecpm": "eCPM",
-    "errorRate": "Частота ошибок",
-    "alertLimitReached": "Достигнуто 90% лимита показов для кампании {{name}}",
-    "currentCampaign": "Текущая кампания",
-    "campaignsTable": {
-      "status": "Статус",
-      "number": "Номер",
-      "charge": "Заряд",
-      "impressions": "Показы",
-      "clicks": "Клики",
-      "progress": "Прогресс"
-    },
-    "statusLabels": {
-      "service": "Сервис",
-      "active": "Доступен",
-      "unknown": "Неизвестно"
-    }
   },
   "campaigns": {
     "title": "Управление кампаниями",

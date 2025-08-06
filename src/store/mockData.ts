@@ -19,7 +19,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 125000,
     impressionsDone: 97500,
     status: 'active',
-    ecpm: 145.80,
   },
   {
     id: '2',
@@ -31,7 +30,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 45600,
     impressionsDone: 15504,
     status: 'active',
-    ecpm: 98.40,
   },
   {
     id: '3',
@@ -43,7 +41,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 89200,
     impressionsDone: 49952,
     status: 'active',
-    ecpm: 178.20,
   },
   {
     id: '4',
@@ -55,7 +52,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 156700,
     impressionsDone: 139463,
     status: 'paused',
-    ecpm: 87.60,
   },
   {
     id: '5',
@@ -67,7 +63,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 234500,
     impressionsDone: 222775,
     status: 'active',
-    ecpm: 203.40,
   },
   {
     id: '6',
@@ -79,7 +74,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 67800,
     impressionsDone: 25842,
     status: 'active',
-    ecpm: 156.90,
   },
   {
     id: '7',
@@ -91,7 +85,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 123400,
     impressionsDone: 123400,
     status: 'completed',
-    ecpm: 134.20,
   },
   {
     id: '8',
@@ -103,7 +96,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 198000,
     impressionsDone: 90180,
     status: 'active',
-    ecpm: 189.50,
   },
   {
     id: '9',
@@ -115,7 +107,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 345600,
     impressionsDone: 158976,
     status: 'active',
-    ecpm: 267.80,
   },
   {
     id: '10',
@@ -127,7 +118,6 @@ export const mockCampaigns: CampaignSummary[] = [
     limitImpressions: 187500,
     impressionsDone: 71250,
     status: 'active',
-    ecpm: 156.30,
   },
 ];
 
@@ -145,10 +135,10 @@ export const mockMetrics: MetricCard[] = [
     format: 'number',
   },
   {
-    title: 'eCPM',
-    value: 156.78,
+    title: 'Активные кампании',
+    value: 8,
     change: 12.5,
-    format: 'currency',
+    format: 'number',
   },
   {
     title: 'Частота ошибок',
