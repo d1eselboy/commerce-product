@@ -333,17 +333,6 @@ export const CampaignEditor: React.FC = () => {
         )}
       </Box>
 
-      {/* Auto-save indicator */}
-      {isDraft && (
-        <Alert 
-          severity="info" 
-          sx={{ mb: 3, bgcolor: '#E3F2FD', border: '1px solid #BBDEFB' }}
-          icon={<Save sx={{ color: '#1976D2' }} />}
-        >
-          Draft auto-saved • Last saved 2 minutes ago
-        </Alert>
-      )}
-
       <Paper sx={{ borderRadius: 2, border: '1px solid #E5E5EA', overflow: 'hidden' }}>
         {/* Step Progress */}
         <Box sx={{ p: 3, bgcolor: '#F5F5F7', borderBottom: '1px solid #E5E5EA' }}>
