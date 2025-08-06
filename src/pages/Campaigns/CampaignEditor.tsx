@@ -26,6 +26,7 @@ import { PlanningStep } from './CampaignEditor/PlanningStep';
 import { AudienceStep } from './CampaignEditor/AudienceStep';
 import { CreativesStep } from './CampaignEditor/CreativesStep';
 import { ReviewStep } from './CampaignEditor/ReviewStep';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
 import type { Campaign } from '@/types/campaign';
 
 const steps = [
@@ -44,11 +45,10 @@ interface CampaignFormData extends Partial<Campaign> {
     endHour: number;
   };
   audienceTargeting?: {
-    type: 'role' | 'file';
-    role?: string;
-    file?: File;
-    fileName?: string;
-    fileSize?: number;
+    type: 'role' | 'ytSegment' | 'crypta';
+    roles?: string[];
+    ytSegmentUrl?: string;
+    cryptaSegment?: string;
     estimatedIds?: number;
   };
   creativeFiles?: File[];
@@ -80,6 +80,8 @@ export const CampaignEditor: React.FC = () => {
   });
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isDraft, setIsDraft] = useState(true);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'publish' | null>(null);
 
   const { data: existingCampaign, isLoading } = useGetCampaignQuery(id!, { skip: !isEdit });
   const [createCampaign, { isLoading: isCreating }] = useCreateCampaignMutation();
@@ -131,10 +133,12 @@ export const CampaignEditor: React.FC = () => {
       case 2: // Audience
         if (!formData.audienceTargeting?.type) {
           errors.audience = t('campaignEditor.validation.audienceRequired');
-        } else if (formData.audienceTargeting.type === 'role' && !formData.audienceTargeting.role) {
-          errors.audience = 'Необходимо выбрать роль аудитории';
-        } else if (formData.audienceTargeting.type === 'file' && !formData.audienceTargeting.file) {
-          errors.audience = 'Необходимо загрузить файл с ID аудитории';
+        } else if (formData.audienceTargeting.type === 'role' && (!formData.audienceTargeting.roles || formData.audienceTargeting.roles.length === 0)) {
+          errors.audience = 'Необходимо выбрать роли аудитории';
+        } else if (formData.audienceTargeting.type === 'ytSegment' && !formData.audienceTargeting.ytSegmentUrl) {
+          errors.audience = 'Необходимо указать ссылку на YT сегмент';
+        } else if (formData.audienceTargeting.type === 'crypta' && !formData.audienceTargeting.cryptaSegment) {
+          errors.audience = 'Необходимо выбрать сегмент Крипты';
         }
         break;
       case 3: // Creatives
@@ -181,7 +185,15 @@ export const CampaignEditor: React.FC = () => {
 
   const handlePublish = async () => {
     if (!validateStep(activeStep)) return;
-
+    
+    // Показать модалку подтверждения
+    setPendingAction('publish');
+    setShowConfirmation(true);
+  };
+  
+  const handleConfirmAction = async () => {
+    if (pendingAction !== 'publish') return;
+    
     try {
       const campaignData = {
         ...formData,
@@ -197,10 +209,19 @@ export const CampaignEditor: React.FC = () => {
         // TODO: Upload creative files if any
       }
       
+      setShowConfirmation(false);
+      setPendingAction(null);
       navigate('/campaigns');
     } catch (error) {
       console.error('Failed to publish campaign:', error);
+      setShowConfirmation(false);
+      setPendingAction(null);
     }
+  };
+  
+  const handleCloseConfirmation = () => {
+    setShowConfirmation(false);
+    setPendingAction(null);
   };
 
   const getStepContent = (stepIndex: number) => {
@@ -263,8 +284,9 @@ export const CampaignEditor: React.FC = () => {
         );
       case 2: // Audience
         return Boolean(formData.audienceTargeting?.type && (
-          (formData.audienceTargeting.type === 'role' && formData.audienceTargeting.role) ||
-          (formData.audienceTargeting.type === 'file' && formData.audienceTargeting.file)
+          (formData.audienceTargeting.type === 'role' && formData.audienceTargeting.roles && formData.audienceTargeting.roles.length > 0) ||
+          (formData.audienceTargeting.type === 'ytSegment' && formData.audienceTargeting.ytSegmentUrl) ||
+          (formData.audienceTargeting.type === 'crypta' && formData.audienceTargeting.cryptaSegment)
         ));
       case 3: // Creatives
         return Boolean(formData.creatives?.length || formData.creativeFiles?.length);
@@ -447,6 +469,18 @@ export const CampaignEditor: React.FC = () => {
           </Box>
         </Box>
       </Paper>
+      
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        open={showConfirmation}
+        onClose={handleCloseConfirmation}
+        onConfirm={handleConfirmAction}
+        title="Подтверждение создания кампании"
+        description="Вы собираетесь создать новую кампанию. Это действие потребует согласования изменений."
+        actionType="create"
+        campaignName={formData.name}
+        isLoading={isCreating || isUpdating}
+      />
     </Box>
   );
 };

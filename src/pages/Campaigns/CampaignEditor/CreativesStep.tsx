@@ -27,6 +27,7 @@ import {
   CloudUpload,
   Add,
   Delete,
+  Edit,
   Image as ImageIcon,
   AspectRatio,
   CheckCircle,
@@ -191,7 +192,8 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedCreatives, setSelectedCreatives] = useState<Creative[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [editingWeights, setEditingWeights] = useState(false);
+  const [editingCreative, setEditingCreative] = useState<string | null>(null);
+  const [showCreativeForm, setShowCreativeForm] = useState(false);
   const [selectedSurface, setSelectedSurface] = useState<'promo_block' | 'map_object'>('promo_block');
   const [creativeCounters, setCreativeCounters] = useState({ promo_block: 1, map_object: 1 });
   const [promoBlockData, setPromoBlockData] = useState({
@@ -379,6 +381,77 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
     onChange({ creativeFiles: updatedCreatives });
   };
 
+  const handleSaveCreative = (creativeData: any) => {
+    const currentCreatives = data.creativeFiles || [];
+    let updatedCreatives;
+    
+    if (editingCreative) {
+      // Редактирование существующего креатива
+      updatedCreatives = currentCreatives.map((c: Creative) => 
+        c.id === editingCreative ? { ...c, ...creativeData } : c
+      );
+    } else {
+      // Добавление нового креатива
+      const newCreative = {
+        ...creativeData,
+        weight: Math.floor(100 / (currentCreatives.length + 1)),
+      };
+      
+      updatedCreatives = [...currentCreatives, newCreative].map((creative, index, array) => ({
+        ...creative,
+        weight: Math.floor(100 / array.length),
+      }));
+    }
+    
+    onChange({ creativeFiles: updatedCreatives });
+    setEditingCreative(null);
+    setShowCreativeForm(false);
+    
+    // Очистить форму
+    if (selectedSurface === 'promo_block') {
+      setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image' });
+    } else {
+      setMapObjectData({ id: '', enabled: true });
+    }
+  };
+
+  const handleEditCreative = (creativeId: string) => {
+    const creative = (data.creativeFiles || []).find((c: Creative) => c.id === creativeId);
+    if (creative) {
+      setEditingCreative(creativeId);
+      setSelectedSurface(creative.surfaces[0] as 'promo_block' | 'map_object');
+      
+      if (creative.surfaces.includes('promo_block')) {
+        setPromoBlockData({
+          id: creative.name,
+          enabled: creative.enabled,
+          title: creative.title || '',
+          subtitle: creative.subtitle || '',
+          layoutType: creative.layoutType || 'small_image'
+        });
+      } else {
+        setMapObjectData({
+          id: creative.name,
+          enabled: creative.enabled
+        });
+      }
+      
+      setShowCreativeForm(true);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCreative(null);
+    setShowCreativeForm(false);
+    
+    // Очистить форму
+    if (selectedSurface === 'promo_block') {
+      setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image' });
+    } else {
+      setMapObjectData({ id: '', enabled: true });
+    }
+  };
+
   const validateCreatives = () => {
     const creatives = data.creativeFiles || [];
     const issues = [];
@@ -450,481 +523,141 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={8}>
-          {/* Upload New Creatives */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" sx={{ mb: 3 }}>
-              Загрузить новые креативы
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#8E8E93', mb: 3 }}>
-              Можно добавлять несколько креативов одного типа поверхности
-            </Typography>
-            
-            {/* Surface Selection Tabs */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="subtitle1" sx={{ mb: 2 }}>
-                Select Surface Type:
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                <Button
-                  variant={selectedSurface === 'promo_block' ? 'contained' : 'outlined'}
-                  startIcon={<AspectRatio />}
-                  onClick={() => setSelectedSurface('promo_block')}
-                  sx={{
-                    bgcolor: selectedSurface === 'promo_block' ? '#007AFF' : '#FFFFFF',
-                    color: selectedSurface === 'promo_block' ? '#FFFFFF' : '#1C1C1E',
-                    borderColor: selectedSurface === 'promo_block' ? '#007AFF' : '#E5E5EA',
-                    borderRadius: '12px',
-                    px: '20px',
-                    py: '12px',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    textTransform: 'none',
-                    boxShadow: selectedSurface === 'promo_block' ? '0 2px 8px rgba(0, 122, 255, 0.3)' : 'none',
-                    '&:hover': {
-                      bgcolor: selectedSurface === 'promo_block' ? '#0056CC' : '#F2F2F7',
-                      transform: 'translateY(-1px)',
-                      boxShadow: selectedSurface === 'promo_block' ? '0 4px 12px rgba(0, 122, 255, 0.4)' : '0 1px 3px rgba(0, 0, 0, 0.1)',
-                    },
-                    transition: 'all 0.2s ease-in-out',
-                  }}
-                >
-                  Promo Block
-                </Button>
-                <Button
-                  variant={selectedSurface === 'map_object' ? 'contained' : 'outlined'}
-                  startIcon={<CropSquare />}
-                  onClick={() => setSelectedSurface('map_object')}
-                  sx={{
-                    bgcolor: selectedSurface === 'map_object' ? '#007AFF' : '#FFFFFF',
-                    color: selectedSurface === 'map_object' ? '#FFFFFF' : '#1C1C1E',
-                    borderColor: selectedSurface === 'map_object' ? '#007AFF' : '#E5E5EA',
-                    borderRadius: '12px',
-                    px: '20px',
-                    py: '12px',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    textTransform: 'none',
-                    boxShadow: selectedSurface === 'map_object' ? '0 2px 8px rgba(0, 122, 255, 0.3)' : 'none',
-                    '&:hover': {
-                      bgcolor: selectedSurface === 'map_object' ? '#0056CC' : '#F2F2F7',
-                      transform: 'translateY(-1px)',
-                      boxShadow: selectedSurface === 'map_object' ? '0 4px 12px rgba(0, 122, 255, 0.4)' : '0 1px 3px rgba(0, 0, 0, 0.1)',
-                    },
-                    transition: 'all 0.2s ease-in-out',
-                  }}
-                >
-                  Map Object
-                </Button>
-              </Box>
-            </Box>
 
-            {/* Surface-Specific Configuration */}
-            <Paper sx={{ p: 3, mb: 4, borderRadius: '16px', border: '1px solid #E5E5EA' }}>
-              {selectedSurface === 'promo_block' && (
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, color: '#1C1C1E' }}>
-                    Promo Block Configuration
-                  </Typography>
-                  
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Base Name (optional)"
-                        placeholder="Основное имя для креативов"
-                        value={promoBlockData.id}
-                        onChange={(e) => setPromoBlockData(prev => ({ ...prev, id: e.target.value }))}
-                        helperText="Оставьте пустым для автоматической генерации ID"
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: '12px',
-                            bgcolor: '#FAFAFA',
-                            '&:hover': {
-                              bgcolor: '#F5F5F5',
-                            },
-                            '&.Mui-focused': {
-                              bgcolor: '#FFFFFF',
-                              '& fieldset': {
-                                borderColor: '#007AFF',
-                                borderWidth: '2px',
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={promoBlockData.enabled}
-                            onChange={(e) => setPromoBlockData(prev => ({ ...prev, enabled: e.target.checked }))}
-                            sx={{
-                              '& .MuiSwitch-switchBase.Mui-checked': {
-                                color: '#34C759',
-                              },
-                              '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                backgroundColor: '#34C759',
-                              },
-                            }}
-                          />
-                        }
-                        label={<Typography sx={{ fontWeight: 500 }}>Enable Creative</Typography>}
-                        sx={{ mt: 1 }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Title"
-                        placeholder="Enter promo block title"
-                        value={promoBlockData.title}
-                        onChange={(e) => setPromoBlockData(prev => ({ ...prev, title: e.target.value }))}
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: '12px',
-                            bgcolor: '#FAFAFA',
-                            '&:hover': {
-                              bgcolor: '#F5F5F5',
-                            },
-                            '&.Mui-focused': {
-                              bgcolor: '#FFFFFF',
-                              '& fieldset': {
-                                borderColor: '#007AFF',
-                                borderWidth: '2px',
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Subtitle"
-                        placeholder="Enter promo block subtitle"
-                        value={promoBlockData.subtitle}
-                        onChange={(e) => setPromoBlockData(prev => ({ ...prev, subtitle: e.target.value }))}
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: '12px',
-                            bgcolor: '#FAFAFA',
-                            '&:hover': {
-                              bgcolor: '#F5F5F5',
-                            },
-                            '&.Mui-focused': {
-                              bgcolor: '#FFFFFF',
-                              '& fieldset': {
-                                borderColor: '#007AFF',
-                                borderWidth: '2px',
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Box>
-              )}
-              
-              {selectedSurface === 'map_object' && (
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, color: '#1C1C1E' }}>
-                    Map Object Configuration
-                  </Typography>
-                  
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Base Name (optional)"
-                        placeholder="Основное имя для креативов"
-                        value={mapObjectData.id}
-                        onChange={(e) => setMapObjectData(prev => ({ ...prev, id: e.target.value }))}
-                        helperText="Оставьте пустым для автоматической генерации ID"
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: '12px',
-                            bgcolor: '#FAFAFA',
-                            '&:hover': {
-                              bgcolor: '#F5F5F5',
-                            },
-                            '&.Mui-focused': {
-                              bgcolor: '#FFFFFF',
-                              '& fieldset': {
-                                borderColor: '#007AFF',
-                                borderWidth: '2px',
-                              },
-                            },
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={mapObjectData.enabled}
-                            onChange={(e) => setMapObjectData(prev => ({ ...prev, enabled: e.target.checked }))}
-                            sx={{
-                              '& .MuiSwitch-switchBase.Mui-checked': {
-                                color: '#34C759',
-                              },
-                              '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                backgroundColor: '#34C759',
-                              },
-                            }}
-                          />
-                        }
-                        label={<Typography sx={{ fontWeight: 500 }}>Enable Creative</Typography>}
-                        sx={{ mt: 1 }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Box>
-              )}
-            </Paper>
-
-            {/* Layout Type Selection for Promo Block */}
-            {selectedSurface === 'promo_block' && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" sx={{ mb: 2 }}>
-                  Layout Type:
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                  <Button
-                    variant={promoBlockData.layoutType === 'small_image' ? 'contained' : 'outlined'}
-                    startIcon={<CropSquare />}
-                    onClick={() => {
-                      setPromoBlockData(prev => ({ ...prev, layoutType: 'small_image' }));
-                      updateCreativesLayoutType('small_image');
-                    }}
-                    sx={{
-                      bgcolor: promoBlockData.layoutType === 'small_image' ? '#007AFF' : '#FFFFFF',
-                      color: promoBlockData.layoutType === 'small_image' ? '#FFFFFF' : '#1C1C1E',
-                      borderColor: promoBlockData.layoutType === 'small_image' ? '#007AFF' : '#E5E5EA',
-                      borderRadius: '12px',
-                      px: '16px',
-                      py: '10px',
-                      transition: 'all 0.2s ease-in-out',
-                    }}
-                  >
-                    Small Image
-                  </Button>
-                  <Button
-                    variant={promoBlockData.layoutType === 'fifty_fifty' ? 'contained' : 'outlined'}
-                    startIcon={<AspectRatio />}
-                    onClick={() => {
-                      setPromoBlockData(prev => ({ ...prev, layoutType: 'fifty_fifty' }));
-                      updateCreativesLayoutType('fifty_fifty');
-                    }}
-                    sx={{
-                      bgcolor: promoBlockData.layoutType === 'fifty_fifty' ? '#007AFF' : '#FFFFFF',
-                      color: promoBlockData.layoutType === 'fifty_fifty' ? '#FFFFFF' : '#1C1C1E',
-                      borderColor: promoBlockData.layoutType === 'fifty_fifty' ? '#007AFF' : '#E5E5EA',
-                      borderRadius: '12px',
-                      px: '16px',
-                      py: '10px',
-                      transition: 'all 0.2s ease-in-out',
-                    }}
-                  >
-                    50/50 Split
-                  </Button>
-                  <Button
-                    variant={promoBlockData.layoutType === 'background_image' ? 'contained' : 'outlined'}
-                    startIcon={<VideoLibrary />}
-                    onClick={() => {
-                      setPromoBlockData(prev => ({ ...prev, layoutType: 'background_image' }));
-                      updateCreativesLayoutType('background_image');
-                    }}
-                    sx={{
-                      bgcolor: promoBlockData.layoutType === 'background_image' ? '#007AFF' : '#FFFFFF',
-                      color: promoBlockData.layoutType === 'background_image' ? '#FFFFFF' : '#1C1C1E',
-                      borderColor: promoBlockData.layoutType === 'background_image' ? '#007AFF' : '#E5E5EA',
-                      borderRadius: '12px',
-                      px: '16px',
-                      py: '10px',
-                      transition: 'all 0.2s ease-in-out',
-                    }}
-                  >
-                    Background Image
-                  </Button>
-                </Box>
-              </Box>
-            )}
-            
-            <Paper
-              {...getRootProps()}
-              sx={{
-                p: 4,
-                border: '2px dashed #C7C7CC',
-                borderRadius: '16px',
-                textAlign: 'center',
-                cursor: 'pointer',
-                bgcolor: isDragActive ? '#F2F2F7' : '#FAFAFA',
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  borderColor: '#007AFF',
-                  bgcolor: '#F0F8FF',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 12px rgba(0, 122, 255, 0.15)',
-                },
-              }}
-            >
-              <input {...getInputProps()} />
-              <CloudUpload sx={{ fontSize: 48, color: '#8E8E93', mb: 2 }} />
-              <Typography variant="h6" sx={{ mb: 1 }}>
-                {isDragActive ? 'Drop files here' : 'Drag files here or click to select'}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#8E8E93', mb: 2 }}>
-                {selectedSurface === 'map_object' 
-                  ? 'Supported formats: GIF, WebP (animated)' 
-                  : 'Supported formats: JPEG, PNG'
-                }
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
-                Max size: {selectedSurface === 'map_object' ? '1MB' : '500KB'} • 
-                {selectedSurface === 'promo_block' && 'Recommended: 320×168px • '}
-                {selectedSurface === 'map_object' && 'Recommended: 64×64px • '}
-                Surface: {selectedSurface === 'promo_block' ? 'Promo Block' : 'Map Object'}
-              </Typography>
-            </Paper>
-
-            {uploading && (
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" sx={{ mb: 1 }}>Uploading...</Typography>
-                <LinearProgress />
-              </Box>
-            )}
-          </Box>
-
-          {/* Library Button */}
-          <Box sx={{ mb: 4 }}>
-            <Button
-              onClick={handleAddFromLibrary}
-              startIcon={<Add />}
-              sx={{
-                bgcolor: '#FFFFFF',
-                color: '#1C1C1E',
-                border: '1px solid #E5E5EA',
-                borderRadius: '12px',
-                px: '16px',
-                py: '10px',
-                fontSize: '14px',
-                fontWeight: 500,
-                textTransform: 'none',
-                '&:hover': {
-                  bgcolor: '#F2F2F7',
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                },
-                transition: 'all 0.2s ease-in-out',
-              }}
-            >
-              Выбрать из библиотеки
-            </Button>
-            <Typography variant="caption" sx={{ display: 'block', mt: 1, color: '#8E8E93' }}>
-              ID будет сгенерирован автоматически для каждого креатива
-            </Typography>
-          </Box>
-
-          {/* Surface Previews */}
+          {/* Добавленные креативы */}
           {creatives.length > 0 && (
             <Box sx={{ mb: 4 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 3 }}>
-                Surface Previews
-              </Typography>
-              
-              {/* Promo Block Previews */}
-              {creatives.some((c: Creative) => c.surfaces.includes('promo_block')) && (
-                <Box sx={{ mb: 4 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <AspectRatio sx={{ fontSize: 16, color: '#8E8E93' }} />
-                    Promo Block Previews
-                  </Typography>
-                  <Grid container spacing={2}>
-                    {creatives
-                      .filter((c: Creative) => c.surfaces.includes('promo_block'))
-                      .map((creative: Creative) => (
-                        <Grid item xs={12} sm={6} key={`promo-${creative.id}`}>
-                          <Card sx={{ border: '1px solid #E5E5EA', position: 'relative', borderRadius: '12px' }}>
-                            {/* Promo Block Layout Preview */}
-                            <Box sx={{ minHeight: 120, position: 'relative', overflow: 'hidden' }}>
-                              {creative.layoutType === 'small_image' && (
-                                <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                                  <Box sx={{ flexShrink: 0 }}>
-                                    <img 
-                                      src={creative.url || (creative.file ? URL.createObjectURL(creative.file) : '')} 
-                                      alt={creative.name}
-                                      style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }}
-                                    />
-                                  </Box>
-                                  <Box sx={{ flex: 1 }}>
-                                    <Typography variant="subtitle1" sx={{ mb: 0.5, color: '#1C1C1E' }}>
-                                      {creative.title || creative.name}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                                      {creative.subtitle || 'Subtitle text'}
-                                    </Typography>
-                                  </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                  Добавленные креативы ({creatives.length})
+                </Typography>
+                <Button
+                  onClick={() => setShowCreativeForm(true)}
+                  startIcon={<Add />}
+                  sx={{
+                    bgcolor: '#007AFF',
+                    color: '#FFFFFF',
+                    borderRadius: '12px',
+                    px: '16px',
+                    py: '8px',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    textTransform: 'none',
+                    '&:hover': {
+                      bgcolor: '#0056CC',
+                    },
+                  }}
+                >
+                  Добавить креатив
+                </Button>
+              </Box>
+
+              <Grid container spacing={3}>
+                {creatives.map((creative: Creative) => (
+                  <Grid item xs={12} sm={6} md={4} key={creative.id}>
+                    <Card sx={{ 
+                      border: editingCreative === creative.id ? '2px solid #007AFF' : '1px solid #E5E5EA', 
+                      borderRadius: '16px',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                      }
+                    }}>
+                      <Box sx={{ position: 'relative' }}>
+                        {/* Creative Preview */}
+                        <Box sx={{ height: 140, position: 'relative', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
+                          {creative.surfaces.includes('promo_block') ? (
+                            // Promo Block Preview
+                            creative.layoutType === 'small_image' ? (
+                              <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, height: '100%' }}>
+                                <Box sx={{ flexShrink: 0 }}>
+                                  <img 
+                                    src={creative.url || (creative.file ? URL.createObjectURL(creative.file) : '')} 
+                                    alt={creative.name}
+                                    style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }}
+                                  />
                                 </Box>
-                              )}
-                              {creative.layoutType === 'fifty_fifty' && (
-                                <Box sx={{ display: 'flex', height: '120px' }}>
-                                  <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                    <Typography variant="subtitle1" sx={{ mb: 0.5, color: '#1C1C1E' }}>
-                                      {creative.title || creative.name}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                                      {creative.subtitle || 'Subtitle text'}
-                                    </Typography>
-                                  </Box>
-                                  <Box sx={{ flex: 1 }}>
-                                    <img 
-                                      src={creative.url || (creative.file ? URL.createObjectURL(creative.file) : '')} 
-                                      alt={creative.name}
-                                      style={{ width: '100%', height: '120px', objectFit: 'cover' }}
-                                    />
-                                  </Box>
+                                <Box sx={{ flex: 1 }}>
+                                  <Typography variant="subtitle2" sx={{ mb: 0.5, color: '#1C1C1E' }}>
+                                    {creative.title || creative.name}
+                                  </Typography>
+                                  <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                                    {creative.subtitle || 'Subtitle text'}
+                                  </Typography>
                                 </Box>
-                              )}
-                              {creative.layoutType === 'background_image' && (
-                                <Box sx={{ 
-                                  position: 'relative', 
-                                  height: '120px',
-                                  backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${creative.url || (creative.file ? URL.createObjectURL(creative.file) : '')})`,
-                                  backgroundSize: 'cover',
-                                  backgroundPosition: 'center',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  color: 'white'
-                                }}>
-                                  <Box sx={{ textAlign: 'center', p: 2 }}>
-                                    <Typography variant="subtitle1" sx={{ mb: 0.5, color: 'white', fontWeight: 600 }}>
-                                      {creative.title || creative.name}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                                      {creative.subtitle || 'Subtitle text'}
-                                    </Typography>
-                                  </Box>
+                              </Box>
+                            ) : creative.layoutType === 'fifty_fifty' ? (
+                              <Box sx={{ display: 'flex', height: '140px' }}>
+                                <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                  <Typography variant="subtitle2" sx={{ mb: 0.5, color: '#1C1C1E' }}>
+                                    {creative.title || creative.name}
+                                  </Typography>
+                                  <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                                    {creative.subtitle || 'Subtitle text'}
+                                  </Typography>
                                 </Box>
-                              )}
+                                <Box sx={{ flex: 1 }}>
+                                  <img 
+                                    src={creative.url || (creative.file ? URL.createObjectURL(creative.file) : '')} 
+                                    alt={creative.name}
+                                    style={{ width: '100%', height: '140px', objectFit: 'cover' }}
+                                  />
+                                </Box>
+                              </Box>
+                            ) : (
+                              <Box sx={{ 
+                                height: '140px',
+                                backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${creative.url || (creative.file ? URL.createObjectURL(creative.file) : '')})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white'
+                              }}>
+                                <Box sx={{ textAlign: 'center', p: 2 }}>
+                                  <Typography variant="subtitle2" sx={{ mb: 0.5, color: 'white', fontWeight: 600 }}>
+                                    {creative.title || creative.name}
+                                  </Typography>
+                                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+                                    {creative.subtitle || 'Subtitle text'}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            )
+                          ) : (
+                            // Map Object Preview
+                            <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', bgcolor: '#F9F9F9' }}>
+                              <img 
+                                src={creative.url || (creative.file ? URL.createObjectURL(creative.file) : '')} 
+                                alt={creative.name}
+                                style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8 }}
+                              />
                             </Box>
-                            
-                            <Box sx={{ px: 2, py: 1.5, bgcolor: '#F9F9F9', borderTop: '1px solid #E5E5EA' }}>
-                              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
-                                Layout: {creative.layoutType?.replace('_', ' ') || 'small image'} • Weight: {creative.weight}% • {creative.enabled ? 'Enabled' : 'Disabled'}
-                              </Typography>
-                            </Box>
-                            
+                          )}
+                          
+                          {/* Action Buttons */}
+                          <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 1 }}>
+                            <IconButton
+                              onClick={() => handleEditCreative(creative.id)}
+                              sx={{
+                                bgcolor: 'rgba(255, 255, 255, 0.9)',
+                                backdropFilter: 'blur(4px)',
+                                '&:hover': {
+                                  bgcolor: '#007AFF',
+                                  color: 'white',
+                                },
+                              }}
+                              size="small"
+                            >
+                              <Edit sx={{ fontSize: 16 }} />
+                            </IconButton>
                             <IconButton
                               onClick={() => handleRemoveCreative(creative.id)}
                               sx={{
-                                position: 'absolute',
-                                top: 8,
-                                right: 8,
                                 bgcolor: 'rgba(255, 255, 255, 0.9)',
+                                backdropFilter: 'blur(4px)',
                                 '&:hover': {
                                   bgcolor: '#FF3B30',
                                   color: 'white',
@@ -934,172 +667,374 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                             >
                               <Delete sx={{ fontSize: 16 }} />
                             </IconButton>
-                          </Card>
-                        </Grid>
-                      ))
-                    }
-                  </Grid>
-                </Box>
-              )}
-              
-              {/* Map Object Previews */}
-              {creatives.some((c: Creative) => c.surfaces.includes('map_object')) && (
-                <Box sx={{ mb: 4 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <CropSquare sx={{ fontSize: 16, color: '#8E8E93' }} />
-                    Map Object Previews
-                  </Typography>
-                  <Grid container spacing={2}>
-                    {creatives
-                      .filter((c: Creative) => c.surfaces.includes('map_object'))
-                      .map((creative: Creative) => (
-                        <Grid item xs={6} sm={4} md={3} key={`map-${creative.id}`}>
-                          <Card sx={{ border: '1px solid #E5E5EA', position: 'relative' }}>
-                            {/* Map Object Layout - Just the media */}
-                            <Box sx={{ p: 2, textAlign: 'center' }}>
-                              <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
-                                <img 
-                                  src={creative.url} 
-                                  alt={creative.name}
-                                  style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8 }}
-                                />
-                              </Box>
-                              <Typography variant="caption" sx={{ color: '#8E8E93', display: 'block' }}>
-                                {creative.name}
-                              </Typography>
-                              <Typography variant="caption" sx={{ color: '#8E8E93' }}>
-                                Weight: {creative.weight}%
-                              </Typography>
-                            </Box>
-                            
-                            <IconButton
-                              onClick={() => handleRemoveCreative(creative.id)}
-                              sx={{
-                                position: 'absolute',
-                                top: 4,
-                                right: 4,
-                                bgcolor: 'rgba(255, 255, 255, 0.9)',
-                                '&:hover': {
-                                  bgcolor: '#FF3B30',
-                                  color: 'white',
-                                },
-                              }}
-                              size="small"
-                            >
-                              <Delete sx={{ fontSize: 14 }} />
-                            </IconButton>
-                          </Card>
-                        </Grid>
-                      ))
-                    }
-                  </Grid>
-                </Box>
-              )}
-              
-              {/* Creative Management */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                  Manage Creatives ({creatives.length})
-                </Typography>
-                <Button
-                  size="small"
-                  onClick={() => setEditingWeights(!editingWeights)}
-                  sx={{ color: '#8E8E93' }}
-                >
-                  {editingWeights ? 'Done' : 'Edit Weights'}
-                </Button>
-              </Box>
-
-              <Grid container spacing={2}>
-                {creatives.map((creative: Creative) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={creative.id}>
-                    <Card sx={{ position: 'relative', border: '1px solid #E5E5EA' }}>
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                          {creative.name}
-                        </Typography>
-                        
-                        <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-                          {creative.surfaces.map((surface) => (
-                            <Chip
-                              key={surface}
-                              label={surface === 'promo_block' ? 'Promo' : 'Map'}
-                              size="small"
-                              sx={{ fontSize: '0.7rem' }}
-                            />
-                          ))}
-                          <Chip
-                            label={creative.format}
-                            size="small"
-                            sx={{ fontSize: '0.7rem' }}
-                          />
+                          </Box>
                         </Box>
                         
-                        <Typography variant="caption" sx={{ color: '#8E8E93', display: 'block', mb: 1 }}>
-                          {creative.dimensions.width}×{creative.dimensions.height} • {(creative.size / 1024).toFixed(1)}KB
-                        </Typography>
-
-                        {editingWeights && (
-                          <Box sx={{ mt: 2 }}>
-                            <Typography variant="caption" sx={{ color: '#8E8E93' }}>
-                              Weight: {creative.weight}%
-                            </Typography>
-                            <Slider
-                              value={creative.weight}
-                              onChange={(_, value) => handleWeightChange(creative.id, value as number)}
-                              min={0}
-                              max={100}
+                        {/* Creative Info */}
+                        <CardContent sx={{ p: 2 }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: '#1C1C1E' }}>
+                            {creative.name}
+                          </Typography>
+                          
+                          <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+                            <Chip
+                              label={creative.surfaces[0] === 'promo_block' ? 'Промоблок' : 'Объект на карте'}
                               size="small"
-                              sx={{
-                                color: '#007AFF',
-                                height: '4px',
-                                '& .MuiSlider-thumb': {
-                                  bgcolor: '#007AFF',
-                                  width: '16px',
-                                  height: '16px',
-                                  border: '2px solid #FFFFFF',
-                                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
-                                  '&:hover': {
-                                    boxShadow: '0 2px 8px rgba(0, 122, 255, 0.3)',
-                                  },
-                                },
-                                '& .MuiSlider-track': {
-                                  bgcolor: '#007AFF',
-                                  border: 'none',
-                                  height: '4px',
-                                  borderRadius: '2px',
-                                },
-                                '& .MuiSlider-rail': {
-                                  bgcolor: '#E5E5EA',
-                                  height: '4px',
-                                  borderRadius: '2px',
-                                },
+                              sx={{ 
+                                fontSize: '0.7rem',
+                                bgcolor: creative.surfaces[0] === 'promo_block' ? '#E3F2FD' : '#FFF3E0',
+                                color: creative.surfaces[0] === 'promo_block' ? '#1976D2' : '#F57C00'
+                              }}
+                            />
+                            <Chip
+                              label={`${creative.weight}%`}
+                              size="small"
+                              sx={{ fontSize: '0.7rem', bgcolor: '#F0F8FF', color: '#007AFF' }}
+                            />
+                            <Chip
+                              label={creative.enabled ? 'Активен' : 'Отключен'}
+                              size="small"
+                              sx={{ 
+                                fontSize: '0.7rem', 
+                                bgcolor: creative.enabled ? '#E8F5E8' : '#FFEBEE',
+                                color: creative.enabled ? '#34C759' : '#FF3B30'
                               }}
                             />
                           </Box>
-                        )}
-                      </CardContent>
-
-                      <IconButton
-                        onClick={() => handleRemoveCreative(creative.id)}
-                        sx={{
-                          position: 'absolute',
-                          top: 8,
-                          right: 8,
-                          bgcolor: 'rgba(255, 255, 255, 0.9)',
-                          '&:hover': {
-                            bgcolor: '#FF3B30',
-                            color: 'white',
-                          },
-                        }}
-                        size="small"
-                      >
-                        <Delete sx={{ fontSize: 16 }} />
-                      </IconButton>
+                          
+                          <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                            {creative.dimensions.width}×{creative.dimensions.height} • {(creative.size / 1024).toFixed(1)}KB
+                          </Typography>
+                        </CardContent>
+                      </Box>
                     </Card>
                   </Grid>
                 ))}
               </Grid>
+            </Box>
+          )}
+
+          {/* Форма добавления нового креатива или список пуст */}
+          {(showCreativeForm || creatives.length === 0) && (
+            <Box sx={{ mb: 4 }}>
+              <Paper sx={{ 
+                p: 3, 
+                borderRadius: '16px', 
+                border: '2px dashed #007AFF',
+                bgcolor: '#F0F8FF'
+              }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h5" sx={{ color: '#007AFF', fontWeight: 600 }}>
+                    {editingCreative ? 'Редактирование креатива' : (creatives.length === 0 ? 'Добавьте первый креатив' : 'Добавить новый креатив')}
+                  </Typography>
+                  {(showCreativeForm && creatives.length > 0) && (
+                    <Button
+                      onClick={handleCancelEdit}
+                      sx={{ color: '#8E8E93' }}
+                    >
+                      Отмена
+                    </Button>
+                  )}
+                </Box>
+                
+                <Typography variant="body2" sx={{ color: '#1976D2', mb: 4 }}>
+                  Выберите тип поверхности и загрузите креатив или выберите из библиотеки
+                </Typography>
+                
+                {/* Surface Selection */}
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="subtitle1" sx={{ mb: 2, color: '#1C1C1E', fontWeight: 500 }}>
+                    Тип поверхности:
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                      variant={selectedSurface === 'promo_block' ? 'contained' : 'outlined'}
+                      startIcon={<AspectRatio />}
+                      onClick={() => setSelectedSurface('promo_block')}
+                      sx={{
+                        bgcolor: selectedSurface === 'promo_block' ? '#007AFF' : '#FFFFFF',
+                        color: selectedSurface === 'promo_block' ? '#FFFFFF' : '#1C1C1E',
+                        borderColor: '#007AFF',
+                        borderRadius: '12px',
+                        px: '20px',
+                        py: '12px',
+                        fontWeight: 500,
+                        textTransform: 'none',
+                        '&:hover': {
+                          bgcolor: selectedSurface === 'promo_block' ? '#0056CC' : '#F0F8FF',
+                        },
+                      }}
+                    >
+                      Промоблок
+                    </Button>
+                    <Button
+                      variant={selectedSurface === 'map_object' ? 'contained' : 'outlined'}
+                      startIcon={<CropSquare />}
+                      onClick={() => setSelectedSurface('map_object')}
+                      sx={{
+                        bgcolor: selectedSurface === 'map_object' ? '#007AFF' : '#FFFFFF',
+                        color: selectedSurface === 'map_object' ? '#FFFFFF' : '#1C1C1E',
+                        borderColor: '#007AFF',
+                        borderRadius: '12px',
+                        px: '20px',
+                        py: '12px',
+                        fontWeight: 500,
+                        textTransform: 'none',
+                        '&:hover': {
+                          bgcolor: selectedSurface === 'map_object' ? '#0056CC' : '#F0F8FF',
+                        },
+                      }}
+                    >
+                      Объект на карте
+                    </Button>
+                  </Box>
+                </Box>
+
+                {/* Configuration Form */}
+                <Paper sx={{ p: 3, mb: 4, borderRadius: '12px', bgcolor: '#FAFAFA' }}>
+                  {selectedSurface === 'promo_block' ? (
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, color: '#1C1C1E' }}>
+                        Настройка промоблока
+                      </Typography>
+                      
+                      <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Основное имя (опционально)"
+                            placeholder="Основное имя для креативов"
+                            value={promoBlockData.id}
+                            onChange={(e) => setPromoBlockData(prev => ({ ...prev, id: e.target.value }))}
+                            helperText="Оставьте пустым для автоматической генерации ID"
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                bgcolor: '#FFFFFF',
+                              },
+                            }}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={promoBlockData.enabled}
+                                onChange={(e) => setPromoBlockData(prev => ({ ...prev, enabled: e.target.checked }))}
+                                sx={{
+                                  '& .MuiSwitch-switchBase.Mui-checked': {
+                                    color: '#34C759',
+                                  },
+                                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                    backgroundColor: '#34C759',
+                                  },
+                                }}
+                              />
+                            }
+                            label={<Typography sx={{ fontWeight: 500 }}>Включить креатив</Typography>}
+                            sx={{ mt: 2 }}
+                          />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <TextField
+                            fullWidth
+                            label="Заголовок"
+                            placeholder="Введите заголовок промоблока"
+                            value={promoBlockData.title}
+                            onChange={(e) => setPromoBlockData(prev => ({ ...prev, title: e.target.value }))}
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                bgcolor: '#FFFFFF',
+                              },
+                            }}
+                          />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <TextField
+                            fullWidth
+                            label="Подзаголовок"
+                            placeholder="Введите подзаголовок промоблока"
+                            value={promoBlockData.subtitle}
+                            onChange={(e) => setPromoBlockData(prev => ({ ...prev, subtitle: e.target.value }))}
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                bgcolor: '#FFFFFF',
+                              },
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                      
+                      {/* Layout Type */}
+                      <Box sx={{ mt: 3 }}>
+                        <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
+                          Тип раскладки:
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                          <Button
+                            variant={promoBlockData.layoutType === 'small_image' ? 'contained' : 'outlined'}
+                            onClick={() => setPromoBlockData(prev => ({ ...prev, layoutType: 'small_image' }))}
+                            sx={{
+                              bgcolor: promoBlockData.layoutType === 'small_image' ? '#007AFF' : '#FFFFFF',
+                              color: promoBlockData.layoutType === 'small_image' ? '#FFFFFF' : '#1C1C1E',
+                              borderColor: '#007AFF',
+                              borderRadius: '8px',
+                              px: '12px',
+                              py: '6px',
+                              textTransform: 'none',
+                            }}
+                          >
+                            Маленькое изображение
+                          </Button>
+                          <Button
+                            variant={promoBlockData.layoutType === 'fifty_fifty' ? 'contained' : 'outlined'}
+                            onClick={() => setPromoBlockData(prev => ({ ...prev, layoutType: 'fifty_fifty' }))}
+                            sx={{
+                              bgcolor: promoBlockData.layoutType === 'fifty_fifty' ? '#007AFF' : '#FFFFFF',
+                              color: promoBlockData.layoutType === 'fifty_fifty' ? '#FFFFFF' : '#1C1C1E',
+                              borderColor: '#007AFF',
+                              borderRadius: '8px',
+                              px: '12px',
+                              py: '6px',
+                              textTransform: 'none',
+                            }}
+                          >
+                            50/50 разделение
+                          </Button>
+                          <Button
+                            variant={promoBlockData.layoutType === 'background_image' ? 'contained' : 'outlined'}
+                            onClick={() => setPromoBlockData(prev => ({ ...prev, layoutType: 'background_image' }))}
+                            sx={{
+                              bgcolor: promoBlockData.layoutType === 'background_image' ? '#007AFF' : '#FFFFFF',
+                              color: promoBlockData.layoutType === 'background_image' ? '#FFFFFF' : '#1C1C1E',
+                              borderColor: '#007AFF',
+                              borderRadius: '8px',
+                              px: '12px',
+                              py: '6px',
+                              textTransform: 'none',
+                            }}
+                          >
+                            Фоновое изображение
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, color: '#1C1C1E' }}>
+                        Настройка объекта на карте
+                      </Typography>
+                      
+                      <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Основное имя (опционально)"
+                            placeholder="Основное имя для креативов"
+                            value={mapObjectData.id}
+                            onChange={(e) => setMapObjectData(prev => ({ ...prev, id: e.target.value }))}
+                            helperText="Оставьте пустым для автоматической генерации ID"
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                bgcolor: '#FFFFFF',
+                              },
+                            }}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={mapObjectData.enabled}
+                                onChange={(e) => setMapObjectData(prev => ({ ...prev, enabled: e.target.checked }))}
+                                sx={{
+                                  '& .MuiSwitch-switchBase.Mui-checked': {
+                                    color: '#34C759',
+                                  },
+                                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                    backgroundColor: '#34C759',
+                                  },
+                                }}
+                              />
+                            }
+                            label={<Typography sx={{ fontWeight: 500 }}>Включить креатив</Typography>}
+                            sx={{ mt: 2 }}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  )}
+                </Paper>
+
+                {/* Upload and Library Options */}
+                <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
+                  <Paper
+                    {...getRootProps()}
+                    sx={{
+                      flex: 1,
+                      p: 3,
+                      border: '2px dashed #007AFF',
+                      borderRadius: '12px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      bgcolor: isDragActive ? '#F0F8FF' : '#FFFFFF',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        bgcolor: '#F0F8FF',
+                        transform: 'translateY(-1px)',
+                      },
+                    }}
+                  >
+                    <input {...getInputProps()} />
+                    <CloudUpload sx={{ fontSize: 32, color: '#007AFF', mb: 1 }} />
+                    <Typography variant="subtitle2" sx={{ mb: 1, color: '#007AFF' }}>
+                      {isDragActive ? 'Отпустите файлы здесь' : 'Загрузить файл'}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#1976D2' }}>
+                      {selectedSurface === 'map_object' 
+                        ? 'GIF, WebP (анимированные)' 
+                        : 'JPEG, PNG'
+                      }
+                    </Typography>
+                  </Paper>
+                  
+                  <Paper
+                    sx={{
+                      flex: 1,
+                      p: 3,
+                      border: '1px solid #007AFF',
+                      borderRadius: '12px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      bgcolor: '#FFFFFF',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        bgcolor: '#F0F8FF',
+                        transform: 'translateY(-1px)',
+                      },
+                    }}
+                    onClick={handleAddFromLibrary}
+                  >
+                    <VideoLibrary sx={{ fontSize: 32, color: '#007AFF', mb: 1 }} />
+                    <Typography variant="subtitle2" sx={{ mb: 1, color: '#007AFF' }}>
+                      Из библиотеки
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#1976D2' }}>
+                      Выбрать готовые креативы
+                    </Typography>
+                  </Paper>
+                </Box>
+                
+                {uploading && (
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="body2" sx={{ mb: 1, color: '#007AFF' }}>Загрузка...</Typography>
+                    <LinearProgress sx={{ '& .MuiLinearProgress-bar': { bgcolor: '#007AFF' } }} />
+                  </Box>
+                )}
+              </Paper>
             </Box>
           )}
 

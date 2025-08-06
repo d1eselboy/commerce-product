@@ -200,26 +200,9 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data }) => {
                   )}
                 </Box>
 
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, color: '#8E8E93' }}>
-                    TARGETING
-                  </Typography>
-                  <Typography variant="body1">
-                    {data.timeTargeting?.days?.length || 5} days/week • {' '}
-                    {(data.timeTargeting?.endHour || 21) - (data.timeTargeting?.startHour || 9)} hours/day
-                  </Typography>
-                </Box>
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, color: '#8E8E93' }}>
-                    WEIGHT & CAP
-                  </Typography>
-                  <Typography variant="body1">
-                    {data.weight || 10}% weight • Max {data.consecutiveCap || 3} consecutive
-                  </Typography>
-                </Box>
 
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, color: '#8E8E93' }}>
@@ -377,67 +360,8 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data }) => {
               </Typography>
             </Box>
 
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                Daily Budget Impact
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                ~{Math.floor(dailyImpressions * 0.15)} ₽/day
-              </Typography>
-            </Box>
-
-            <Box>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                Campaign ROI Estimate
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#34C759' }}>
-                125% - 180%
-              </Typography>
-            </Box>
           </Paper>
 
-          {/* Next Steps */}
-          <Paper 
-            sx={{ 
-              p: 3, 
-              bgcolor: '#E3F2FD', 
-              borderRadius: 2,
-              border: '1px solid #BBDEFB',
-            }}
-          >
-            <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2 }}>
-              After Publishing
-            </Typography>
-
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                📊 Monitor Performance
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
-                Check dashboard for real-time metrics and optimization opportunities
-              </Typography>
-            </Box>
-
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                ⚡ Optimize Weights
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
-                Adjust creative weights based on performance data after 24-48 hours
-              </Typography>
-            </Box>
-
-            <Box>
-              <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                🎯 A/B Test Results
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#8E8E93', lineHeight: 1.4 }}>
-                Compare creative performance to identify winning variants
-              </Typography>
-            </Box>
-          </Paper>
         </Grid>
       </Grid>
     </Box>

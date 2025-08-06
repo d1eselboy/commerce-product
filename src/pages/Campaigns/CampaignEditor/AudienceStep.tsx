@@ -16,6 +16,10 @@ import {
   Chip,
   LinearProgress,
   Divider,
+  TextField,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
 } from '@mui/material';
 import {
   CloudUpload,
@@ -25,6 +29,8 @@ import {
   CheckCircle,
   Info,
   Delete,
+  Link,
+  Psychology,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useDropzone } from 'react-dropzone';
@@ -47,22 +53,40 @@ const audienceRoles = [
   { id: 'passengers', name: 'passengers', estimatedReach: 1200000 },
 ];
 
+// Available Yandex.Crypta behavioral analysis segments
+const cryptaSegments = [
+  { id: 'shopping_intent', name: 'Покупательские намерения', estimatedReach: 1800000 },
+  { id: 'travel_enthusiasts', name: 'Путешественники', estimatedReach: 950000 },
+  { id: 'tech_early_adopters', name: 'Ранние последователи технологий', estimatedReach: 420000 },
+  { id: 'fitness_health', name: 'Здоровье и фитнес', estimatedReach: 720000 },
+  { id: 'food_delivery', name: 'Пользователи доставки еды', estimatedReach: 1200000 },
+  { id: 'financial_services', name: 'Финансовые услуги', estimatedReach: 650000 },
+  { id: 'education_online', name: 'Онлайн образование', estimatedReach: 380000 },
+  { id: 'entertainment_streaming', name: 'Потоковые развлечения', estimatedReach: 1400000 },
+  { id: 'automotive_interest', name: 'Автомобильные интересы', estimatedReach: 890000 },
+  { id: 'luxury_brands', name: 'Люксовые бренды', estimatedReach: 220000 },
+];
+
 export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, errors }) => {
   const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const [fileProcessing, setFileProcessing] = useState(false);
 
   const targetingType = data.audienceTargeting?.type || 'role';
-  const selectedRole = data.audienceTargeting?.role || '';
+  const selectedRoles = data.audienceTargeting?.roles || [];
+  const selectedCryptaSegments = data.audienceTargeting?.cryptaSegments || [];
+  const ytSegmentUrl = data.audienceTargeting?.ytSegmentUrl || '';
   const audienceFile = data.audienceTargeting?.file;
   const estimatedIds = data.audienceTargeting?.estimatedIds || 0;
 
   const handleTargetingTypeChange = (_event: React.ChangeEvent<HTMLInputElement>, value: string) => {
     const newTargeting = {
       type: value,
-      role: value === 'role' ? 'all_users' : undefined,
+      roles: value === 'role' ? ['all_users'] : undefined,
+      cryptaSegments: value === 'crypta' ? [] : undefined,
+      ytSegmentUrl: value === 'yt-segment' ? '' : undefined,
       file: value === 'file' ? audienceFile : undefined,
-      estimatedIds: value === 'role' ? getEstimatedReach('all_users') : estimatedIds,
+      estimatedIds: value === 'role' ? getEstimatedReach(['all_users']) : 0,
     };
     
     onChange({
@@ -70,24 +94,74 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
     });
   };
 
-  const handleRoleChange = (event: any) => {
-    const role = event.target.value;
+  const handleRolesChange = (event: any) => {
+    const roles = typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value;
     onChange({
       audienceTargeting: {
         ...data.audienceTargeting,
-        role: role,
-        estimatedIds: getEstimatedReach(role),
+        roles: roles,
+        estimatedIds: getEstimatedReach(roles),
       }
     });
   };
 
-  const getEstimatedReach = (roleId: string) => {
-    const role = audienceRoles.find(r => r.id === roleId);
-    return role ? role.estimatedReach : 0;
+  const handleCryptaSegmentsChange = (event: any) => {
+    const segments = typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value;
+    onChange({
+      audienceTargeting: {
+        ...data.audienceTargeting,
+        cryptaSegments: segments,
+        estimatedIds: getCryptaEstimatedReach(segments),
+      }
+    });
+  };
+
+  const handleYtSegmentUrlChange = (event: any) => {
+    const url = event.target.value;
+    onChange({
+      audienceTargeting: {
+        ...data.audienceTargeting,
+        ytSegmentUrl: url,
+        estimatedIds: url ? 500000 : 0, // Mock estimated reach for YT segment
+      }
+    });
+  };
+
+  const getEstimatedReach = (roleIds: string[]) => {
+    if (!roleIds || roleIds.length === 0) return 0;
+    
+    // Calculate overlap - simple approximation
+    const totalReach = roleIds.reduce((sum, roleId) => {
+      const role = audienceRoles.find(r => r.id === roleId);
+      return sum + (role ? role.estimatedReach : 0);
+    }, 0);
+    
+    // Apply overlap reduction based on number of selected roles
+    const overlapFactor = roleIds.length > 1 ? 0.7 : 1; // 30% overlap reduction for multiple roles
+    return Math.floor(totalReach * overlapFactor);
+  };
+
+  const getCryptaEstimatedReach = (segmentIds: string[]) => {
+    if (!segmentIds || segmentIds.length === 0) return 0;
+    
+    // Calculate overlap for Crypta segments
+    const totalReach = segmentIds.reduce((sum, segmentId) => {
+      const segment = cryptaSegments.find(s => s.id === segmentId);
+      return sum + (segment ? segment.estimatedReach : 0);
+    }, 0);
+    
+    // Apply overlap reduction for multiple segments
+    const overlapFactor = segmentIds.length > 1 ? 0.6 : 1; // 40% overlap reduction for behavioral segments
+    return Math.floor(totalReach * overlapFactor);
   };
 
   const getRoleName = (roleId: string) => {
     return t(`campaignEditor.audience.roles.${roleId}`, roleId);
+  };
+
+  const getCryptaSegmentName = (segmentId: string) => {
+    const segment = cryptaSegments.find(s => s.id === segmentId);
+    return segment ? segment.name : segmentId;
   };
 
   // File upload for audience IDs
@@ -156,7 +230,11 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
   };
 
   const currentEstimatedReach = targetingType === 'role' 
-    ? getEstimatedReach(selectedRole)
+    ? getEstimatedReach(selectedRoles)
+    : targetingType === 'crypta'
+    ? getCryptaEstimatedReach(selectedCryptaSegments)
+    : targetingType === 'yt-segment'
+    ? (ytSegmentUrl ? 500000 : 0)
     : estimatedIds;
 
   return (
@@ -191,11 +269,11 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                           <Group sx={{ color: '#007AFF', fontSize: 20 }} />
                           <Typography variant="subtitle1">
-                            {t('campaignEditor.audience.roleBasedTargeting')}
+                            По ролям
                           </Typography>
                         </Box>
                         <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                          Выберите готовую роль пользователей из предустановленных категорий
+                          Multi-select roles with overlap calculation
                         </Typography>
                       </Box>
                     }
@@ -203,26 +281,48 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
                   />
                 </Paper>
 
-                <Paper sx={{ p: 3, border: targetingType === 'file' ? '2px solid #007AFF' : '1px solid #E5E5EA', borderRadius: '16px' }}>
+                <Paper sx={{ p: 3, border: targetingType === 'yt-segment' ? '2px solid #007AFF' : '1px solid #E5E5EA', borderRadius: '16px' }}>
                   <FormControlLabel
-                    value="file"
+                    value="yt-segment"
                     control={<Radio sx={{ color: '#007AFF' }} />}
                     label={
                       <Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <Assignment sx={{ color: '#007AFF', fontSize: 20 }} />
+                          <Link sx={{ color: '#007AFF', fontSize: 20 }} />
                           <Typography variant="subtitle1">
-                            {t('campaignEditor.audience.fileBasedTargeting')}
+                            Сегмент Таргетинг по ID
                           </Typography>
                         </Box>
                         <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                          Загрузите файл с конкретными ID пользователей для точного таргетинга
+                          "YT" segment URL input – it will be a URL link to table
                         </Typography>
                       </Box>
                     }
                     sx={{ alignItems: 'flex-start', m: 0 }}
                   />
                 </Paper>
+
+                <Paper sx={{ p: 3, border: targetingType === 'crypta' ? '2px solid #007AFF' : '1px solid #E5E5EA', borderRadius: '16px' }}>
+                  <FormControlLabel
+                    value="crypta"
+                    control={<Radio sx={{ color: '#007AFF' }} />}
+                    label={
+                      <Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                          <Psychology sx={{ color: '#007AFF', fontSize: 20 }} />
+                          <Typography variant="subtitle1">
+                            Сегмент Яндекс.Крипта
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" sx={{ color: '#8E8E93' }}>
+                          Advanced behavioral analysis segments - Multi-select with segments with overlap calculation
+                        </Typography>
+                      </Box>
+                    }
+                    sx={{ alignItems: 'flex-start', m: 0 }}
+                  />
+                </Paper>
+
               </RadioGroup>
             </FormControl>
           </Box>
@@ -231,17 +331,31 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
           {targetingType === 'role' && (
             <Box sx={{ mb: 4 }}>
               <Typography variant="h5" sx={{ mb: 2 }}>
-                {t('campaignEditor.audience.selectRole')}
+                Выберите роли (с расчетом пересечений)
               </Typography>
               
-              <FormControl fullWidth sx={{ maxWidth: 400 }}>
+              <FormControl fullWidth sx={{ maxWidth: 600 }}>
                 <Select
-                  value={selectedRole}
-                  onChange={handleRoleChange}
-                  displayEmpty
+                  multiple
+                  value={selectedRoles}
+                  onChange={handleRolesChange}
+                  input={<OutlinedInput />}
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map((value) => (
+                        <Chip 
+                          key={value} 
+                          label={getRoleName(value)} 
+                          size="small"
+                          sx={{ bgcolor: '#E3F2FD', color: '#1976D2' }}
+                        />
+                      ))}
+                    </Box>
+                  )}
                   sx={{
                     borderRadius: '12px',
                     bgcolor: '#FAFAFA',
+                    minHeight: 56,
                     '&:hover': {
                       bgcolor: '#F5F5F5',
                     },
@@ -252,17 +366,119 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
                 >
                   {audienceRoles.map((role) => (
                     <MenuItem key={role.id} value={role.id}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                        <Typography variant="body1">
-                          {getRoleName(role.id)}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: '#8E8E93', ml: 2 }}>
-                          ~{role.estimatedReach.toLocaleString()} польз.
-                        </Typography>
-                      </Box>
+                      <Checkbox 
+                        checked={selectedRoles.indexOf(role.id) > -1}
+                        sx={{ color: '#007AFF' }}
+                      />
+                      <ListItemText 
+                        primary={getRoleName(role.id)}
+                        secondary={`~${role.estimatedReach.toLocaleString()} польз.`}
+                      />
                     </MenuItem>
                   ))}
                 </Select>
+                
+                {selectedRoles.length > 1 && (
+                  <Typography variant="caption" sx={{ color: '#8E8E93', mt: 1 }}>
+                    * Учитывается пересечение аудиторий (коэффициент 0.7)
+                  </Typography>
+                )}
+              </FormControl>
+            </Box>
+          )}
+
+          {/* YT Segment URL Input */}
+          {targetingType === 'yt-segment' && (
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" sx={{ mb: 2 }}>
+                URL ссылка на YT сегмент
+              </Typography>
+              
+              <TextField
+                fullWidth
+                value={ytSegmentUrl}
+                onChange={handleYtSegmentUrlChange}
+                placeholder="https://example.com/yt-segment-table"
+                sx={{
+                  maxWidth: 600,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                    bgcolor: '#FAFAFA',
+                    '&:hover': {
+                      bgcolor: '#F5F5F5',
+                    },
+                    '&.Mui-focused': {
+                      bgcolor: '#FFFFFF',
+                    },
+                  }
+                }}
+                InputProps={{
+                  startAdornment: <Link sx={{ color: '#8E8E93', mr: 1 }} />
+                }}
+              />
+              
+              <Typography variant="caption" sx={{ color: '#8E8E93', display: 'block', mt: 1 }}>
+                Введите URL ссылку на таблицу с YT сегментом для точного таргетинга
+              </Typography>
+            </Box>
+          )}
+
+          {/* Crypta Segments Selection */}
+          {targetingType === 'crypta' && (
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" sx={{ mb: 2 }}>
+                Поведенческие сегменты Яндекс.Крипта
+              </Typography>
+              
+              <FormControl fullWidth sx={{ maxWidth: 600 }}>
+                <Select
+                  multiple
+                  value={selectedCryptaSegments}
+                  onChange={handleCryptaSegmentsChange}
+                  input={<OutlinedInput />}
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map((value) => (
+                        <Chip 
+                          key={value} 
+                          label={getCryptaSegmentName(value)} 
+                          size="small"
+                          sx={{ bgcolor: '#F3E5F5', color: '#7B1FA2' }}
+                        />
+                      ))}
+                    </Box>
+                  )}
+                  sx={{
+                    borderRadius: '12px',
+                    bgcolor: '#FAFAFA',
+                    minHeight: 56,
+                    '&:hover': {
+                      bgcolor: '#F5F5F5',
+                    },
+                    '&.Mui-focused': {
+                      bgcolor: '#FFFFFF',
+                    },
+                  }}
+                >
+                  {cryptaSegments.map((segment) => (
+                    <MenuItem key={segment.id} value={segment.id}>
+                      <Checkbox 
+                        checked={selectedCryptaSegments.indexOf(segment.id) > -1}
+                        sx={{ color: '#7B1FA2' }}
+                      />
+                      <ListItemText 
+                        primary={segment.name}
+                        secondary={`~${segment.estimatedReach.toLocaleString()} польз.`}
+                      />
+                    </MenuItem>
+                  ))}
+                </Select>
+                
+                {selectedCryptaSegments.length > 1 && (
+                  <Typography variant="caption" sx={{ color: '#8E8E93', mt: 1 }}>
+                    * Учитывается пересечение поведенческих сегментов (коэффициент 0.6)
+                  </Typography>
+                )}
               </FormControl>
             </Box>
           )}
@@ -366,19 +582,58 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
               {t('campaignEditor.audience.currentAudience')}
             </Typography>
 
-            {targetingType === 'role' && selectedRole && (
+            {targetingType === 'role' && selectedRoles.length > 0 && (
               <Box sx={{ mb: 3 }}>
                 <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                  Выбранная роль:
+                  Выбранные роли ({selectedRoles.length}):
                 </Typography>
-                <Chip 
-                  label={getRoleName(selectedRole)}
-                  sx={{ 
-                    bgcolor: '#007AFF', 
-                    color: '#FFFFFF',
-                    fontWeight: 500 
-                  }}
-                />
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {selectedRoles.map((roleId) => (
+                    <Chip 
+                      key={roleId}
+                      label={getRoleName(roleId)}
+                      size="small"
+                      sx={{ 
+                        bgcolor: '#007AFF', 
+                        color: '#FFFFFF',
+                        fontWeight: 500 
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            )}
+
+            {targetingType === 'yt-segment' && ytSegmentUrl && (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                  YT сегмент:
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#1C1C1E', wordBreak: 'break-all' }}>
+                  {ytSegmentUrl}
+                </Typography>
+              </Box>
+            )}
+
+            {targetingType === 'crypta' && selectedCryptaSegments.length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                  Поведенческие сегменты ({selectedCryptaSegments.length}):
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {selectedCryptaSegments.map((segmentId) => (
+                    <Chip 
+                      key={segmentId}
+                      label={getCryptaSegmentName(segmentId)}
+                      size="small"
+                      sx={{ 
+                        bgcolor: '#7B1FA2', 
+                        color: '#FFFFFF',
+                        fontWeight: 500 
+                      }}
+                    />
+                  ))}
+                </Box>
               </Box>
             )}
 

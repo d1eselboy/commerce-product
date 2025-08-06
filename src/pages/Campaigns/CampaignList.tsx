@@ -46,6 +46,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useListCampaignsQuery, useUpdateCampaignMutation } from '@/store/api';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
 import type { CampaignSummary } from '@/types/campaign';
 
 const statusColors = {
@@ -135,13 +136,15 @@ export const CampaignList: React.FC = () => {
   const [bulkWeight, setBulkWeight] = useState(10);
   const [sortBy, setSortBy] = useState<'name' | 'status' | 'weight' | 'impressions'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState<{ campaign: CampaignSummary; newStatus: string } | null>(null);
   
   const { data: campaigns, isLoading, error } = useListCampaignsQuery({
     search: search || undefined,
     status: statusFilter.length > 0 ? statusFilter as any : undefined,
   });
   
-  const [updateCampaign] = useUpdateCampaignMutation();
+  const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignMutation();
 
   const handleCreateCampaign = () => {
     navigate('/campaigns/new');
@@ -161,12 +164,33 @@ export const CampaignList: React.FC = () => {
     navigate('/campaigns/new', { state: { duplicateFrom: campaign } });
   };
 
-  const handleTogglePause = async (campaign: CampaignSummary) => {
+  const handleTogglePause = (campaign: CampaignSummary) => {
     const newStatus = campaign.status === 'active' ? 'paused' : 'active';
-    await updateCampaign({
-      id: campaign.id,
-      data: { status: newStatus },
-    });
+    setPendingStatusChange({ campaign, newStatus });
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmStatusChange = async () => {
+    if (!pendingStatusChange) return;
+    
+    try {
+      await updateCampaign({
+        id: pendingStatusChange.campaign.id,
+        data: { status: pendingStatusChange.newStatus },
+      }).unwrap();
+      
+      setShowConfirmation(false);
+      setPendingStatusChange(null);
+    } catch (error) {
+      console.error('Failed to update campaign status:', error);
+      setShowConfirmation(false);
+      setPendingStatusChange(null);
+    }
+  };
+
+  const handleCloseConfirmation = () => {
+    setShowConfirmation(false);
+    setPendingStatusChange(null);
   };
 
   // Selection handlers
@@ -924,6 +948,18 @@ export const CampaignList: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Status Change Confirmation Modal */}
+      <ConfirmationModal
+        open={showConfirmation}
+        onClose={handleCloseConfirmation}
+        onConfirm={handleConfirmStatusChange}
+        title={`Изменение статуса кампании`}
+        description={`Вы собираетесь изменить статус кампании "${pendingStatusChange?.campaign.name}" на "${pendingStatusChange?.newStatus === 'active' ? 'Активная' : 'Приостановлена'}". Это действие потребует согласования изменений.`}
+        actionType="statusChange"
+        campaignName={pendingStatusChange?.campaign.name}
+        isLoading={isUpdating}
+      />
     </Box>
   );
 };
