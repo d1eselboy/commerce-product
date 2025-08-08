@@ -261,7 +261,7 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
           {targetingType === 'role' && (
             <Box sx={{ mb: 4 }}>
               <Typography variant="h5" sx={{ mb: 2 }}>
-                Выберите роли (с расчетом пересечений)
+                Выберите роли (кампания покажется на каждой из ролей)
               </Typography>
               
               <FormControl fullWidth sx={{ maxWidth: 600 }}>

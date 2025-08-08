@@ -27,7 +27,7 @@ interface ConfirmationModalProps {
   onConfirm: () => void;
   title: string;
   description: string;
-  actionType: 'create' | 'statusChange';
+  actionType: 'create' | 'edit' | 'statusChange';
   campaignName?: string;
   isLoading?: boolean;
 }
@@ -46,6 +46,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     switch (actionType) {
       case 'create':
         return 'создании кампании';
+      case 'edit':
+        return 'редактировании кампании';
       case 'statusChange':
         return 'изменении статуса кампании';
       default:
@@ -63,6 +65,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
     if (actionType === 'statusChange') {
       items.push('Текущие показы кампании будут приостановлены до подтверждения изменений');
+    }
+
+    if (actionType === 'edit') {
+      items.push('Внесенные изменения будут применены после согласования');
+      items.push('Текущие показы кампании продолжатся с прежними параметрами до подтверждения');
     }
 
     return items;

@@ -431,7 +431,7 @@ export const CampaignEditor: React.FC = () => {
               <Button
                 onClick={handlePublish}
                 disabled={isCreating || isUpdating || Object.keys(validationErrors).length > 0}
-                startIcon={<Visibility />}
+                startIcon={isEdit ? <Save /> : <Visibility />}
                 sx={{
                   bgcolor: '#FFDD2D',
                   color: '#000',
@@ -445,7 +445,7 @@ export const CampaignEditor: React.FC = () => {
                   },
                 }}
               >
-                {t('campaignEditor.buttons.publish')}
+                {isEdit ? 'Сохранить изменения' : t('campaignEditor.buttons.publish')}
               </Button>
             ) : (
               <Button
@@ -476,9 +476,12 @@ export const CampaignEditor: React.FC = () => {
         open={showConfirmation}
         onClose={handleCloseConfirmation}
         onConfirm={handleConfirmAction}
-        title="Подтверждение создания кампании"
-        description="Вы собираетесь создать новую кампанию. Это действие потребует согласования изменений."
-        actionType="create"
+        title={isEdit ? "Подтверждение сохранения изменений" : "Подтверждение создания кампании"}
+        description={isEdit ? 
+          `Вы собираетесь сохранить изменения кампании "${formData.name}". Это действие потребует согласования изменений.` :
+          "Вы собираетесь создать новую кампанию. Это действие потребует согласования изменений."
+        }
+        actionType={isEdit ? "edit" : "create"}
         campaignName={formData.name}
         isLoading={isCreating || isUpdating}
       />

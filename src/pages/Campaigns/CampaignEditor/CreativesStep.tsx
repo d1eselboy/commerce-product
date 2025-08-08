@@ -34,6 +34,7 @@ import {
   Warning,
   VideoLibrary,
   CropSquare,
+  Link,
 } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
@@ -63,6 +64,7 @@ interface Creative {
   title?: string;
   subtitle?: string;
   layoutType?: 'small_image' | 'fifty_fifty' | 'background_image';
+  backgroundColor?: string;
 }
 
 // Mock creative images (real VTB images + base64 placeholders)
@@ -192,6 +194,8 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedCreatives, setSelectedCreatives] = useState<Creative[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [showMdsInput, setShowMdsInput] = useState(false);
+  const [mdsUrl, setMdsUrl] = useState('');
   const [editingCreative, setEditingCreative] = useState<string | null>(null);
   const [showCreativeForm, setShowCreativeForm] = useState(false);
   const [selectedSurface, setSelectedSurface] = useState<'promo_block' | 'map_object'>('promo_block');
@@ -201,7 +205,8 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
     enabled: true,
     title: '',
     subtitle: '',
-    layoutType: 'small_image' as 'small_image' | 'fifty_fifty' | 'background_image'
+    layoutType: 'small_image' as 'small_image' | 'fifty_fifty' | 'background_image',
+    backgroundColor: '#FFFFFF'
   });
   const [mapObjectData, setMapObjectData] = useState({
     id: '',
@@ -247,6 +252,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
             title: promoBlockData.title || file.name.replace(/\.[^/.]+$/, ''),
             subtitle: promoBlockData.subtitle || 'Add subtitle text',
             layoutType: promoBlockData.layoutType,
+            backgroundColor: promoBlockData.backgroundColor,
           }),
         };
       });
@@ -264,7 +270,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
       
       // Clear form after successful upload
       if (selectedSurface === 'promo_block') {
-        setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image' });
+        setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image', backgroundColor: '#FFFFFF' });
       } else {
         setMapObjectData({ id: '', enabled: true });
       }
@@ -286,6 +292,62 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
   const handleAddFromLibrary = () => {
     setLibraryOpen(true);
   };
+
+  const handleAddFromMds = () => {
+    const surfaceData = selectedSurface === 'promo_block' ? promoBlockData : mapObjectData;
+    
+    if (!mdsUrl.trim()) return;
+    
+    setUploading(true);
+    
+    // Simulate processing delay
+    setTimeout(() => {
+      const filename = mdsUrl.split('/').pop()?.split('.')[0] || 'mds_creative';
+      const baseName = surfaceData.id.trim() || filename;
+      const uniqueId = generateUniqueId(baseName, selectedSurface);
+      
+      const newCreative: Creative = {
+        id: uniqueId,
+        name: filename,
+        url: mdsUrl,
+        surfaces: [selectedSurface],
+        dimensions: selectedSurface === 'map_object' ? { width: 64, height: 64 } : { width: 320, height: 168 },
+        size: 0, // Unknown size for MDS links
+        weight: 100,
+        format: selectedSurface === 'map_object' ? 'animated_icon' : 'static_image',
+        fileFormat: mdsUrl.split('.').pop()?.toUpperCase() || 'UNKNOWN',
+        enabled: surfaceData.enabled,
+        // Add promo block specific fields
+        ...(selectedSurface === 'promo_block' && {
+          title: promoBlockData.title || filename,
+          subtitle: promoBlockData.subtitle || 'MDS Creative',
+          layoutType: promoBlockData.layoutType,
+          backgroundColor: promoBlockData.backgroundColor,
+        }),
+      };
+      
+      const currentCreatives = data.creativeFiles || [];
+      const redistributedCreatives = [...currentCreatives, newCreative].map((creative, index, array) => ({
+        ...creative,
+        weight: Math.floor(100 / array.length),
+      }));
+      
+      onChange({ 
+        creativeFiles: redistributedCreatives
+      });
+      
+      setUploading(false);
+      setMdsUrl('');
+      setShowMdsInput(false);
+      
+      // Clear form after successful upload
+      if (selectedSurface === 'promo_block') {
+        setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image', backgroundColor: '#FFFFFF' });
+      } else {
+        setMapObjectData({ id: '', enabled: true });
+      }
+    }, 1000);
+  };
   
   const handleChooseFromLibrary = (creative: Creative) => {
     const surfaceData = selectedSurface === 'promo_block' ? promoBlockData : mapObjectData;
@@ -302,6 +364,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
         title: promoBlockData.title || creative.title,
         subtitle: promoBlockData.subtitle || creative.subtitle,
         layoutType: promoBlockData.layoutType,
+        backgroundColor: promoBlockData.backgroundColor,
       }),
     };
     
@@ -318,7 +381,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
     
     // Clear form after successful selection
     if (selectedSurface === 'promo_block') {
-      setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image' });
+      setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image', backgroundColor: '#FFFFFF' });
     } else {
       setMapObjectData({ id: '', enabled: true });
     }
@@ -920,6 +983,78 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                           </Button>
                         </Box>
                       </Box>
+
+                      {/* Background Color */}
+                      <Box sx={{ mt: 3 }}>
+                        <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
+                          Цвет фона:
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Box
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              bgcolor: promoBlockData.backgroundColor,
+                              border: '2px solid #E5E5EA',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              position: 'relative',
+                              '&:hover': {
+                                transform: 'scale(1.05)',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                              },
+                              transition: 'all 0.2s ease',
+                            }}
+                            onClick={() => {
+                              // Создаем невидимый input для выбора цвета
+                              const colorInput = document.createElement('input');
+                              colorInput.type = 'color';
+                              colorInput.value = promoBlockData.backgroundColor;
+                              colorInput.onchange = (e) => {
+                                const target = e.target as HTMLInputElement;
+                                setPromoBlockData(prev => ({ ...prev, backgroundColor: target.value }));
+                              };
+                              colorInput.click();
+                            }}
+                          />
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
+                              {promoBlockData.backgroundColor.toUpperCase()}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: '#8E8E93' }}>
+                              Нажмите на квадрат для выбора цвета
+                            </Typography>
+                          </Box>
+                        </Box>
+                        
+                        {/* Предустановленные цвета */}
+                        <Box sx={{ mt: 2 }}>
+                          <Typography variant="caption" sx={{ color: '#8E8E93', mb: 1, display: 'block' }}>
+                            Популярные цвета:
+                          </Typography>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            {['#FFFFFF', '#000000', '#007AFF', '#34C759', '#FF9500', '#FF3B30', '#AF52DE', '#FFDD2D'].map((color) => (
+                              <Box
+                                key={color}
+                                sx={{
+                                  width: 24,
+                                  height: 24,
+                                  bgcolor: color,
+                                  border: promoBlockData.backgroundColor === color ? '2px solid #007AFF' : '1px solid #E5E5EA',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  '&:hover': {
+                                    transform: 'scale(1.1)',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                  },
+                                  transition: 'all 0.2s ease',
+                                }}
+                                onClick={() => setPromoBlockData(prev => ({ ...prev, backgroundColor: color }))}
+                              />
+                            ))}
+                          </Box>
+                        </Box>
+                      </Box>
                     </Box>
                   ) : (
                     <Box>
@@ -969,12 +1104,13 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                   )}
                 </Paper>
 
-                {/* Upload and Library Options */}
-                <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
+                {/* Upload, Library and MDS Options */}
+                <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
                   <Paper
                     {...getRootProps()}
                     sx={{
                       flex: 1,
+                      minWidth: { xs: '100%', sm: 'calc(50% - 8px)', md: 'calc(33.33% - 8px)' },
                       p: 3,
                       border: '2px dashed #007AFF',
                       borderRadius: '12px',
@@ -1004,6 +1140,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                   <Paper
                     sx={{
                       flex: 1,
+                      minWidth: { xs: '100%', sm: 'calc(50% - 8px)', md: 'calc(33.33% - 8px)' },
                       p: 3,
                       border: '1px solid #007AFF',
                       borderRadius: '12px',
@@ -1026,7 +1163,102 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                       Выбрать готовые креативы
                     </Typography>
                   </Paper>
+
+                  <Paper
+                    sx={{
+                      flex: 1,
+                      minWidth: { xs: '100%', sm: 'calc(50% - 8px)', md: 'calc(33.33% - 8px)' },
+                      p: 3,
+                      border: '1px solid #34C759',
+                      borderRadius: '12px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      bgcolor: '#FFFFFF',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        bgcolor: '#F0FFF4',
+                        transform: 'translateY(-1px)',
+                      },
+                    }}
+                    onClick={() => setShowMdsInput(true)}
+                  >
+                    <Link sx={{ fontSize: 32, color: '#34C759', mb: 1 }} />
+                    <Typography variant="subtitle2" sx={{ mb: 1, color: '#34C759' }}>
+                      Ссылка из MDS
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#22A54A' }}>
+                      Указать URL медиа
+                    </Typography>
+                  </Paper>
                 </Box>
+
+                {/* MDS URL Input */}
+                {showMdsInput && (
+                  <Paper sx={{ p: 3, mb: 4, border: '1px solid #34C759', borderRadius: '12px', bgcolor: '#F0FFF4' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                      <Link sx={{ fontSize: 20, color: '#34C759' }} />
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#34C759' }}>
+                        Добавить медиа из MDS
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>
+                      <TextField
+                        fullWidth
+                        label="URL медиа из MDS"
+                        placeholder="https://avatars.mds.yandex.net/get-..."
+                        value={mdsUrl}
+                        onChange={(e) => setMdsUrl(e.target.value)}
+                        helperText="Вставьте прямую ссылку на изображение или медиа из MDS"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: '8px',
+                            bgcolor: '#FFFFFF',
+                          },
+                          '& .MuiInputLabel-root': {
+                            color: '#34C759',
+                          },
+                          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#34C759',
+                          },
+                        }}
+                      />
+                      <Button
+                        onClick={handleAddFromMds}
+                        disabled={!mdsUrl.trim() || uploading}
+                        variant="contained"
+                        sx={{
+                          bgcolor: '#34C759',
+                          color: '#FFFFFF',
+                          minWidth: 100,
+                          height: 56,
+                          '&:hover': {
+                            bgcolor: '#22A54A',
+                          },
+                          '&:disabled': {
+                            bgcolor: '#E5E5EA',
+                            color: '#8E8E93',
+                          },
+                        }}
+                      >
+                        Добавить
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setShowMdsInput(false);
+                          setMdsUrl('');
+                        }}
+                        sx={{ 
+                          color: '#8E8E93',
+                          height: 56,
+                          minWidth: 80,
+                        }}
+                      >
+                        Отмена
+                      </Button>
+                    </Box>
+                  </Paper>
+                )}
                 
                 {uploading && (
                   <Box sx={{ mb: 3 }}>
@@ -1117,120 +1349,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
             </Box>
           </Paper>
 
-          {/* Algorithm Logic */}
-          <Paper 
-            elevation={1}
-            sx={{ 
-              p: 3, 
-              bgcolor: '#F0F8FF', 
-              borderRadius: '16px',
-              border: '1px solid #D1E9FF',
-              mb: 3,
-            }}
-          >
-            <Typography variant="h5" sx={{ mb: 3, color: '#1976D2', fontWeight: 600 }}>
-              Алгоритм показа креативов
-            </Typography>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, color: '#1C1C1E' }}>
-                Consecutive cap
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.5 }}>
-                Не более <strong>{data.consecutiveCap || 3}</strong> подряд показов одной и той же кампании
-              </Typography>
-            </Box>
-
-            <Divider sx={{ my: 2, bgcolor: '#D1E9FF' }} />
-
-            <Box>
-              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: '#1C1C1E' }}>
-                Алгоритм розыгрыша:
-              </Typography>
-              
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ color: '#1976D2', fontWeight: 500, mb: 1 }}>
-                  При вызове ручки:
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.5, ml: 2 }}>
-                  • Фильтруем по активным кампаниям с остатками показов
-                  <br />
-                  • Исключаем ту, которая нарушает consecutive cap
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ color: '#1976D2', fontWeight: 500, mb: 1 }}>
-                  Если кампаний нет:
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.5, ml: 2 }}>
-                  • Берем ту, которая нарушает consecutive cap
-                  <br />
-                  • Если вообще нет кампаний для показа, то отправлять в ручку, что следующий запрос через несколько минут
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ color: '#1976D2', fontWeight: 500, mb: 1 }}>
-                  Выбор креатива:
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#8E8E93', lineHeight: 1.5, ml: 2 }}>
-                  • Считаем PriorityScore
-                  <br />
-                  • Сортируем и находим топ-1 кампанию
-                  <br />
-                  • Внутри топ-1 кампании выбирается креатив C_new по порядку, заданным в кампании с учетом уже показанных креативов
-                </Typography>
-              </Box>
-            </Box>
-          </Paper>
-
-          {/* Weight Distribution - only show if there are creatives */}
-          {creatives.length > 1 && (
-            <Paper 
-              elevation={1}
-              sx={{ 
-                p: 3, 
-                bgcolor: '#F9F9F9', 
-                borderRadius: '16px',
-                border: '1px solid #E5E5EA',
-              }}
-            >
-              <Typography variant="h5" sx={{ mb: 2, color: '#1C1C1E' }}>
-                Веса креативов
-              </Typography>
-
-              {creatives.map((creative: Creative) => (
-                <Box key={creative.id} sx={{ mb: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body2" sx={{ fontSize: '0.8rem', color: '#1C1C1E' }}>
-                      {creative.name}
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8rem', color: '#1C1C1E' }}>
-                      {creative.weight}%
-                    </Typography>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={creative.weight}
-                    sx={{
-                      height: 4,
-                      borderRadius: 2,
-                      bgcolor: '#E5E5EA',
-                      '& .MuiLinearProgress-bar': {
-                        bgcolor: '#007AFF',
-                        borderRadius: 2,
-                      },
-                    }}
-                  />
-                </Box>
-              ))}
-
-              <Typography variant="body2" sx={{ color: '#8E8E93', mt: 1, display: 'block' }}>
-                Всего: {creatives.reduce((sum: number, c: Creative) => sum + c.weight, 0)}%
-              </Typography>
-            </Paper>
-          )}
+          
         </Grid>
       </Grid>
 

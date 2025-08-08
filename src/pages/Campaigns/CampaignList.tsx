@@ -896,12 +896,61 @@ export const CampaignList: React.FC = () => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
-                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E', mb: 0.5 }}>
-                        {formatDate(campaign.startDate)}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 500 }}>
-                        {formatDate(campaign.endDate)}
-                      </Typography>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box sx={{ 
+                            width: 6, 
+                            height: 6, 
+                            borderRadius: '50%', 
+                            bgcolor: '#34C759',
+                            flexShrink: 0
+                          }} />
+                          <Typography variant="caption" sx={{ 
+                            color: '#8E8E93', 
+                            fontWeight: 500, 
+                            fontSize: '0.75rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                            Начало
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" sx={{ 
+                          fontWeight: 600, 
+                          color: '#1C1C1E', 
+                          fontSize: '0.875rem',
+                          pl: 1.75
+                        }}>
+                          {formatDate(campaign.startDate)}
+                        </Typography>
+                        
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                          <Box sx={{ 
+                            width: 6, 
+                            height: 6, 
+                            borderRadius: '50%', 
+                            bgcolor: '#FF9500',
+                            flexShrink: 0
+                          }} />
+                          <Typography variant="caption" sx={{ 
+                            color: '#8E8E93', 
+                            fontWeight: 500, 
+                            fontSize: '0.75rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                            Окончание
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" sx={{ 
+                          fontWeight: 600, 
+                          color: '#1C1C1E', 
+                          fontSize: '0.875rem',
+                          pl: 1.75
+                        }}>
+                          {formatDate(campaign.endDate)}
+                        </Typography>
+                      </Box>
                     </TableCell>
                     <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
                       <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E', mb: 0.5 }}>
