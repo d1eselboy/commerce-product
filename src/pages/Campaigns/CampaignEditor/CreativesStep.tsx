@@ -472,7 +472,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
     
     // Очистить форму
     if (selectedSurface === 'promo_block') {
-      setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image' });
+      setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image', backgroundColor: '#FFFFFF' });
     } else {
       setMapObjectData({ id: '', enabled: true });
     }
@@ -490,7 +490,8 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
           enabled: creative.enabled,
           title: creative.title || '',
           subtitle: creative.subtitle || '',
-          layoutType: creative.layoutType || 'small_image'
+          layoutType: creative.layoutType || 'small_image',
+          backgroundColor: creative.backgroundColor || '#FFFFFF'
         });
       } else {
         setMapObjectData({
@@ -509,7 +510,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
     
     // Очистить форму
     if (selectedSurface === 'promo_block') {
-      setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image' });
+      setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image', backgroundColor: '#FFFFFF' });
     } else {
       setMapObjectData({ id: '', enabled: true });
     }
@@ -782,12 +783,47 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                     {editingCreative ? 'Редактирование креатива' : (creatives.length === 0 ? 'Добавьте первый креатив' : 'Добавить новый креатив')}
                   </Typography>
                   {(showCreativeForm && creatives.length > 0) && (
-                    <Button
-                      onClick={handleCancelEdit}
-                      sx={{ color: '#8E8E93' }}
-                    >
-                      Отмена
-                    </Button>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      {editingCreative && (
+                        <Button
+                          onClick={() => {
+                            // Собираем данные из формы для сохранения
+                            const creativeData = {
+                              name: selectedSurface === 'promo_block' ? promoBlockData.id || 'Creative' : mapObjectData.id || 'Creative',
+                              enabled: selectedSurface === 'promo_block' ? promoBlockData.enabled : mapObjectData.enabled,
+                              ...(selectedSurface === 'promo_block' && {
+                                title: promoBlockData.title,
+                                subtitle: promoBlockData.subtitle,
+                                layoutType: promoBlockData.layoutType,
+                                backgroundColor: promoBlockData.backgroundColor,
+                              }),
+                            };
+                            handleSaveCreative(creativeData);
+                          }}
+                          variant="contained"
+                          sx={{
+                            bgcolor: '#007AFF',
+                            color: '#FFFFFF',
+                            borderRadius: '8px',
+                            px: '16px',
+                            py: '8px',
+                            fontWeight: 500,
+                            textTransform: 'none',
+                            '&:hover': {
+                              bgcolor: '#0056CC',
+                            },
+                          }}
+                        >
+                          Сохранить
+                        </Button>
+                      )}
+                      <Button
+                        onClick={handleCancelEdit}
+                        sx={{ color: '#8E8E93' }}
+                      >
+                        Отмена
+                      </Button>
+                    </Box>
                   )}
                 </Box>
                 
