@@ -56,14 +56,9 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data }) => {
     if (!data.name?.trim()) issues.push('Campaign name is required');
     if (!data.startDate || !data.endDate) issues.push('Campaign dates are required');
     if (!data.limitImpressions || data.limitImpressions <= 0) issues.push('Impression limit is required');
-    if (data.weight === 0) issues.push('Campaign weight cannot be zero');
     if (!data.creativeFiles?.length) issues.push('At least one creative is required');
 
-    // Check for warnings
-    if (data.weight > 50) warnings.push('High weight (>50%) may dominate other campaigns');
-    if (data.weight < 5) warnings.push('Low weight (<5%) may result in minimal impressions');
-    if (data.consecutiveCap > 5) warnings.push('High consecutive cap may reduce user experience');
-
+    
     // Check creative formats
     const creatives = data.creativeFiles || [];
     creatives.forEach((creative: any) => {
@@ -86,7 +81,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data }) => {
 
     const totalWeight = creatives.reduce((sum: number, c: any) => sum + c.weight, 0);
     if (Math.abs(totalWeight - 100) > 5) {
-      warnings.push(`Creative weights total ${totalWeight}% (should be ~100%)`);
+      warnings.push(`Another warning type`);
     }
 
     return { issues, warnings, isReady: issues.length === 0 };

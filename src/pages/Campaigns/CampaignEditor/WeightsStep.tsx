@@ -70,36 +70,6 @@ export const WeightsStep: React.FC<WeightsStepProps> = ({ data, onChange, errors
   // Colors for pie chart
   const colors = ['#FFDD2D', '#34C759', '#FF9500', '#007AFF', '#FF3B30', '#8E8E93', '#AF52DE'];
 
-  // Conflict detection
-  const getConflicts = () => {
-    const conflicts = [];
-    
-    if (data.weight > 50) {
-      conflicts.push({
-        type: 'warning',
-        message: 'High weight (>50%) may dominate other campaigns',
-      });
-    }
-    
-    if (data.weight < 5) {
-      conflicts.push({
-        type: 'warning',
-        message: 'Low weight (<5%) may result in minimal impressions',
-      });
-    }
-
-    if (data.consecutiveCap > 5) {
-      conflicts.push({
-        type: 'info',
-        message: 'High consecutive cap may reduce user experience diversity',
-      });
-    }
-
-    return conflicts;
-  };
-
-  const conflicts = getConflicts();
-
   // Performance prediction
   const getPredictedPerformance = () => {
     const dailyImpressions = data.limitImpressions && calculateDuration() 

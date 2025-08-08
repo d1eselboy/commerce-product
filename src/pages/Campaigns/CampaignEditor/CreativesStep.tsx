@@ -560,15 +560,6 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
       }
     });
 
-    // Check weight distribution
-    const totalWeight = creatives.reduce((sum: number, c: Creative) => sum + c.weight, 0);
-    if (Math.abs(totalWeight - 100) > 5) {
-      issues.push({ 
-        type: 'warning', 
-        message: `Total weight is ${totalWeight}% (should be close to 100%)` 
-      });
-    }
-
     return issues;
   };
 
