@@ -24,7 +24,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Slider,
   Grid,
   Card,
   CardContent,
@@ -39,7 +38,6 @@ import {
   Pause,
   PlayArrow,
   FileDownload,
-  Tune,
   Visibility,
   FilterList,
 } from '@mui/icons-material';
@@ -130,11 +128,12 @@ export const CampaignList: React.FC = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const [filterAnchorEl, setFilterAnchorEl] = useState<HTMLElement | null>(null);
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
   const [bulkActionOpen, setBulkActionOpen] = useState(false);
-  const [bulkAction, setBulkAction] = useState<'pause' | 'resume' | 'delete' | 'weight' | null>(null);
-  const [bulkWeight, setBulkWeight] = useState(10);
-  const [sortBy, setSortBy] = useState<'name' | 'status' | 'weight' | 'impressions'>('name');
+  const [bulkAction, setBulkAction] = useState<'pause' | 'resume' | 'delete' | null>(null);
+  const [sortBy, setSortBy] = useState<'name' | 'status' | 'impressions'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState<{ campaign: CampaignSummary; newStatus: string } | null>(null);
@@ -168,6 +167,29 @@ export const CampaignList: React.FC = () => {
     const newStatus = campaign.status === 'active' ? 'paused' : 'active';
     setPendingStatusChange({ campaign, newStatus });
     setShowConfirmation(true);
+  };
+
+  // Filter handlers
+  const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
+    setFilterAnchorEl(event.currentTarget);
+    setFilterMenuOpen(true);
+  };
+
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+    setFilterMenuOpen(false);
+  };
+
+  const handleStatusFilterChange = (status: string) => {
+    setStatusFilter(prev => 
+      prev.includes(status) 
+        ? prev.filter(s => s !== status)
+        : [...prev, status]
+    );
+  };
+
+  const clearFilters = () => {
+    setStatusFilter([]);
   };
 
   const handleConfirmStatusChange = async () => {
@@ -211,7 +233,7 @@ export const CampaignList: React.FC = () => {
   };
 
   // Bulk operations
-  const handleBulkAction = (action: 'pause' | 'resume' | 'delete' | 'weight') => {
+  const handleBulkAction = (action: 'pause' | 'resume' | 'delete') => {
     setBulkAction(action);
     setBulkActionOpen(true);
   };
@@ -227,9 +249,6 @@ export const CampaignList: React.FC = () => {
             break;
           case 'resume':
             await updateCampaign({ id: campaignId, data: { status: 'active' } });
-            break;
-          case 'weight':
-            await updateCampaign({ id: campaignId, data: { weight: bulkWeight } });
             break;
           case 'delete':
             // Implement delete logic
@@ -247,11 +266,12 @@ export const CampaignList: React.FC = () => {
   const exportCampaigns = () => {
     const selectedData = campaigns?.filter(c => selectedCampaigns.includes(c.id)) || [];
     const csvContent = [
-      ['Name', 'Status', 'Weight', 'Impressions Done', 'Limit'].join(','),
+      ['Name', 'Status', 'Start Date', 'End Date', 'Impressions Done', 'Limit'].join(','),
       ...selectedData.map(c => [
         c.name,
         c.status,
-        c.weight,
+        c.startDate,
+        c.endDate,
         c.impressionsDone,
         c.limitImpressions,
       ].join(','))
@@ -266,11 +286,18 @@ export const CampaignList: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  // Sorting
-  const sortedCampaigns = React.useMemo(() => {
+  // Filtering and Sorting
+  const filteredAndSortedCampaigns = React.useMemo(() => {
     if (!campaigns) return [];
     
-    return [...campaigns].sort((a, b) => {
+    // First filter by status
+    let filtered = campaigns;
+    if (statusFilter.length > 0) {
+      filtered = campaigns.filter(c => statusFilter.includes(c.status));
+    }
+    
+    // Then sort
+    return [...filtered].sort((a, b) => {
       let aValue: any = a[sortBy];
       let bValue: any = b[sortBy];
       
@@ -290,21 +317,31 @@ export const CampaignList: React.FC = () => {
         return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
       }
     });
-  }, [campaigns, sortBy, sortOrder]);
+  }, [campaigns, statusFilter, sortBy, sortOrder]);
 
   // Quick stats
   const quickStats = React.useMemo(() => {
-    if (!campaigns) return { total: 0, active: 0, paused: 0, totalImpressions: 0 };
+    if (!campaigns) return { total: 0, active: 0, paused: 0, totalImpressions: 0, averageProgress: 0 };
     
-    const active = campaigns.filter(c => c.status === 'active').length;
+    const activeCampaigns = campaigns.filter(c => c.status === 'active');
+    const active = activeCampaigns.length;
     const paused = campaigns.filter(c => c.status === 'paused').length;
     const totalImpressions = campaigns.reduce((sum, c) => sum + c.impressionsDone, 0);
+    
+    // Calculate average progress for active campaigns
+    const averageProgress = active > 0 
+      ? Math.round(activeCampaigns.reduce((sum, c) => {
+          const progress = (c.impressionsDone / c.limitImpressions) * 100;
+          return sum + Math.min(progress, 100);
+        }, 0) / active)
+      : 0;
     
     return {
       total: campaigns.length,
       active,
       paused,
       totalImpressions,
+      averageProgress,
     };
   }, [campaigns]);
 
@@ -427,7 +464,7 @@ export const CampaignList: React.FC = () => {
                 ОБЩИЙ ПРОГРЕСС
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 600, mt: 1, color: '#1C1C1E' }}>
-                {quickStats.activeCampaigns}
+                {quickStats.averageProgress}%
               </Typography>
             </CardContent>
           </Card>
@@ -455,24 +492,25 @@ export const CampaignList: React.FC = () => {
           <Button
             variant="outlined"
             startIcon={<FilterList />}
+            onClick={handleFilterClick}
             sx={{
-              bgcolor: '#F5F5F7',
+              bgcolor: statusFilter.length > 0 ? '#FFDD2D' : '#F5F5F7',
               border: 'none',
-              color: '#1C1C1E',
+              color: statusFilter.length > 0 ? '#000' : '#1C1C1E',
               borderRadius: '12px',
               px: 3,
               py: 1.5,
               fontWeight: 600,
               transition: 'all 0.2s ease-in-out',
               '&:hover': {
-                bgcolor: '#E5E5EA',
+                bgcolor: statusFilter.length > 0 ? '#E6C429' : '#E5E5EA',
                 border: 'none',
                 transform: 'translateY(-1px)',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
               },
             }}
           >
-            Фильтры
+            Фильтры {statusFilter.length > 0 && `(${statusFilter.length})`}
           </Button>
         </Box>
 
@@ -499,6 +537,88 @@ export const CampaignList: React.FC = () => {
           Создать кампанию
         </Button>
       </Box>
+
+      {/* Filter Menu */}
+      <Menu
+        anchorEl={filterAnchorEl}
+        open={filterMenuOpen}
+        onClose={handleFilterClose}
+        PaperProps={{
+          sx: {
+            borderRadius: '12px',
+            border: '1px solid #E5E5EA',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+            mt: 1,
+            minWidth: 200,
+          },
+        }}
+      >
+        <Box sx={{ p: 2 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, color: '#1C1C1E' }}>
+            Фильтр по статусу
+          </Typography>
+          
+          {['active', 'draft', 'paused', 'completed'].map((status) => {
+            const statusLabels = {
+              active: 'Активные',
+              draft: 'Черновики', 
+              paused: 'Приостановленные',
+              completed: 'Завершенные'
+            };
+            
+            return (
+              <Box
+                key={status}
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  mb: 1,
+                  cursor: 'pointer',
+                  p: 1,
+                  borderRadius: '8px',
+                  '&:hover': {
+                    bgcolor: '#F8F9FA',
+                  },
+                }}
+                onClick={() => handleStatusFilterChange(status)}
+              >
+                <Checkbox
+                  checked={statusFilter.includes(status)}
+                  size="small"
+                  sx={{
+                    color: '#8E8E93',
+                    '&.Mui-checked': {
+                      color: '#FFDD2D',
+                    },
+                  }}
+                />
+                <Typography variant="body2" sx={{ ml: 1, color: '#1C1C1E' }}>
+                  {statusLabels[status as keyof typeof statusLabels]}
+                </Typography>
+              </Box>
+            );
+          })}
+          
+          {statusFilter.length > 0 && (
+            <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid #F0F0F0' }}>
+              <Button
+                size="small"
+                onClick={clearFilters}
+                sx={{ 
+                  color: '#8E8E93',
+                  fontSize: '0.875rem',
+                  textTransform: 'none',
+                  '&:hover': {
+                    bgcolor: '#F8F9FA',
+                  },
+                }}
+              >
+                Сбросить фильтры
+              </Button>
+            </Box>
+          )}
+        </Box>
+      </Menu>
 
       {/* Bulk Actions Toolbar */}
       {selectedCampaigns.length > 0 && (
@@ -529,13 +649,6 @@ export const CampaignList: React.FC = () => {
               onClick={() => handleBulkAction('pause')}
             >
               Остановить
-            </Button>
-            <Button
-              size="small"
-              startIcon={<Tune />}
-              onClick={() => handleBulkAction('weight')}
-            >
-              Изменить вес
             </Button>
             <Button
               size="small"
@@ -660,18 +773,9 @@ export const CampaignList: React.FC = () => {
                     letterSpacing: '0.5px',
                     color: '#8E8E93',
                     borderBottom: '1px solid #E5E5EA',
-                    cursor: 'pointer',
-                    transition: 'color 0.2s ease-in-out',
-                    '&:hover': {
-                      color: '#1C1C1E',
-                    },
-                  }}
-                  onClick={() => {
-                    setSortBy('weight');
-                    setSortOrder(sortBy === 'weight' && sortOrder === 'asc' ? 'desc' : 'asc');
                   }}
                 >
-                  Вес {sortBy === 'weight' && (sortOrder === 'asc' ? '↑' : '↓')}
+                  Период
                 </TableCell>
                 <TableCell 
                   sx={{ 
@@ -730,7 +834,7 @@ export const CampaignList: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedCampaigns?.map((campaign) => {
+              {filteredAndSortedCampaigns?.map((campaign) => {
                 const progress = calculateProgress(campaign.impressionsDone, campaign.limitImpressions);
                 const statusColor = campaign.status === 'active' ? '#34C759' : 
                                   campaign.status === 'paused' ? '#FF9500' : '#8E8E93';
@@ -787,16 +891,16 @@ export const CampaignList: React.FC = () => {
                       </Box>
                     </TableCell>
                     <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#1C1C1E', mb: 0.5 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#1C1C1E' }}>
                         {campaign.name}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 500 }}>
-                        {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
-                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E' }}>
-                        {campaign.weight}%
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: '#1C1C1E', mb: 0.5 }}>
+                        {formatDate(campaign.startDate)}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#8E8E93', fontWeight: 500 }}>
+                        {formatDate(campaign.endDate)}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ py: 2.5, px: 3, borderBottom: '1px solid #F0F0F0' }}>
@@ -846,6 +950,31 @@ export const CampaignList: React.FC = () => {
         </TableContainer>
       </Paper>
 
+      {filteredAndSortedCampaigns?.length === 0 && campaigns && campaigns.length > 0 && (
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Не найдено кампаний по выбранным фильтрам
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Попробуйте изменить критерии фильтрации
+          </Typography>
+          <Button
+            variant="outlined"
+            onClick={clearFilters}
+            sx={{
+              borderColor: '#FFDD2D',
+              color: '#FFDD2D',
+              '&:hover': {
+                bgcolor: '#FFDD2D',
+                color: '#000',
+              },
+            }}
+          >
+            Сбросить фильтры
+          </Button>
+        </Box>
+      )}
+
       {campaigns?.length === 0 && (
         <Box sx={{ textAlign: 'center', py: 8 }}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -877,7 +1006,6 @@ export const CampaignList: React.FC = () => {
           {bulkAction === 'pause' && 'Приостановить кампании'}
           {bulkAction === 'resume' && 'Запустить кампании'}
           {bulkAction === 'delete' && 'Удалить кампании'}
-          {bulkAction === 'weight' && 'Изменить вес кампаний'}
         </DialogTitle>
         <DialogContent>
           {bulkAction === 'delete' ? (
@@ -885,38 +1013,6 @@ export const CampaignList: React.FC = () => {
               Вы действительно хотите удалить {selectedCampaigns.length} кампаний? 
               Это действие нельзя отменить.
             </Alert>
-          ) : bulkAction === 'weight' ? (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="body2" sx={{ mb: 3 }}>
-                Установить новый вес для {selectedCampaigns.length} выбранных кампаний:
-              </Typography>
-              <Box sx={{ px: 2 }}>
-                <Slider
-                  value={bulkWeight}
-                  onChange={(_, value) => setBulkWeight(value as number)}
-                  min={1}
-                  max={100}
-                  valueLabelDisplay="auto"
-                  valueLabelFormat={(value) => `${value}%`}
-                  marks={[
-                    { value: 1, label: '1%' },
-                    { value: 25, label: '25%' },
-                    { value: 50, label: '50%' },
-                    { value: 75, label: '75%' },
-                    { value: 100, label: '100%' },
-                  ]}
-                  sx={{
-                    color: '#FFDD2D',
-                    '& .MuiSlider-thumb': {
-                      bgcolor: '#FFDD2D',
-                    },
-                  }}
-                />
-              </Box>
-              <Typography variant="caption" sx={{ color: '#8E8E93', mt: 2, display: 'block' }}>
-                Новый вес: {bulkWeight}%
-              </Typography>
-            </Box>
           ) : (
             <Typography variant="body2">
               {bulkAction === 'pause' && `Приостановить ${selectedCampaigns.length} кампаний?`}
@@ -943,7 +1039,6 @@ export const CampaignList: React.FC = () => {
             {bulkAction === 'pause' && 'Приостановить'}
             {bulkAction === 'resume' && 'Запустить'}
             {bulkAction === 'delete' && 'Удалить'}
-            {bulkAction === 'weight' && 'Применить'}
           </Button>
         </DialogActions>
       </Dialog>

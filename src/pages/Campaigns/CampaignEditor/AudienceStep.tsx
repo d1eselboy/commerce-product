@@ -15,7 +15,6 @@ import {
   Button,
   Chip,
   LinearProgress,
-  Divider,
   TextField,
   Checkbox,
   ListItemText,
@@ -23,14 +22,10 @@ import {
 } from '@mui/material';
 import {
   CloudUpload,
-  People,
   Group,
   Assignment,
-  CheckCircle,
-  Info,
   Delete,
   Link,
-  Psychology,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useDropzone } from 'react-dropzone';
@@ -53,19 +48,6 @@ const audienceRoles = [
   { id: 'passengers', name: 'passengers', estimatedReach: 1200000 },
 ];
 
-// Available Yandex.Crypta behavioral analysis segments
-const cryptaSegments = [
-  { id: 'shopping_intent', name: 'Покупательские намерения', estimatedReach: 1800000 },
-  { id: 'travel_enthusiasts', name: 'Путешественники', estimatedReach: 950000 },
-  { id: 'tech_early_adopters', name: 'Ранние последователи технологий', estimatedReach: 420000 },
-  { id: 'fitness_health', name: 'Здоровье и фитнес', estimatedReach: 720000 },
-  { id: 'food_delivery', name: 'Пользователи доставки еды', estimatedReach: 1200000 },
-  { id: 'financial_services', name: 'Финансовые услуги', estimatedReach: 650000 },
-  { id: 'education_online', name: 'Онлайн образование', estimatedReach: 380000 },
-  { id: 'entertainment_streaming', name: 'Потоковые развлечения', estimatedReach: 1400000 },
-  { id: 'automotive_interest', name: 'Автомобильные интересы', estimatedReach: 890000 },
-  { id: 'luxury_brands', name: 'Люксовые бренды', estimatedReach: 220000 },
-];
 
 export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, errors }) => {
   const { t } = useTranslation();
@@ -74,7 +56,6 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
 
   const targetingType = data.audienceTargeting?.type || 'role';
   const selectedRoles = data.audienceTargeting?.roles || [];
-  const selectedCryptaSegments = data.audienceTargeting?.cryptaSegments || [];
   const ytSegmentUrl = data.audienceTargeting?.ytSegmentUrl || '';
   const audienceFile = data.audienceTargeting?.file;
   const estimatedIds = data.audienceTargeting?.estimatedIds || 0;
@@ -83,7 +64,6 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
     const newTargeting = {
       type: value,
       roles: value === 'role' ? ['all_users'] : undefined,
-      cryptaSegments: value === 'crypta' ? [] : undefined,
       ytSegmentUrl: value === 'yt-segment' ? '' : undefined,
       file: value === 'file' ? audienceFile : undefined,
       estimatedIds: value === 'role' ? getEstimatedReach(['all_users']) : 0,
@@ -105,16 +85,6 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
     });
   };
 
-  const handleCryptaSegmentsChange = (event: any) => {
-    const segments = typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value;
-    onChange({
-      audienceTargeting: {
-        ...data.audienceTargeting,
-        cryptaSegments: segments,
-        estimatedIds: getCryptaEstimatedReach(segments),
-      }
-    });
-  };
 
   const handleYtSegmentUrlChange = (event: any) => {
     const url = event.target.value;
@@ -141,28 +111,11 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
     return Math.floor(totalReach * overlapFactor);
   };
 
-  const getCryptaEstimatedReach = (segmentIds: string[]) => {
-    if (!segmentIds || segmentIds.length === 0) return 0;
-    
-    // Calculate overlap for Crypta segments
-    const totalReach = segmentIds.reduce((sum, segmentId) => {
-      const segment = cryptaSegments.find(s => s.id === segmentId);
-      return sum + (segment ? segment.estimatedReach : 0);
-    }, 0);
-    
-    // Apply overlap reduction for multiple segments
-    const overlapFactor = segmentIds.length > 1 ? 0.6 : 1; // 40% overlap reduction for behavioral segments
-    return Math.floor(totalReach * overlapFactor);
-  };
 
   const getRoleName = (roleId: string) => {
     return t(`campaignEditor.audience.roles.${roleId}`, roleId);
   };
 
-  const getCryptaSegmentName = (segmentId: string) => {
-    const segment = cryptaSegments.find(s => s.id === segmentId);
-    return segment ? segment.name : segmentId;
-  };
 
   // File upload for audience IDs
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -231,8 +184,6 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
 
   const currentEstimatedReach = targetingType === 'role' 
     ? getEstimatedReach(selectedRoles)
-    : targetingType === 'crypta'
-    ? getCryptaEstimatedReach(selectedCryptaSegments)
     : targetingType === 'yt-segment'
     ? (ytSegmentUrl ? 500000 : 0)
     : estimatedIds;
@@ -246,8 +197,7 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
         {t('campaignEditor.audience.description')}
       </Typography>
 
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
+      <Box sx={{ maxWidth: 800 }}>
           {/* Targeting Type Selection */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" sx={{ mb: 3 }}>
@@ -302,26 +252,6 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
                   />
                 </Paper>
 
-                <Paper sx={{ p: 3, border: targetingType === 'crypta' ? '2px solid #007AFF' : '1px solid #E5E5EA', borderRadius: '16px' }}>
-                  <FormControlLabel
-                    value="crypta"
-                    control={<Radio sx={{ color: '#007AFF' }} />}
-                    label={
-                      <Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <Psychology sx={{ color: '#007AFF', fontSize: 20 }} />
-                          <Typography variant="subtitle1">
-                            Сегмент Яндекс.Крипта
-                          </Typography>
-                        </Box>
-                        <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                          Advanced behavioral analysis segments - Multi-select with segments with overlap calculation
-                        </Typography>
-                      </Box>
-                    }
-                    sx={{ alignItems: 'flex-start', m: 0 }}
-                  />
-                </Paper>
 
               </RadioGroup>
             </FormControl>
@@ -423,65 +353,6 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
             </Box>
           )}
 
-          {/* Crypta Segments Selection */}
-          {targetingType === 'crypta' && (
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" sx={{ mb: 2 }}>
-                Поведенческие сегменты Яндекс.Крипта
-              </Typography>
-              
-              <FormControl fullWidth sx={{ maxWidth: 600 }}>
-                <Select
-                  multiple
-                  value={selectedCryptaSegments}
-                  onChange={handleCryptaSegmentsChange}
-                  input={<OutlinedInput />}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                        <Chip 
-                          key={value} 
-                          label={getCryptaSegmentName(value)} 
-                          size="small"
-                          sx={{ bgcolor: '#F3E5F5', color: '#7B1FA2' }}
-                        />
-                      ))}
-                    </Box>
-                  )}
-                  sx={{
-                    borderRadius: '12px',
-                    bgcolor: '#FAFAFA',
-                    minHeight: 56,
-                    '&:hover': {
-                      bgcolor: '#F5F5F5',
-                    },
-                    '&.Mui-focused': {
-                      bgcolor: '#FFFFFF',
-                    },
-                  }}
-                >
-                  {cryptaSegments.map((segment) => (
-                    <MenuItem key={segment.id} value={segment.id}>
-                      <Checkbox 
-                        checked={selectedCryptaSegments.indexOf(segment.id) > -1}
-                        sx={{ color: '#7B1FA2' }}
-                      />
-                      <ListItemText 
-                        primary={segment.name}
-                        secondary={`~${segment.estimatedReach.toLocaleString()} польз.`}
-                      />
-                    </MenuItem>
-                  ))}
-                </Select>
-                
-                {selectedCryptaSegments.length > 1 && (
-                  <Typography variant="caption" sx={{ color: '#8E8E93', mt: 1 }}>
-                    * Учитывается объединение сегментов
-                  </Typography>
-                )}
-              </FormControl>
-            </Box>
-          )}
 
           {/* File Upload */}
           {targetingType === 'file' && (
@@ -563,158 +434,7 @@ export const AudienceStep: React.FC<AudienceStepProps> = ({ data, onChange, erro
               {errors.audience}
             </Alert>
           )}
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          {/* Current Audience Summary */}
-          <Paper 
-            elevation={1}
-            sx={{ 
-              p: 3, 
-              bgcolor: '#F5F5F7', 
-              borderRadius: '16px',
-              border: '1px solid #E5E5EA',
-              mb: 3,
-            }}
-          >
-            <Typography variant="h5" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <People sx={{ fontSize: 20, color: '#8E8E93' }} />
-              {t('campaignEditor.audience.currentAudience')}
-            </Typography>
-
-            {targetingType === 'role' && selectedRoles.length > 0 && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                  Выбранные роли ({selectedRoles.length}):
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {selectedRoles.map((roleId) => (
-                    <Chip 
-                      key={roleId}
-                      label={getRoleName(roleId)}
-                      size="small"
-                      sx={{ 
-                        bgcolor: '#007AFF', 
-                        color: '#FFFFFF',
-                        fontWeight: 500 
-                      }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-            )}
-
-            {targetingType === 'yt-segment' && ytSegmentUrl && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                  YT сегмент:
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#1C1C1E', wordBreak: 'break-all' }}>
-                  {ytSegmentUrl}
-                </Typography>
-              </Box>
-            )}
-
-            {targetingType === 'crypta' && selectedCryptaSegments.length > 0 && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                  Поведенческие сегменты ({selectedCryptaSegments.length}):
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {selectedCryptaSegments.map((segmentId) => (
-                    <Chip 
-                      key={segmentId}
-                      label={getCryptaSegmentName(segmentId)}
-                      size="small"
-                      sx={{ 
-                        bgcolor: '#7B1FA2', 
-                        color: '#FFFFFF',
-                        fontWeight: 500 
-                      }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-            )}
-
-            {targetingType === 'file' && audienceFile && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                  Загруженный файл:
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#1C1C1E' }}>
-                  {data.audienceTargeting.fileName}
-                </Typography>
-              </Box>
-            )}
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                {t('campaignEditor.audience.estimatedReach')}:
-              </Typography>
-              <Typography variant="h4" sx={{ color: '#1C1C1E' }}>
-                {currentEstimatedReach.toLocaleString()}
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#8E8E93' }}>
-                пользователей
-              </Typography>
-            </Box>
-
-            {currentEstimatedReach > 0 && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 2, bgcolor: '#E8F5E8', borderRadius: '8px' }}>
-                <CheckCircle sx={{ color: '#34C759', fontSize: 16 }} />
-                <Typography variant="caption" sx={{ color: '#34C759', fontWeight: 500 }}>
-                  Аудитория настроена
-                </Typography>
-              </Box>
-            )}
-          </Paper>
-
-          {/* Targeting Tips */}
-          <Paper 
-            elevation={1}
-            sx={{ 
-              p: 3, 
-              bgcolor: '#E3F2FD', 
-              borderRadius: '16px',
-              border: '1px solid #BBDEFB',
-            }}
-          >
-            <Typography variant="h5" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Info sx={{ fontSize: 20, color: '#1976D2' }} />
-              Рекомендации по таргетингу
-            </Typography>
-
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 1 }}>
-                Роли аудитории:
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#1976D2', display: 'block', lineHeight: 1.4 }}>
-                • Быстрая настройка для стандартных сегментов
-                <br />
-                • Автоматическое обновление списка пользователей
-                <br />
-                • Рекомендуется для широких кампаний
-              </Typography>
-            </Box>
-
-            <Divider sx={{ my: 2, borderColor: '#BBDEFB' }} />
-
-            <Box>
-              <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 1 }}>
-                Файл с ID:
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#1976D2', display: 'block', lineHeight: 1.4 }}>
-                • Точное управление аудиторией
-                <br />
-                • Один ID пользователя на строку
-                <br />
-                • Максимальная гибкость таргетинга
-              </Typography>
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 };
