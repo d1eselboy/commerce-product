@@ -24,6 +24,10 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
     onChange({ description: event.target.value });
   };
 
+  const handleAdvertisingIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange({ advertisingId: event.target.value });
+  };
+
 
   return (
     <Box>
@@ -86,6 +90,62 @@ export const BasicStep: React.FC<BasicStepProps> = ({ data, onChange, errors }) 
                 {errors.name}
               </FormHelperText>
             )}
+          </Box>
+
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2 }}>
+              Рекламное ID
+            </Typography>
+            <TextField
+              fullWidth
+              placeholder="Введите рекламное ID кампании"
+              value={data.advertisingId || ''}
+              onChange={handleAdvertisingIdChange}
+              error={Boolean(errors.advertisingId)}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  fontSize: '1rem',
+                  borderRadius: '12px',
+                  backgroundColor: '#FAFAFA',
+                  border: '1px solid #E5E5EA',
+                  '& fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#007AFF',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#007AFF',
+                    borderWidth: '2px',
+                  },
+                  '& input': {
+                    py: '14px',
+                    px: '16px',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    color: '#1C1C1E',
+                    '&::placeholder': {
+                      color: '#8E8E93',
+                      opacity: 1,
+                    },
+                  },
+                  '&.Mui-error': {
+                    backgroundColor: '#FFF5F5',
+                    '& fieldset': {
+                      borderColor: '#FF3B30',
+                    },
+                  },
+                },
+              }}
+            />
+            {errors.advertisingId && (
+              <FormHelperText error sx={{ mt: 1, fontSize: '0.875rem' }}>
+                {errors.advertisingId}
+              </FormHelperText>
+            )}
+            <FormHelperText sx={{ mt: 1, color: '#8E8E93' }}>
+              Уникальный идентификатор для отслеживания рекламной кампании
+            </FormHelperText>
           </Box>
 
           <Box sx={{ mb: 4 }}>

@@ -60,6 +60,7 @@ interface Creative {
   format: 'static_image' | 'animated_icon';
   fileFormat: string;
   enabled: boolean;
+  deeplink?: string;
   // Promo block specific fields
   title?: string;
   subtitle?: string;
@@ -206,11 +207,13 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
     title: '',
     subtitle: '',
     layoutType: 'small_image' as 'small_image' | 'fifty_fifty' | 'background_image',
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#FFFFFF',
+    deeplink: ''
   });
   const [mapObjectData, setMapObjectData] = useState({
     id: '',
-    enabled: true
+    enabled: true,
+    deeplink: ''
   });
 
   // Generate unique ID for new creative
@@ -247,6 +250,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
           format: selectedSurface === 'map_object' ? 'animated_icon' as const : 'static_image' as const,
           fileFormat: file.type.split('/')[1].toUpperCase(),
           enabled: surfaceData.enabled,
+          deeplink: surfaceData.deeplink,
           // Add promo block specific fields
           ...(selectedSurface === 'promo_block' && {
             title: promoBlockData.title || file.name.replace(/\.[^/.]+$/, ''),
@@ -270,9 +274,9 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
       
       // Clear form after successful upload
       if (selectedSurface === 'promo_block') {
-        setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image', backgroundColor: '#FFFFFF' });
+        setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image', backgroundColor: '#FFFFFF', deeplink: '' });
       } else {
-        setMapObjectData({ id: '', enabled: true });
+        setMapObjectData({ id: '', enabled: true, deeplink: '' });
       }
     }, 1500);
   }, [data.creativeFiles, onChange, selectedSurface, promoBlockData, mapObjectData, creativeCounters]);
@@ -317,6 +321,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
         format: selectedSurface === 'map_object' ? 'animated_icon' : 'static_image',
         fileFormat: mdsUrl.split('.').pop()?.toUpperCase() || 'UNKNOWN',
         enabled: surfaceData.enabled,
+        deeplink: surfaceData.deeplink,
         // Add promo block specific fields
         ...(selectedSurface === 'promo_block' && {
           title: promoBlockData.title || filename,
@@ -342,9 +347,9 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
       
       // Clear form after successful upload
       if (selectedSurface === 'promo_block') {
-        setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image', backgroundColor: '#FFFFFF' });
+        setPromoBlockData({ id: '', enabled: true, title: '', subtitle: '', layoutType: 'small_image', backgroundColor: '#FFFFFF', deeplink: '' });
       } else {
-        setMapObjectData({ id: '', enabled: true });
+        setMapObjectData({ id: '', enabled: true, deeplink: '' });
       }
     }, 1000);
   };
@@ -360,6 +365,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
       id: uniqueId,
       enabled: surfaceData.enabled,
       surfaces: [selectedSurface],
+      deeplink: surfaceData.deeplink,
       ...(selectedSurface === 'promo_block' && {
         title: promoBlockData.title || creative.title,
         subtitle: promoBlockData.subtitle || creative.subtitle,
@@ -491,12 +497,14 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
           title: creative.title || '',
           subtitle: creative.subtitle || '',
           layoutType: creative.layoutType || 'small_image',
-          backgroundColor: creative.backgroundColor || '#FFFFFF'
+          backgroundColor: creative.backgroundColor || '#FFFFFF',
+          deeplink: creative.deeplink || ''
         });
       } else {
         setMapObjectData({
           id: creative.name,
-          enabled: creative.enabled
+          enabled: creative.enabled,
+          deeplink: creative.deeplink || ''
         });
       }
       
@@ -791,6 +799,7 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                             const creativeData = {
                               name: selectedSurface === 'promo_block' ? promoBlockData.id || 'Creative' : mapObjectData.id || 'Creative',
                               enabled: selectedSurface === 'promo_block' ? promoBlockData.enabled : mapObjectData.enabled,
+                              deeplink: selectedSurface === 'promo_block' ? promoBlockData.deeplink : mapObjectData.deeplink,
                               ...(selectedSurface === 'promo_block' && {
                                 title: promoBlockData.title,
                                 subtitle: promoBlockData.subtitle,
@@ -947,6 +956,22 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                             placeholder="Введите подзаголовок промоблока"
                             value={promoBlockData.subtitle}
                             onChange={(e) => setPromoBlockData(prev => ({ ...prev, subtitle: e.target.value }))}
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                bgcolor: '#FFFFFF',
+                              },
+                            }}
+                          />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <TextField
+                            fullWidth
+                            label="Диплинк (URL)"
+                            placeholder="https://example.com/deeplink"
+                            value={promoBlockData.deeplink}
+                            onChange={(e) => setPromoBlockData(prev => ({ ...prev, deeplink: e.target.value }))}
+                            helperText="URL, который откроется по клику на креатив"
                             sx={{
                               '& .MuiOutlinedInput-root': {
                                 borderRadius: '12px',
@@ -1124,6 +1149,22 @@ export const CreativesStep: React.FC<CreativesStepProps> = ({ data, onChange }) 
                             }
                             label={<Typography sx={{ fontWeight: 500 }}>Включить креатив</Typography>}
                             sx={{ mt: 2 }}
+                          />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <TextField
+                            fullWidth
+                            label="Диплинк (URL)"
+                            placeholder="https://example.com/deeplink"
+                            value={mapObjectData.deeplink}
+                            onChange={(e) => setMapObjectData(prev => ({ ...prev, deeplink: e.target.value }))}
+                            helperText="URL, который откроется по клику на объект на карте"
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                bgcolor: '#FFFFFF',
+                              },
+                            }}
                           />
                         </Grid>
                       </Grid>
